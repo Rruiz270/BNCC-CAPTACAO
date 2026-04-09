@@ -34,7 +34,7 @@ interface ConsultoriaContextType {
   startSession: (municipalityId: number) => Promise<Session | null>;
   switchSession: (sessionId: number) => void;
   endSession: (sessionId: number) => Promise<void>;
-  refreshSessions: () => Promise<void>;
+  refreshSessions: () => Promise<Session[]>;
 }
 
 const ConsultoriaContext = createContext<ConsultoriaContextType | null>(null);
