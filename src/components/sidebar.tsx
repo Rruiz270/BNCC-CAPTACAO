@@ -4,22 +4,22 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NAV_ITEMS = [
-  { href: "/dashboard", label: "Dashboard", icon: "📊" },
-  { href: "/diagnostico", label: "Diagnóstico", icon: "🔍" },
-  { href: "/simulador", label: "Simulador", icon: "🎛️" },
-  { href: "/comparativo", label: "Comparativo", icon: "⚖️" },
-  { href: "/compliance", label: "Compliance", icon: "✅" },
-  { href: "/plano-de-acao", label: "Plano de Ação", icon: "📋" },
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/diagnostico", label: "Diagnóstico" },
+  { href: "/simulador", label: "Simulador" },
+  { href: "/comparativo", label: "Comparativo" },
+  { href: "/compliance", label: "Compliance" },
+  { href: "/plano-de-acao", label: "Plano de Ação" },
   { type: "divider", label: "Implementação" },
-  { href: "/implementacao/curriculo", label: "Currículo BNCC", icon: "📚" },
-  { href: "/implementacao/minuta", label: "Minuta CME", icon: "📄" },
-  { href: "/implementacao/simec", label: "Guia SIMEC", icon: "🏛️" },
-  { href: "/implementacao/formacao", label: "Formação Docente", icon: "👩‍🏫" },
+  { href: "/implementacao/curriculo", label: "Currículo BNCC" },
+  { href: "/implementacao/minuta", label: "Minuta CME" },
+  { href: "/implementacao/simec", label: "Guia SIMEC" },
+  { href: "/implementacao/formacao", label: "Formação Docente" },
   { type: "divider", label: "Dados" },
-  { href: "/importar", label: "Importar Dados", icon: "📥" },
-  { href: "/relatorios", label: "Relatórios", icon: "📑" },
+  { href: "/importar", label: "Importar Dados" },
+  { href: "/relatorios", label: "Relatórios" },
   { type: "divider", label: "" },
-  { href: "/catalogo", label: "Catálogo i10", icon: "🏷️" },
+  { href: "/catalogo", label: "Catálogo i10" },
 ];
 
 export function Sidebar() {
@@ -54,13 +54,12 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href!}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${
+              className={`flex items-center px-3 py-2.5 rounded-lg text-sm transition-all ${
                 isActive
                   ? "bg-white/15 text-white font-semibold"
                   : "text-white/60 hover:bg-white/8 hover:text-white/90"
               }`}
             >
-              <span className="text-base w-5 text-center">{item.icon}</span>
               <span>{item.label}</span>
             </Link>
           );

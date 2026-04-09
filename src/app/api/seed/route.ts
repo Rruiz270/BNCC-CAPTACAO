@@ -377,17 +377,24 @@ export async function GET(request: NextRequest) {
         // Step 2: Create all tables
         send('Creating tables...');
         // Execute each statement individually (neon tagged templates don't support multi-statement)
-        const statements = CREATE_TABLES_SQL
+        // Strip SQL comments before splitting so inline -- don't break parsing
+        const cleanedSQL = CREATE_TABLES_SQL
+          .split('\n')
+          .map(line => line.replace(/--.*$/, '').trimEnd())
+          .join('\n');
+
+        const statements = cleanedSQL
           .split(';')
           .map(s => s.trim())
-          .filter(s => s.length > 0 && !s.startsWith('--'));
+          .filter(s => s.length > 0);
 
         for (const stmt of statements) {
           try {
             await sql.query(stmt);
+            send(`OK: ${stmt.substring(0, 60).replace(/\n/g, ' ')}...`);
           } catch (e: unknown) {
             const errMsg = e instanceof Error ? e.message : String(e);
-            send(`Warning on statement: ${errMsg.substring(0, 100)}`);
+            send(`Warning on statement [${stmt.substring(0, 40).replace(/\n/g, ' ')}]: ${errMsg.substring(0, 100)}`);
           }
         }
         send(`All ${statements.length} table/index statements executed.`);
@@ -410,14 +417,7 @@ export async function GET(request: NextRequest) {
 
         if (force && existingCount > 0) {
           send(`Force mode: truncating existing data (${existingCount} municipalities)...`);
-          // Delete in order of dependencies
-          await sql`DELETE FROM fundeb.documents`;
-          await sql`DELETE FROM fundeb.simulations`;
-          await sql`DELETE FROM fundeb.action_plans`;
-          await sql`DELETE FROM fundeb.compliance_items`;
-          await sql`DELETE FROM fundeb.schools`;
-          await sql`DELETE FROM fundeb.enrollments`;
-          await sql`DELETE FROM fundeb.municipalities`;
+          await sql`TRUNCATE fundeb.municipalities CASCADE`;
           send('Existing data truncated.');
         }
 
