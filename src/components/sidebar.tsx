@@ -32,13 +32,19 @@ interface MuniOption {
 function SidebarMunicipalityPicker({ onSelect, creating }: { onSelect: (id: number) => void; creating: boolean }) {
   const [municipalities, setMunicipalities] = useState<MuniOption[]>([]);
   const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState<MuniOption | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    fetch("/api/municipalities?limit=645")
+    if (loaded) return;
+    fetch("/api/municipalities?limit=645&sort=nome")
       .then((r) => r.json())
-      .then((data) => setMunicipalities(data.data || []))
+      .then((data) => {
+        setMunicipalities(data.data || []);
+        setLoaded(true);
+      })
       .catch(() => {});
-  }, []);
+  }, [loaded]);
 
   const filtered = search.length > 0
     ? municipalities.filter((m) => m.nome.toLowerCase().includes(search.toLowerCase()))
@@ -47,36 +53,58 @@ function SidebarMunicipalityPicker({ onSelect, creating }: { onSelect: (id: numb
   return (
     <div className="mt-3 p-2 bg-white/5 rounded-lg">
       <div className="text-[10px] text-white/50 mb-1.5">Selecione o municipio:</div>
-      <input
-        type="text"
-        placeholder="Buscar municipio..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-full px-2 py-1.5 text-xs rounded bg-white/10 text-white border border-white/20 placeholder-white/40 outline-none focus:border-[#00B4D8] mb-1.5"
-      />
-      <div className="max-h-40 overflow-y-auto rounded bg-white/5">
-        {filtered.slice(0, 50).map((m) => (
-          <button
-            key={m.id}
-            onClick={() => onSelect(m.id)}
-            disabled={creating}
-            className="w-full text-left px-2 py-1.5 text-xs text-white/80 hover:bg-[#00B4D8]/20 hover:text-white transition-colors disabled:opacity-50"
-          >
-            {m.nome}
-          </button>
-        ))}
-        {filtered.length === 0 && (
-          <div className="px-2 py-2 text-xs text-white/40">Nenhum encontrado</div>
-        )}
-        {filtered.length > 50 && (
-          <div className="px-2 py-1 text-[10px] text-white/30 text-center">
-            +{filtered.length - 50} municipios. Refine a busca.
+
+      {selected ? (
+        <div className="flex items-center gap-2 mb-2">
+          <div className="flex-1 px-2 py-1.5 text-xs rounded bg-[#00B4D8]/20 text-white font-semibold truncate">
+            {selected.nome}
           </div>
-        )}
-      </div>
-      {creating && (
-        <div className="text-[10px] text-[#00B4D8] mt-2 animate-pulse-slow">Criando sessao...</div>
+          <button
+            onClick={() => { setSelected(null); setSearch(""); }}
+            className="text-white/40 hover:text-white text-xs px-1"
+          >
+            x
+          </button>
+        </div>
+      ) : (
+        <>
+          <input
+            type="text"
+            placeholder="Buscar municipio..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            autoFocus
+            className="w-full px-2 py-1.5 text-xs rounded bg-white/10 text-white border border-white/20 placeholder-white/40 outline-none focus:border-[#00B4D8] mb-1.5"
+          />
+          <div className="max-h-40 overflow-y-auto rounded bg-white/5">
+            {filtered.slice(0, 50).map((m) => (
+              <button
+                key={m.id}
+                onClick={() => setSelected(m)}
+                className="w-full text-left px-2 py-1.5 text-xs text-white/80 hover:bg-[#00B4D8]/20 hover:text-white transition-colors"
+              >
+                {m.nome}
+              </button>
+            ))}
+            {filtered.length === 0 && (
+              <div className="px-2 py-2 text-xs text-white/40">Nenhum encontrado</div>
+            )}
+            {filtered.length > 50 && (
+              <div className="px-2 py-1 text-[10px] text-white/30 text-center">
+                +{filtered.length - 50} municipios. Refine a busca.
+              </div>
+            )}
+          </div>
+        </>
       )}
+
+      <button
+        onClick={() => selected && onSelect(selected.id)}
+        disabled={!selected || creating}
+        className="w-full mt-2 py-2 rounded-lg text-xs font-semibold transition-colors disabled:opacity-30 disabled:cursor-not-allowed bg-[#00B4D8] text-white hover:bg-[#00B4D8]/80"
+      >
+        {creating ? "Criando sessao..." : "Iniciar Consultoria"}
+      </button>
     </div>
   );
 }
