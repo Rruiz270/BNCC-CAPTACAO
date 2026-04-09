@@ -1,13 +1,58 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
-import { MunicipalitySelector } from "@/components/municipality-selector";
+import { useConsultoria } from "@/lib/consultoria-context";
 import { COMPLIANCE_SECTIONS } from "@/lib/constants";
 
+interface SectionProgress {
+  section: string;
+  total: number;
+  done: number;
+  progress: number;
+}
+
 export default function CompliancePage() {
-  const [municipalityId, setMunicipalityId] = useState<number | undefined>();
+  const { activeSession, municipality } = useConsultoria();
+  const [sectionProgress, setSectionProgress] = useState<Record<string, SectionProgress>>({});
+  const [loading, setLoading] = useState(false);
+
+  const municipalityId = activeSession?.municipalityId;
+
+  useEffect(() => {
+    if (!municipalityId) {
+      setSectionProgress({});
+      return;
+    }
+    setLoading(true);
+    fetch(`/api/compliance?municipalityId=${municipalityId}`)
+      .then((r) => r.json())
+      .then((data) => {
+        const progress: Record<string, SectionProgress> = {};
+        for (const section of COMPLIANCE_SECTIONS) {
+          const items = (data.items || []).filter(
+            (i: { section: string }) => i.section === section.id
+          );
+          const total = items.length;
+          const done = items.filter((i: { status: string }) => i.status === "done").length;
+          progress[section.id] = {
+            section: section.id,
+            total,
+            done,
+            progress: total > 0 ? Math.round((done / total) * 100) : 0,
+          };
+        }
+        setSectionProgress(progress);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [municipalityId]);
+
+  // Overall stats
+  const totalItems = COMPLIANCE_SECTIONS.reduce((acc, s) => acc + s.items.length, 0);
+  const totalDone = Object.values(sectionProgress).reduce((acc, s) => acc + s.done, 0);
+  const overallProgress = totalItems > 0 ? Math.round((totalDone / totalItems) * 100) : 0;
 
   return (
     <div>
@@ -17,16 +62,18 @@ export default function CompliancePage() {
       />
 
       <div className="max-w-7xl mx-auto px-8 py-6 space-y-6">
-        {/* Municipality Selector */}
-        <div className="max-w-md">
-          <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--text3)] mb-2">
-            Municipio
-          </label>
-          <MunicipalitySelector
-            value={municipalityId}
-            onChange={(id) => setMunicipalityId(id)}
-          />
-        </div>
+        {/* Session info or prompt */}
+        {!activeSession ? (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 text-center">
+            <p className="text-amber-800 text-sm font-semibold">Nenhuma consultoria ativa</p>
+            <p className="text-amber-600 text-xs mt-1">Inicie uma consultoria na sidebar para acompanhar o compliance do municipio.</p>
+          </div>
+        ) : (
+          <div className="bg-[#00B4D8]/5 border border-[#00B4D8]/20 rounded-lg px-4 py-2.5 flex items-center gap-2 text-sm">
+            <span className="w-2 h-2 rounded-full bg-[#00E5A0]" />
+            <span className="font-semibold text-[var(--navy)]">{municipality?.nome}</span>
+          </div>
+        )}
 
         {/* Overall Progress Summary */}
         <div className="bg-white border border-[var(--border)] rounded-xl p-5 animate-fade-in">
@@ -36,10 +83,10 @@ export default function CompliancePage() {
                 Progresso Geral
               </div>
               <div className="text-2xl font-extrabold mt-1 text-[var(--text)]">
-                0%
+                {loading ? "..." : `${overallProgress}%`}
               </div>
               <div className="text-xs text-[var(--text2)] mt-0.5">
-                0 de {COMPLIANCE_SECTIONS.reduce((acc, s) => acc + s.items.length, 0)} itens concluidos
+                {totalDone} de {totalItems} itens concluidos
               </div>
             </div>
             <div className="text-3xl opacity-40">
@@ -51,7 +98,7 @@ export default function CompliancePage() {
           <div className="mt-3 w-full bg-[var(--bg)] rounded-full h-2">
             <div
               className="h-2 rounded-full bg-[var(--cyan)] transition-all duration-500"
-              style={{ width: "0%" }}
+              style={{ width: `${overallProgress}%` }}
             />
           </div>
         </div>
@@ -59,8 +106,9 @@ export default function CompliancePage() {
         {/* Compliance Section Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {COMPLIANCE_SECTIONS.map((section) => {
-            const totalItems = section.items.length;
-            const progress = 0;
+            const sp = sectionProgress[section.id];
+            const progress = sp?.progress ?? 0;
+            const totalCount = section.items.length;
 
             return (
               <Link
@@ -100,7 +148,7 @@ export default function CompliancePage() {
 
                 {/* Item Count */}
                 <div className="text-xs text-[var(--text3)] mb-3">
-                  {totalItems} {totalItems === 1 ? "item" : "itens"} para verificar
+                  {sp ? `${sp.done} de ` : ""}{totalCount} {totalCount === 1 ? "item" : "itens"}{sp ? " concluidos" : " para verificar"}
                 </div>
 
                 {/* Progress Bar */}

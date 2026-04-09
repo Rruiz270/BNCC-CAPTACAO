@@ -121,12 +121,16 @@ export const complianceItems = fundebSchema.table('compliance_items', {
 export const actionPlans = fundebSchema.table('action_plans', {
   id: serial('id').primaryKey(),
   municipalityId: integer('municipality_id').references(() => municipalities.id),
-  semana: integer('semana').notNull(), // 1-7
+  phase: text('phase').default('curto'), // curto, medio, longo
+  semana: integer('semana').notNull(), // 1-7 for curto, 0 for medio/longo
   semanaLabel: text('semana_label'),
+  taskKey: text('task_key'), // unique key like curto_1_1, medio_1
   tarefa: text('tarefa').notNull(),
+  descricao: text('descricao'),
   responsavel: text('responsavel'),
   status: text('status').default('pending'),
   dueDate: text('due_date'),
+  notes: text('notes'),
   completedAt: timestamp('completed_at'),
 });
 
@@ -140,6 +144,18 @@ export const simulations = fundebSchema.table('simulations', {
   resultadoGanho: real('resultado_ganho'),
   resultadoGanhoPct: real('resultado_ganho_pct'),
   createdAt: timestamp('created_at').defaultNow(),
+});
+
+// consultorias (advisory sessions)
+export const consultorias = fundebSchema.table('consultorias', {
+  id: serial('id').primaryKey(),
+  municipalityId: integer('municipality_id').references(() => municipalities.id),
+  status: text('status').default('active'), // active, paused, completed
+  startDate: timestamp('start_date').defaultNow(),
+  endDate: timestamp('end_date'),
+  notes: text('notes'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
 // documents (minutas, curriculos, etc)

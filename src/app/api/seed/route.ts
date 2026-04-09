@@ -307,12 +307,16 @@ CREATE TABLE IF NOT EXISTS fundeb.compliance_items (
 CREATE TABLE IF NOT EXISTS fundeb.action_plans (
   id SERIAL PRIMARY KEY,
   municipality_id INTEGER REFERENCES fundeb.municipalities(id),
+  phase TEXT DEFAULT 'curto',
   semana INTEGER NOT NULL,
   semana_label TEXT,
+  task_key TEXT,
   tarefa TEXT NOT NULL,
+  descricao TEXT,
   responsavel TEXT,
   status TEXT DEFAULT 'pending',
   due_date TEXT,
+  notes TEXT,
   completed_at TIMESTAMP
 );
 
@@ -341,6 +345,27 @@ CREATE TABLE IF NOT EXISTS fundeb.documents (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
+-- consultorias (advisory sessions)
+CREATE TABLE IF NOT EXISTS fundeb.consultorias (
+  id SERIAL PRIMARY KEY,
+  municipality_id INTEGER REFERENCES fundeb.municipalities(id),
+  status TEXT DEFAULT 'active',
+  start_date TIMESTAMP DEFAULT NOW(),
+  end_date TIMESTAMP,
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Ensure action_plans has new columns (safe for existing tables)
+DO $$ BEGIN
+  ALTER TABLE fundeb.action_plans ADD COLUMN IF NOT EXISTS phase TEXT DEFAULT 'curto';
+  ALTER TABLE fundeb.action_plans ADD COLUMN IF NOT EXISTS task_key TEXT;
+  ALTER TABLE fundeb.action_plans ADD COLUMN IF NOT EXISTS descricao TEXT;
+  ALTER TABLE fundeb.action_plans ADD COLUMN IF NOT EXISTS notes TEXT;
+EXCEPTION WHEN OTHERS THEN NULL;
+END $$;
+
 -- Create indexes for performance
 CREATE INDEX IF NOT EXISTS idx_municipalities_nome ON fundeb.municipalities(nome);
 CREATE INDEX IF NOT EXISTS idx_municipalities_gp ON fundeb.municipalities(ganho_perda);
@@ -351,6 +376,7 @@ CREATE INDEX IF NOT EXISTS idx_compliance_muni ON fundeb.compliance_items(munici
 CREATE INDEX IF NOT EXISTS idx_action_plans_muni ON fundeb.action_plans(municipality_id);
 CREATE INDEX IF NOT EXISTS idx_simulations_muni ON fundeb.simulations(municipality_id);
 CREATE INDEX IF NOT EXISTS idx_documents_muni ON fundeb.documents(municipality_id);
+CREATE INDEX IF NOT EXISTS idx_consultorias_muni ON fundeb.consultorias(municipality_id);
 `;
 
 // ── GET /api/seed ───────────────────────────────────────────────────────

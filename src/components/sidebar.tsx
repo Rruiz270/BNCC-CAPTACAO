@@ -2,28 +2,55 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useConsultoria } from "@/lib/consultoria-context";
+import { MunicipalitySelector } from "@/components/municipality-selector";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard" },
-  { href: "/diagnostico", label: "Diagnóstico" },
+  { href: "/diagnostico", label: "Diagnostico" },
   { href: "/simulador", label: "Simulador" },
   { href: "/comparativo", label: "Comparativo" },
   { href: "/compliance", label: "Compliance" },
-  { href: "/plano-de-acao", label: "Plano de Ação" },
-  { type: "divider", label: "Implementação" },
-  { href: "/implementacao/curriculo", label: "Currículo BNCC" },
+  { href: "/plano-de-acao", label: "Plano de Acao" },
+  { type: "divider", label: "Implementacao" },
+  { href: "/implementacao/curriculo", label: "Curriculo BNCC" },
   { href: "/implementacao/minuta", label: "Minuta CME" },
   { href: "/implementacao/simec", label: "Guia SIMEC" },
-  { href: "/implementacao/formacao", label: "Formação Docente" },
+  { href: "/implementacao/formacao", label: "Formacao Docente" },
   { type: "divider", label: "Dados" },
   { href: "/importar", label: "Importar Dados" },
-  { href: "/relatorios", label: "Relatórios" },
+  { href: "/relatorios", label: "Relatorios" },
   { type: "divider", label: "" },
-  { href: "/catalogo", label: "Catálogo i10" },
+  { href: "/catalogo", label: "Catalogo i10" },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { sessions, activeSession, municipality, startSession, switchSession, endSession, loading } = useConsultoria();
+  const [showNewSession, setShowNewSession] = useState(false);
+  const [showSessionList, setShowSessionList] = useState(false);
+  const [creating, setCreating] = useState(false);
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    function handler() {
+      setShowSessionList(false);
+    }
+    if (showSessionList) {
+      document.addEventListener("click", handler);
+      return () => document.removeEventListener("click", handler);
+    }
+  }, [showSessionList]);
+
+  const activeSessions = sessions.filter((s) => s.status === "active");
+
+  async function handleStartSession(municipalityId: number) {
+    setCreating(true);
+    await startSession(municipalityId);
+    setCreating(false);
+    setShowNewSession(false);
+  }
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 bg-[#0A2463] text-white flex flex-col z-50 overflow-y-auto">
@@ -31,6 +58,95 @@ export function Sidebar() {
       <div className="px-6 py-5 border-b border-white/10">
         <div className="text-[#00B4D8] font-extrabold text-sm tracking-wider uppercase">Instituto i10</div>
         <div className="text-white/50 text-xs mt-0.5">Plataforma FUNDEB 2026</div>
+      </div>
+
+      {/* Session Panel */}
+      <div className="px-4 py-3 border-b border-white/10">
+        {loading ? (
+          <div className="text-white/30 text-xs animate-pulse-slow">Carregando...</div>
+        ) : activeSession && municipality ? (
+          <div>
+            {/* Active municipality */}
+            <div className="text-[10px] font-bold uppercase tracking-wider text-[#00B4D8] mb-1">
+              Consultoria Ativa
+            </div>
+            <div className="text-sm font-semibold text-white truncate">{municipality.nome}</div>
+
+            {/* Progress badges */}
+            <div className="flex gap-2 mt-2">
+              <div className="flex-1 bg-white/10 rounded px-2 py-1">
+                <div className="text-[9px] text-white/50 uppercase">Compliance</div>
+                <div className="text-xs font-bold text-[#00E5A0]">{activeSession.complianceProgress ?? 0}%</div>
+              </div>
+              <div className="flex-1 bg-white/10 rounded px-2 py-1">
+                <div className="text-[9px] text-white/50 uppercase">Plano</div>
+                <div className="text-xs font-bold text-[#48CAE4]">{activeSession.actionPlanProgress ?? 0}%</div>
+              </div>
+            </div>
+
+            {/* Session actions */}
+            <div className="flex gap-2 mt-2">
+              {activeSessions.length > 1 && (
+                <div className="relative flex-1">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setShowSessionList(!showSessionList); }}
+                    className="w-full text-[10px] px-2 py-1 rounded bg-white/10 text-white/70 hover:bg-white/15 transition-colors"
+                  >
+                    Trocar
+                  </button>
+                  {showSessionList && (
+                    <div className="absolute left-0 top-full mt-1 w-48 bg-[#0A2463] border border-white/20 rounded-lg shadow-xl z-50 overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                      {activeSessions.filter((s) => s.id !== activeSession.id).map((s) => (
+                        <button
+                          key={s.id}
+                          onClick={() => { switchSession(s.id); setShowSessionList(false); }}
+                          className="w-full text-left px-3 py-2 text-xs text-white/80 hover:bg-white/10 transition-colors"
+                        >
+                          {s.municipality?.nome}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+              <button
+                onClick={() => endSession(activeSession.id)}
+                className="text-[10px] px-2 py-1 rounded bg-white/10 text-white/50 hover:bg-red-500/20 hover:text-red-300 transition-colors"
+              >
+                Encerrar
+              </button>
+              <button
+                onClick={() => setShowNewSession(!showNewSession)}
+                className="text-[10px] px-2 py-1 rounded bg-[#00B4D8]/20 text-[#00B4D8] hover:bg-[#00B4D8]/30 transition-colors"
+              >
+                + Nova
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <button
+              onClick={() => setShowNewSession(!showNewSession)}
+              className="w-full text-center py-2 px-3 rounded-lg bg-[#00B4D8]/20 text-[#00B4D8] text-sm font-semibold hover:bg-[#00B4D8]/30 transition-colors"
+            >
+              Iniciar Consultoria
+            </button>
+          </div>
+        )}
+
+        {/* New session form */}
+        {showNewSession && (
+          <div className="mt-3 p-2 bg-white/5 rounded-lg">
+            <div className="text-[10px] text-white/50 mb-1.5">Selecione o municipio:</div>
+            <MunicipalitySelector
+              onChange={(id) => handleStartSession(id)}
+              className="text-[var(--text)]"
+            />
+            {creating && (
+              <div className="text-[10px] text-[#00B4D8] mt-2 animate-pulse-slow">Criando sessao...</div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Navigation */}
@@ -69,7 +185,7 @@ export function Sidebar() {
       {/* Footer */}
       <div className="px-6 py-4 border-t border-white/10 text-[10px] text-white/30">
         <div>FUNDEB SP 2026</div>
-        <div>645 municípios • 15 categorias</div>
+        <div>645 municipios - 15 categorias</div>
       </div>
     </aside>
   );

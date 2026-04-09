@@ -91,3 +91,29 @@ export const ACTION_PLAN_WEEKS = [
   { semana: 6, label: 'Semana 6: Travamento - Ultimo Check', dates: '12-23 Mai', color: '#ef4444' },
   { semana: 7, label: 'DIA DO CENSO: 27/Mai/2026', dates: '27 Mai', color: '#ef4444' },
 ];
+
+export const ACTION_PLAN_PHASES = [
+  { id: 'curto', label: 'Quick Wins', sublabel: 'Ate 27/Mai/2026', deadline: '27/05/2026', color: '#3b82f6' },
+  { id: 'medio', label: 'Medio Prazo', sublabel: 'Ate 31/Ago/2026', deadline: '31/08/2026', color: '#8b5cf6' },
+  { id: 'longo', label: 'Longo Prazo', sublabel: '2027+', deadline: '31/12/2027', color: '#06b6d4' },
+];
+
+export const MEDIUM_TERM_TASKS = [
+  { key: 'medio_1', tarefa: 'Aprovar curriculo BNCC Computacao no CME', descricao: 'Submeter minuta de resolucao ao Conselho Municipal de Educacao e obter aprovacao formal', deadline: '30/06/2026' },
+  { key: 'medio_2', tarefa: 'Publicar resolucao em Diario Oficial', descricao: 'Publicar a resolucao aprovada no Diario Oficial do municipio como comprovacao VAAR', deadline: '15/07/2026' },
+  { key: 'medio_3', tarefa: 'Registrar condicionalidades VAAR no SIMEC', descricao: 'Acessar o SIMEC e registrar todas as 5 condicionalidades com documentacao comprobatoria', deadline: '31/08/2026' },
+  { key: 'medio_4', tarefa: 'Atualizar PAR no SIMEC', descricao: 'Atualizar o Plano de Acoes Articuladas com as novas acoes e metas do FUNDEB', deadline: '31/08/2026' },
+  { key: 'medio_5', tarefa: 'Iniciar formacao docente em Computacao', descricao: 'Programa de formacao continuada com minimo de 32h anuais para professores', deadline: '31/07/2026' },
+  { key: 'medio_6', tarefa: 'Adquirir material didatico de Computacao', descricao: 'Realizar processo de aquisicao de materiais didaticos para o componente curricular', deadline: '31/08/2026' },
+  { key: 'medio_7', tarefa: 'Implementar selecao por merito de gestores', descricao: 'Estabelecer processo de selecao/provimento por merito dos gestores escolares (Condicionalidade VAAR)', deadline: '31/08/2026' },
+  { key: 'medio_8', tarefa: 'Garantir participacao nas avaliacoes SAEB', descricao: 'Assegurar que todas as escolas participem das avaliacoes nacionais (Prova Brasil/SAEB)', deadline: '31/08/2026' },
+  { key: 'medio_9', tarefa: 'Regime de colaboracao estado-municipio', descricao: 'Formalizar instrumento de regime de colaboracao com o estado de SP para o FUNDEB', deadline: '31/08/2026' },
+];
+
+export const LONG_TERM_TASKS = [
+  { key: 'longo_1', tarefa: 'Expandir escola integral (EC 135)', descricao: 'Atingir meta de 4% de novas vagas integrais/ano conforme EC 135/2025', deadline: '31/12/2027' },
+  { key: 'longo_2', tarefa: 'Aprovar plano de expansao de vagas integrais', descricao: 'Elaborar e aprovar plano municipal de expansao da educacao integral com metas e cronograma', deadline: '31/12/2026' },
+  { key: 'longo_3', tarefa: 'Adequar infraestrutura escolar', descricao: 'Investir na adequacao de laboratorios de informatica, bibliotecas e quadras esportivas', deadline: '31/12/2027' },
+  { key: 'longo_4', tarefa: 'Implementar curriculo de Computacao pleno', descricao: 'Garantir implementacao do componente curricular de Computacao em todas as unidades escolares', deadline: '28/02/2027' },
+  { key: 'longo_5', tarefa: 'Consolidar parcerias e conveniamentos', descricao: 'Revisar e formalizar todas as parcerias com instituicoes conveniadas para maximizar FUNDEB', deadline: '31/12/2027' },
+];
