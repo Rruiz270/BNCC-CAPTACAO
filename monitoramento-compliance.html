@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitoramento de Compliance FUNDEB/BNCC | Instituto i10</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0A2463;
+  --cyan: #00B4D8;
+  --green: #00E5A0;
+  --green-dark: #00C88A;
+  --red: #D4553A;
+  --orange: #E8A838;
+  --bg: #F4F7FA;
+  --card: #fff;
+  --border: #DDE3EB;
+  --text: #0A2463;
+  --text2: #5A6B80;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* TOP BAR */
+.topbar {
+  background: var(--navy);
+  padding: 0 2rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(10,36,99,0.15);
+}
+
+.topbar-brand {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--cyan);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.topbar-nav {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.topbar-nav a {
+  color: rgba(255,255,255,0.7);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.topbar-nav a:hover { color: var(--cyan); }
+
+/* HERO */
+.hero {
+  background: linear-gradient(135deg, var(--navy) 0%, #0D2F7A 50%, #1240A0 100%);
+  padding: 3rem 2rem 2.5rem;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(0,180,216,0.12) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: 10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(0,229,160,0.08) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.hero-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.hero h1 {
+  font-family: 'Source Serif 4', serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.hero p {
+  opacity: 0.85;
+  font-size: 1.05rem;
+  max-width: 700px;
+}
+
+.hero-badge {
+  display: inline-block;
+  background: rgba(0,229,160,0.15);
+  border: 1px solid rgba(0,229,160,0.3);
+  color: var(--green);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* MAIN LAYOUT */
+.main-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* MUNICIPALITY SELECTOR */
+.selector-bar {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  box-shadow: 0 1px 4px rgba(10,36,99,0.06);
+  border: 1px solid var(--border);
+}
+
+.selector-bar label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.selector-bar select {
+  flex: 1;
+  min-width: 250px;
+  padding: 0.6rem 1rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: var(--text);
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.selector-bar select:focus {
+  outline: none;
+  border-color: var(--cyan);
+}
+
+.btn {
+  padding: 0.6rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn-primary {
+  background: var(--cyan);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #009CC0;
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--text);
+  border: 2px solid var(--border);
+}
+
+.btn-outline:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.btn-green {
+  background: var(--green);
+  color: var(--navy);
+}
+
+.btn-green:hover {
+  background: var(--green-dark);
+}
+
+/* DASHBOARD GRID */
+.dashboard-top {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .dashboard-top { grid-template-columns: 1fr; }
+}
+
+/* SCORE GAUGE */
+.gauge-card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(10,36,99,0.06);
+  border: 1px solid var(--border);
+}
+
+.gauge-card h3 {
+  font-size: 0.85rem;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 1.5rem;
+}
+
+.gauge-container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 1rem;
+}
+
+.gauge-svg {
+  width: 200px;
+  height: 200px;
+  transform: rotate(-90deg);
+}
+
+.gauge-bg {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 12;
+}
+
+.gauge-fill {
+  fill: none;
+  stroke-width: 12;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s ease, stroke 0.5s ease;
+}
+
+.gauge-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.gauge-percent {
+  font-size: 2.8rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text);
+}
+
+.gauge-label {
+  font-size: 0.8rem;
+  color: var(--text2);
+  margin-top: 0.25rem;
+}
+
+.gauge-status {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-top: 0.75rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+.gauge-status.critical { background: rgba(212,85,58,0.1); color: var(--red); }
+.gauge-status.warning { background: rgba(232,168,56,0.1); color: var(--orange); }
+.gauge-status.good { background: rgba(0,229,160,0.1); color: var(--green-dark); }
+.gauge-status.excellent { background: rgba(0,180,216,0.1); color: var(--cyan); }
+
+/* TIMELINE */
+.timeline-card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 4px rgba(10,36,99,0.06);
+  border: 1px solid var(--border);
+}
+
+.timeline-card h3 {
+  font-size: 0.85rem;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 1.25rem;
+}
+
+.deadline-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  background: var(--bg);
+  border-radius: 10px;
+  margin-bottom: 0.75rem;
+  border-left: 4px solid var(--green);
+  transition: border-color 0.3s;
+}
+
+.deadline-item.near { border-left-color: var(--orange); }
+.deadline-item.urgent { border-left-color: var(--red); }
+.deadline-item.past { border-left-color: #999; opacity: 0.6; }
+
+.deadline-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.deadline-item:not(.near):not(.urgent):not(.past) .deadline-icon {
+  background: rgba(0,229,160,0.12);
+}
+.deadline-item.near .deadline-icon { background: rgba(232,168,56,0.12); }
+.deadline-item.urgent .deadline-icon { background: rgba(212,85,58,0.12); }
+.deadline-item.past .deadline-icon { background: rgba(150,150,150,0.12); }
+
+.deadline-info { flex: 1; }
+
+.deadline-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.deadline-date {
+  font-size: 0.8rem;
+  color: var(--text2);
+}
+
+.deadline-countdown {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.countdown-number {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.deadline-item:not(.near):not(.urgent):not(.past) .countdown-number { color: var(--green-dark); }
+.deadline-item.near .countdown-number { color: var(--orange); }
+.deadline-item.urgent .countdown-number { color: var(--red); }
+.deadline-item.past .countdown-number { color: #999; }
+
+.countdown-label {
+  font-size: 0.7rem;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* COMPLIANCE SECTIONS */
+.sections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(540px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 600px) {
+  .sections-grid { grid-template-columns: 1fr; }
+}
+
+.section-card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 4px rgba(10,36,99,0.06);
+  border: 1px solid var(--border);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.section-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.section-letter {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: white;
+  flex-shrink: 0;
+}
+
+.section-letter.a { background: var(--cyan); }
+.section-letter.b { background: var(--green-dark); }
+.section-letter.c { background: var(--orange); }
+.section-letter.d { background: #8B5CF6; }
+.section-letter.e { background: var(--red); }
+
+.section-name {
+  font-family: 'Source Serif 4', serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.section-deadline {
+  font-size: 0.75rem;
+  color: var(--text2);
+}
+
+.section-score {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.section-score.high { color: var(--green-dark); }
+.section-score.mid { color: var(--orange); }
+.section-score.low { color: var(--red); }
+
+.section-progress {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.section-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s ease, background 0.4s ease;
+}
+
+.checklist { list-style: none; }
+
+.checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--bg);
+  cursor: pointer;
+  transition: background 0.15s;
+  border-radius: 6px;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.checklist-item:hover { background: var(--bg); }
+
+.checklist-item:last-child { border-bottom: none; }
+
+.check-status {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+  position: relative;
+  margin-top: 1px;
+}
+
+.check-status.done {
+  background: rgba(0,229,160,0.15);
+  color: var(--green-dark);
+  border-color: var(--green-dark);
+}
+
+.check-status.done::after { content: '\2713'; }
+
+.check-status.progress {
+  background: rgba(0,180,216,0.12);
+  color: var(--cyan);
+  border-color: var(--cyan);
+}
+
+.check-status.progress::after { content: '\21BB'; font-size: 0.85rem; }
+
+.check-status.pending {
+  background: rgba(212,85,58,0.1);
+  color: var(--red);
+  border-color: var(--red);
+}
+
+.check-status.pending::after { content: '\2717'; }
+
+.check-status.late {
+  background: rgba(232,168,56,0.12);
+  color: var(--orange);
+  border-color: var(--orange);
+}
+
+.check-status.late::after { content: '!'; font-weight: 800; }
+
+.check-text {
+  flex: 1;
+  font-size: 0.88rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.check-text.completed {
+  text-decoration: line-through;
+  opacity: 0.55;
+}
+
+.status-selector {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 50;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(10,36,99,0.12);
+  padding: 0.35rem;
+  min-width: 160px;
+}
+
+.status-selector.open { display: block; }
+
+.status-option {
+  padding: 0.45rem 0.65rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.15s;
+}
+
+.status-option:hover { background: var(--bg); }
+
+.status-option .opt-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.opt-done .opt-icon { background: rgba(0,229,160,0.15); color: var(--green-dark); }
+.opt-progress .opt-icon { background: rgba(0,180,216,0.12); color: var(--cyan); }
+.opt-pending .opt-icon { background: rgba(212,85,58,0.1); color: var(--red); }
+.opt-late .opt-icon { background: rgba(232,168,56,0.12); color: var(--orange); }
+
+/* RISK MATRIX */
+.risk-card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 4px rgba(10,36,99,0.06);
+  border: 1px solid var(--border);
+}
+
+.risk-card h3 {
+  font-family: 'Source Serif 4', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.risk-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.85rem;
+}
+
+.risk-table thead th {
+  background: var(--navy);
+  color: white;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.risk-table thead th:first-child { border-radius: 8px 0 0 0; }
+.risk-table thead th:last-child { border-radius: 0 8px 0 0; }
+
+.risk-table tbody td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.risk-table tbody tr:last-child td { border-bottom: none; }
+.risk-table tbody tr:last-child td:first-child { border-radius: 0 0 0 8px; }
+.risk-table tbody tr:last-child td:last-child { border-radius: 0 0 8px 0; }
+
+.risk-table tbody tr:hover { background: var(--bg); }
+
+.risk-tag {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.risk-tag.critical { background: rgba(212,85,58,0.1); color: var(--red); }
+.risk-tag.high { background: rgba(232,168,56,0.1); color: var(--orange); }
+.risk-tag.medium { background: rgba(0,180,216,0.1); color: var(--cyan); }
+
+.risk-hidden { display: none; }
+
+/* ACTION PLAN */
+.action-card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 4px rgba(10,36,99,0.06);
+  border: 1px solid var(--border);
+}
+
+.action-card h3 {
+  font-family: 'Source Serif 4', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.action-card .subtitle {
+  font-size: 0.85rem;
+  color: var(--text2);
+  margin-bottom: 1.25rem;
+}
+
+.action-list { list-style: none; }
+
+.action-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: var(--bg);
+  border-radius: 10px;
+  margin-bottom: 0.6rem;
+  border-left: 4px solid var(--red);
+}
+
+.action-item.priority-high { border-left-color: var(--red); }
+.action-item.priority-medium { border-left-color: var(--orange); }
+.action-item.priority-low { border-left-color: var(--cyan); }
+
+.action-priority {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: white;
+  margin-top: 2px;
+}
+
+.action-item.priority-high .action-priority { background: var(--red); }
+.action-item.priority-medium .action-priority { background: var(--orange); }
+.action-item.priority-low .action-priority { background: var(--cyan); }
+
+.action-text {
+  flex: 1;
+}
+
+.action-text strong {
+  font-size: 0.88rem;
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+.action-text span {
+  font-size: 0.8rem;
+  color: var(--text2);
+}
+
+.no-actions {
+  text-align: center;
+  padding: 2rem;
+  color: var(--green-dark);
+  font-weight: 600;
+}
+
+.no-actions .big-check {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* BOTTOM BAR */
+.bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.bottom-bar .back-link {
+  color: var(--cyan);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: opacity 0.2s;
+}
+
+.bottom-bar .back-link:hover { opacity: 0.8; }
+
+/* STATUS SUMMARY BAR */
+.summary-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 700px) {
+  .summary-bar { grid-template-columns: repeat(2, 1fr); }
+}
+
+.summary-item {
+  background: var(--card);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 4px rgba(10,36,99,0.06);
+}
+
+.summary-item .num {
+  font-size: 1.8rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.summary-item .num.green { color: var(--green-dark); }
+.summary-item .num.cyan { color: var(--cyan); }
+.summary-item .num.orange { color: var(--orange); }
+.summary-item .num.red { color: var(--red); }
+
+.summary-item .lbl {
+  font-size: 0.78rem;
+  color: var(--text2);
+  font-weight: 500;
+}
+
+/* PRINT STYLES */
+@media print {
+  .topbar, .selector-bar, .btn, .status-selector, .bottom-bar { display: none !important; }
+  .hero { padding: 1rem; background: var(--navy) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .main-container { padding: 0.5rem; }
+  .section-card, .risk-card, .action-card, .gauge-card, .timeline-card {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+  .sections-grid { grid-template-columns: 1fr; }
+  .dashboard-top { grid-template-columns: 1fr 1fr; }
+  body { font-size: 11px; }
+  .print-header { display: block !important; }
+}
+
+.print-header {
+  display: none;
+  text-align: center;
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text2);
+}
+
+/* OVERLAY for dropdown close */
+.dropdown-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 40;
+}
+
+.dropdown-overlay.open { display: block; }
+
+/* Section expand/collapse */
+.section-toggle {
+  display: none;
+}
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  .hero h1 { font-size: 1.5rem; }
+  .hero { padding: 2rem 1rem 1.5rem; }
+  .main-container { padding: 1rem; }
+  .dashboard-top { grid-template-columns: 1fr; }
+  .risk-table { font-size: 0.75rem; }
+  .risk-table thead th, .risk-table tbody td { padding: 0.5rem; }
+  .selector-bar { flex-direction: column; align-items: stretch; }
+  .selector-bar select { min-width: auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-brand">INSTITUTO i10</div>
+  <nav class="topbar-nav">
+    <a href="playbook.html">Playbook</a>
+    <a href="#" onclick="window.print(); return false;">Imprimir</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">FUNDEB 2026 / EC 108</div>
+    <h1>Monitoramento de Compliance</h1>
+    <p>Painel de acompanhamento das condicionalidades VAAR, BNCC Computa&ccedil;&atilde;o, Censo Escolar, SIMEC e EC 135 para munic&iacute;pios do estado de S&atilde;o Paulo.</p>
+  </div>
+</section>
+
+<!-- MAIN -->
+<div class="main-container">
+
+  <!-- MUNICIPALITY SELECTOR -->
+  <div class="selector-bar">
+    <label for="citySelect">Munic&iacute;pio:</label>
+    <select id="citySelect" onchange="loadCity(this.value)">
+      <option value="">-- Selecione um munic&iacute;pio --</option>
+    </select>
+    <button class="btn btn-primary" onclick="loadCity(document.getElementById('citySelect').value)">Carregar</button>
+    <button class="btn btn-outline" onclick="resetAll()">Limpar Tudo</button>
+    <button class="btn btn-green" onclick="exportReport()">Exportar Relat&oacute;rio</button>
+  </div>
+
+  <!-- SUMMARY BAR -->
+  <div class="summary-bar" id="summaryBar">
+    <div class="summary-item"><div class="num green" id="sumDone">0</div><div class="lbl">Conclu&iacute;dos</div></div>
+    <div class="summary-item"><div class="num cyan" id="sumProgress">0</div><div class="lbl">Em Andamento</div></div>
+    <div class="summary-item"><div class="num orange" id="sumLate">0</div><div class="lbl">Atrasados</div></div>
+    <div class="summary-item"><div class="num red" id="sumPending">0</div><div class="lbl">Pendentes</div></div>
+  </div>
+
+  <!-- GAUGE + TIMELINE -->
+  <div class="dashboard-top">
+    <!-- GAUGE -->
+    <div class="gauge-card">
+      <h3>Score Geral de Compliance</h3>
+      <div class="gauge-container">
+        <svg class="gauge-svg" viewBox="0 0 200 200">
+          <circle class="gauge-bg" cx="100" cy="100" r="82"></circle>
+          <circle class="gauge-fill" id="gaugeFill" cx="100" cy="100" r="82"
+            stroke-dasharray="515.22" stroke-dashoffset="515.22"></circle>
+        </svg>
+        <div class="gauge-text">
+          <div class="gauge-percent" id="gaugePercent">0%</div>
+          <div class="gauge-label">compliance</div>
+        </div>
+      </div>
+      <div class="gauge-status critical" id="gaugeStatus">Selecione um munic&iacute;pio</div>
+    </div>
+
+    <!-- TIMELINE -->
+    <div class="timeline-card">
+      <h3>Prazos e Contagens Regressivas</h3>
+      <div id="timelineContainer"></div>
+    </div>
+  </div>
+
+  <!-- COMPLIANCE SECTIONS -->
+  <div class="sections-grid" id="sectionsGrid"></div>
+
+  <!-- RISK MATRIX -->
+  <div class="risk-card">
+    <h3><span style="font-size:1.2rem;">&#9888;</span> Matriz de Riscos</h3>
+    <div style="overflow-x:auto;">
+      <table class="risk-table">
+        <thead>
+          <tr>
+            <th>Item N&atilde;o Cumprido</th>
+            <th>Consequ&ecirc;ncia</th>
+            <th>Impacto Financeiro</th>
+            <th>Severidade</th>
+          </tr>
+        </thead>
+        <tbody id="riskTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ACTION PLAN -->
+  <div class="action-card">
+    <h3><span style="font-size:1.2rem;">&#9889;</span> Plano de A&ccedil;&atilde;o Priorit&aacute;rio</h3>
+    <p class="subtitle">Gerado automaticamente com base nos itens pendentes e atrasados</p>
+    <ul class="action-list" id="actionList"></ul>
+  </div>
+
+  <!-- PRINT HEADER -->
+  <div class="print-header">
+    <p>Relat&oacute;rio gerado em <span id="printDate"></span> | Instituto i10 - Monitoramento de Compliance FUNDEB/BNCC 2026</p>
+  </div>
+
+  <!-- BOTTOM BAR -->
+  <div class="bottom-bar">
+    <a href="playbook.html" class="back-link">&larr; Voltar ao Playbook</a>
+    <div style="font-size:0.8rem; color:var(--text2);">
+      &copy; 2026 Instituto i10 &middot; Dados atualizados em tempo real
+    </div>
+  </div>
+
+</div>
+
+<!-- OVERLAY -->
+<div class="dropdown-overlay" id="dropdownOverlay" onclick="closeAllDropdowns()"></div>
+
+<script>
+// =========================================================
+// DATA DEFINITIONS
+// =========================================================
+
+const SECTIONS = [
+  {
+    id: 'A', letter: 'a', name: '5 Condicionalidades VAAR',
+    deadline: '31/ago/2026',
+    items: [
+      { id: 'a1', text: 'Provimento por sele\u00e7\u00e3o/m\u00e9rito dos gestores escolares' },
+      { id: 'a2', text: 'Participa\u00e7\u00e3o nas avalia\u00e7\u00f5es (SAEB, Prova Brasil)' },
+      { id: 'a3', text: 'Redu\u00e7\u00e3o das desigualdades socioecon\u00f4micas e raciais' },
+      { id: 'a4', text: 'Regime de colabora\u00e7\u00e3o estado-munic\u00edpio firmado' },
+      { id: 'a5', text: 'Referenciais curriculares alinhados \u00e0 BNCC (inclui Computa\u00e7\u00e3o)' }
+    ]
+  },
+  {
+    id: 'B', letter: 'b', name: 'BNCC Computa\u00e7\u00e3o',
+    deadline: '31/ago/2026',
+    items: [
+      { id: 'b1', text: 'Curr\u00edculo aprovado pelo CME (Conselho Municipal de Educa\u00e7\u00e3o)' },
+      { id: 'b2', text: 'Resolu\u00e7\u00e3o publicada em di\u00e1rio oficial' },
+      { id: 'b3', text: 'Professores capacitados em computa\u00e7\u00e3o / pensamento computacional' },
+      { id: 'b4', text: 'Material did\u00e1tico adquirido (livros, plataformas)' },
+      { id: 'b5', text: 'Laborat\u00f3rios / infraestrutura de TI instalados' },
+      { id: 'b6', text: 'Registro da implementa\u00e7\u00e3o no SIMEC' }
+    ]
+  },
+  {
+    id: 'C', letter: 'c', name: 'Censo Escolar',
+    deadline: '27/mai/2026',
+    items: [
+      { id: 'c1', text: 'Todas as matr\u00edculas registradas no sistema' },
+      { id: 'c2', text: 'Categorias de matr\u00edcula classificadas corretamente' },
+      { id: 'c3', text: 'AEE dupla matr\u00edcula registrada (Atendimento Educacional Especializado)' },
+      { id: 'c4', text: 'Escolas rurais classificadas corretamente' }
+    ]
+  },
+  {
+    id: 'D', letter: 'd', name: 'SIMEC',
+    deadline: '31/ago/2026',
+    items: [
+      { id: 'd1', text: 'PAR (Plano de A\u00e7\u00f5es Articuladas) atualizado' },
+      { id: 'd2', text: 'Condicionalidades registradas no sistema' },
+      { id: 'd3', text: 'Documenta\u00e7\u00e3o comprobat\u00f3ria anexada' }
+    ]
+  },
+  {
+    id: 'E', letter: 'e', name: 'EC 135 \u2013 Escola Integral',
+    deadline: '31/ago/2026',
+    items: [
+      { id: 'e1', text: 'Meta de 4% novas vagas integrais/ano definida e aprovada' },
+      { id: 'e2', text: 'Plano de expans\u00e3o de escola integral aprovado pelo CME' }
+    ]
+  }
+];
+
+const ALL_ITEM_IDS = SECTIONS.flatMap(s => s.items.map(i => i.id));
+const TOTAL_ITEMS = ALL_ITEM_IDS.length;
+
+// Status cycle: done -> progress -> pending -> late -> done
+const STATUS_CYCLE = ['done', 'progress', 'pending', 'late'];
+const STATUS_LABELS = {
+  done: '\u2705 Conclu\u00eddo',
+  progress: '\uD83D\uDD04 Em Andamento',
+  pending: '\u274C Pendente',
+  late: '\u26A0\uFE0F Atrasado'
+};
+
+// Deadlines
+const DEADLINES = [
+  { name: 'Censo Escolar', date: new Date(2026, 4, 27), icon: '\uD83D\uDCCA' },
+  { name: 'Condicionalidades VAAR (SIMEC)', date: new Date(2026, 7, 31), icon: '\uD83D\uDCC4' },
+  { name: 'BNCC Computa\u00e7\u00e3o \u2013 Registro SIMEC', date: new Date(2026, 7, 31), icon: '\uD83D\uDCBB' },
+  { name: 'EC 135 \u2013 Plano Escola Integral', date: new Date(2026, 7, 31), icon: '\uD83C\uDFEB' }
+];
+
+// Risk matrix data
+const RISKS = [
+  { item: 'N\u00e3o registrar AEE (dupla matr\u00edcula)', consequence: 'Perda da pondera\u00e7\u00e3o 1.1 no c\u00e1lculo do FUNDEB para alunos com defici\u00eancia', impact: 'R$ 1.200\u2013R$ 2.400/aluno/ano', severity: 'critical', relatedIds: ['c3'] },
+  { item: 'N\u00e3o cumprir Condicionalidade V (BNCC)', consequence: 'Perda total do VAAR \u2013 at\u00e9 2,5% do FUNDEB', impact: 'At\u00e9 R$ 2,5 milh\u00f5es (dep. do munic\u00edpio)', severity: 'critical', relatedIds: ['a5','b1','b2','b3','b4','b5','b6'] },
+  { item: 'Matr\u00edculas n\u00e3o registradas no Censo', consequence: 'Alunos n\u00e3o contabilizados na distribui\u00e7\u00e3o do FUNDEB', impact: 'R$ 5.000\u2013R$ 8.000/aluno/ano', severity: 'critical', relatedIds: ['c1','c2'] },
+  { item: 'N\u00e3o participar do SAEB', consequence: 'Perda da Condicionalidade II do VAAR', impact: 'Redu\u00e7\u00e3o proporcional do VAAR', severity: 'high', relatedIds: ['a2'] },
+  { item: 'PAR desatualizado no SIMEC', consequence: 'Bloqueio de transfer\u00eancias volunt\u00e1rias e assist\u00eancia t\u00e9cnica', impact: 'Var\u00edavel \u2013 dep. dos programas', severity: 'high', relatedIds: ['d1','d2','d3'] },
+  { item: 'N\u00e3o cumprir meta de escola integral (EC 135)', consequence: 'Descumprimento de emenda constitucional; risco de san\u00e7\u00e3o futura', impact: 'Perda de repasses espec\u00edficos para integral', severity: 'high', relatedIds: ['e1','e2'] },
+  { item: 'Gestores sem sele\u00e7\u00e3o por m\u00e9rito', consequence: 'Perda da Condicionalidade I do VAAR', impact: 'Redu\u00e7\u00e3o do VAAR', severity: 'high', relatedIds: ['a1'] },
+  { item: 'Escolas rurais mal classificadas', consequence: 'Perda da pondera\u00e7\u00e3o para matr\u00edculas rurais', impact: 'R$ 800\u2013R$ 1.500/aluno/ano', severity: 'medium', relatedIds: ['c4'] },
+  { item: 'Regime de colabora\u00e7\u00e3o n\u00e3o firmado', consequence: 'Perda da Condicionalidade IV do VAAR', impact: 'Redu\u00e7\u00e3o proporcional do VAAR', severity: 'medium', relatedIds: ['a4'] },
+  { item: 'Professores n\u00e3o capacitados em computa\u00e7\u00e3o', consequence: 'Implementa\u00e7\u00e3o deficiente; risco no monitoramento MEC', impact: 'Qualitativo + risco VAAR', severity: 'medium', relatedIds: ['b3'] }
+];
+
+// Action plan templates
+const ACTION_TEMPLATES = {
+  a1: { text: 'Publicar edital de sele\u00e7\u00e3o de gestores escolares', detail: 'Definir crit\u00e9rios de m\u00e9rito e desempenho conforme Lei 14.113/2020', priority: 'high' },
+  a2: { text: 'Confirmar participa\u00e7\u00e3o no SAEB 2026', detail: 'Verificar cadastro das escolas no sistema do INEP', priority: 'high' },
+  a3: { text: 'Implementar pol\u00edticas de redu\u00e7\u00e3o de desigualdades', detail: 'Documentar a\u00e7\u00f5es afirmativas e programas de equidade', priority: 'medium' },
+  a4: { text: 'Formalizar regime de colabora\u00e7\u00e3o com o estado', detail: 'Assinar conv\u00eanio/termo de coopera\u00e7\u00e3o com a SEE-SP', priority: 'medium' },
+  a5: { text: 'Aprovar referencial curricular com BNCC Computa\u00e7\u00e3o', detail: 'Submeter ao CME e publicar resolu\u00e7\u00e3o', priority: 'high' },
+  b1: { text: 'Submeter curr\u00edculo de computa\u00e7\u00e3o ao CME', detail: 'Elaborar proposta curricular baseada na BNCC e agendar delibera\u00e7\u00e3o', priority: 'high' },
+  b2: { text: 'Publicar resolu\u00e7\u00e3o curricular no di\u00e1rio oficial', detail: 'Ap\u00f3s aprova\u00e7\u00e3o do CME, publicar e comunicar escolas', priority: 'high' },
+  b3: { text: 'Iniciar forma\u00e7\u00e3o de professores em computa\u00e7\u00e3o', detail: 'Contratar parceiro ou definir programa de capacita\u00e7\u00e3o; m\u00ednimo 40h', priority: 'high' },
+  b4: { text: 'Adquirir material did\u00e1tico de computa\u00e7\u00e3o', detail: 'Licitar/comprar livros e licen\u00e7as de plataformas educacionais', priority: 'medium' },
+  b5: { text: 'Instalar/adaptar laborat\u00f3rios de inform\u00e1tica', detail: 'Verificar infraestrutura el\u00e9trica, rede e equipamentos', priority: 'medium' },
+  b6: { text: 'Registrar implementa\u00e7\u00e3o de computa\u00e7\u00e3o no SIMEC', detail: 'Preencher m\u00f3dulo espec\u00edfico com evid\u00eancias e documentos', priority: 'high' },
+  c1: { text: 'Concluir registro de todas as matr\u00edculas', detail: 'Mutir\u00e3o de cadastro; verificar escolas com pendencias', priority: 'high' },
+  c2: { text: 'Auditar categorias de matr\u00edcula', detail: 'Conferir se integral, parcial, EJA est\u00e3o corretos no sistema', priority: 'high' },
+  c3: { text: 'Registrar AEE como dupla matr\u00edcula', detail: 'Cada aluno AEE deve ter 2 matr\u00edculas: turma regular + AEE', priority: 'high' },
+  c4: { text: 'Revisar classifica\u00e7\u00e3o de escolas rurais', detail: 'Verificar c\u00f3digos INEP e localiza\u00e7\u00e3o no Censo', priority: 'medium' },
+  d1: { text: 'Atualizar o PAR no SIMEC', detail: 'Acessar plataforma e preencher diagn\u00f3stico atualizado', priority: 'high' },
+  d2: { text: 'Registrar cumprimento das condicionalidades', detail: 'Preencher cada condicionalidade com evid\u00eancias no SIMEC', priority: 'high' },
+  d3: { text: 'Anexar documenta\u00e7\u00e3o comprobat\u00f3ria ao SIMEC', detail: 'Digitalizar resolu\u00e7\u00f5es, atas, editais e anexar', priority: 'medium' },
+  e1: { text: 'Definir meta de 4% de novas vagas integrais/ano', detail: 'Calcular vagas atuais e projetar expans\u00e3o m\u00ednima', priority: 'high' },
+  e2: { text: 'Elaborar e aprovar plano de expans\u00e3o de escola integral', detail: 'Incluir cronograma, custos e submeter ao CME para aprova\u00e7\u00e3o', priority: 'high' }
+};
+
+// Municipality presets
+const CITIES = [
+  { name: 'S\u00e3o Paulo', pop: '12.400.000', score: 78, data: { a1:'done', a2:'done', a3:'progress', a4:'done', a5:'progress', b1:'done', b2:'done', b3:'progress', b4:'progress', b5:'progress', b6:'pending', c1:'done', c2:'done', c3:'done', c4:'done', d1:'done', d2:'progress', d3:'pending', e1:'progress', e2:'pending' }},
+  { name: 'Campinas', pop: '1.220.000', score: 65, data: { a1:'done', a2:'done', a3:'progress', a4:'progress', a5:'pending', b1:'progress', b2:'pending', b3:'pending', b4:'pending', b5:'progress', b6:'pending', c1:'done', c2:'done', c3:'progress', c4:'done', d1:'done', d2:'pending', d3:'pending', e1:'pending', e2:'pending' }},
+  { name: 'Guarulhos', pop: '1.400.000', score: 55, data: { a1:'progress', a2:'done', a3:'pending', a4:'pending', a5:'pending', b1:'pending', b2:'pending', b3:'pending', b4:'pending', b5:'pending', b6:'pending', c1:'done', c2:'done', c3:'done', c4:'progress', d1:'progress', d2:'pending', d3:'pending', e1:'pending', e2:'pending' }},
+  { name: 'Ribeir\u00e3o Preto', pop: '720.000', score: 70, data: { a1:'done', a2:'done', a3:'done', a4:'progress', a5:'progress', b1:'done', b2:'progress', b3:'progress', b4:'pending', b5:'done', b6:'pending', c1:'done', c2:'done', c3:'done', c4:'done', d1:'done', d2:'progress', d3:'pending', e1:'progress', e2:'pending' }},
+  { name: 'Sorocaba', pop: '695.000', score: 60, data: { a1:'done', a2:'done', a3:'progress', a4:'pending', a5:'pending', b1:'progress', b2:'pending', b3:'progress', b4:'pending', b5:'progress', b6:'pending', c1:'done', c2:'done', c3:'progress', c4:'done', d1:'progress', d2:'pending', d3:'pending', e1:'pending', e2:'pending' }},
+  { name: 'S\u00e3o Jos\u00e9 dos Campos', pop: '740.000', score: 72, data: { a1:'done', a2:'done', a3:'done', a4:'done', a5:'progress', b1:'done', b2:'done', b3:'progress', b4:'progress', b5:'done', b6:'pending', c1:'done', c2:'done', c3:'done', c4:'done', d1:'done', d2:'progress', d3:'pending', e1:'progress', e2:'pending' }},
+  { name: 'Santos', pop: '435.000', score: 68, data: { a1:'done', a2:'done', a3:'progress', a4:'done', a5:'progress', b1:'done', b2:'progress', b3:'progress', b4:'pending', b5:'done', b6:'pending', c1:'done', c2:'done', c3:'done', c4:'done', d1:'done', d2:'pending', d3:'pending', e1:'pending', e2:'pending' }},
+  { name: 'Jundia\u00ed', pop: '425.000', score: 82, data: { a1:'done', a2:'done', a3:'done', a4:'done', a5:'done', b1:'done', b2:'done', b3:'progress', b4:'done', b5:'done', b6:'progress', c1:'done', c2:'done', c3:'done', c4:'done', d1:'done', d2:'done', d3:'progress', e1:'done', e2:'progress' }},
+  { name: 'Osasco', pop: '700.000', score: 42, data: { a1:'pending', a2:'done', a3:'pending', a4:'pending', a5:'pending', b1:'pending', b2:'pending', b3:'pending', b4:'pending', b5:'pending', b6:'pending', c1:'done', c2:'progress', c3:'pending', c4:'pending', d1:'pending', d2:'pending', d3:'pending', e1:'pending', e2:'pending' }},
+  { name: 'Piracicaba', pop: '410.000', score: 58, data: { a1:'done', a2:'done', a3:'pending', a4:'progress', a5:'pending', b1:'progress', b2:'pending', b3:'pending', b4:'pending', b5:'progress', b6:'pending', c1:'done', c2:'done', c3:'progress', c4:'done', d1:'progress', d2:'pending', d3:'pending', e1:'pending', e2:'pending' }},
+  { name: 'Bauru', pop: '380.000', score: 63, data: { a1:'done', a2:'done', a3:'progress', a4:'done', a5:'pending', b1:'progress', b2:'pending', b3:'progress', b4:'pending', b5:'done', b6:'pending', c1:'done', c2:'done', c3:'done', c4:'done', d1:'done', d2:'pending', d3:'pending', e1:'pending', e2:'pending' }},
+  { name: 'S\u00e3o Bernardo do Campo', pop: '850.000', score: 52, data: { a1:'progress', a2:'done', a3:'pending', a4:'pending', a5:'pending', b1:'pending', b2:'pending', b3:'progress', b4:'pending', b5:'progress', b6:'pending', c1:'done', c2:'done', c3:'progress', c4:'progress', d1:'progress', d2:'pending', d3:'pending', e1:'pending', e2:'pending' }},
+  { name: 'Franca', pop: '360.000', score: 45, data: { a1:'pending', a2:'done', a3:'pending', a4:'pending', a5:'pending', b1:'pending', b2:'pending', b3:'pending', b4:'pending', b5:'pending', b6:'pending', c1:'done', c2:'done', c3:'pending', c4:'done', d1:'progress', d2:'pending', d3:'pending', e1:'pending', e2:'pending' }},
+  { name: 'Taubat\u00e9', pop: '320.000', score: 50, data: { a1:'done', a2:'done', a3:'pending', a4:'pending', a5:'pending', b1:'pending', b2:'pending', b3:'pending', b4:'pending', b5:'pending', b6:'pending', c1:'done', c2:'progress', c3:'pending', c4:'done', d1:'progress', d2:'pending', d3:'pending', e1:'pending', e2:'pending' }},
+  { name: 'Mogi das Cruzes', pop: '450.000', score: 48, data: { a1:'progress', a2:'done', a3:'pending', a4:'pending', a5:'pending', b1:'pending', b2:'pending', b3:'pending', b4:'pending', b5:'pending', b6:'pending', c1:'done', c2:'done', c3:'pending', c4:'progress', d1:'pending', d2:'pending', d3:'pending', e1:'pending', e2:'pending' }},
+  { name: 'Araraquara', pop: '240.000', score: 74, data: { a1:'done', a2:'done', a3:'done', a4:'done', a5:'progress', b1:'done', b2:'done', b3:'progress', b4:'progress', b5:'done', b6:'pending', c1:'done', c2:'done', c3:'done', c4:'done', d1:'done', d2:'progress', d3:'pending', e1:'progress', e2:'pending' }},
+  { name: 'S\u00e3o Carlos', pop: '255.000', score: 76, data: { a1:'done', a2:'done', a3:'done', a4:'done', a5:'done', b1:'done', b2:'progress', b3:'done', b4:'progress', b5:'done', b6:'pending', c1:'done', c2:'done', c3:'done', c4:'done', d1:'done', d2:'progress', d3:'pending', e1:'progress', e2:'pending' }},
+  { name: 'Presidente Prudente', pop: '230.000', score: 38, data: { a1:'pending', a2:'done', a3:'pending', a4:'pending', a5:'pending', b1:'pending', b2:'pending', b3:'pending', b4:'pending', b5:'pending', b6:'pending', c1:'done', c2:'pending', c3:'pending', c4:'pending', d1:'pending', d2:'pending', d3:'pending', e1:'pending', e2:'pending' }},
+  { name: 'Mar\u00edlia', pop: '240.000', score: 56, data: { a1:'done', a2:'done', a3:'pending', a4:'progress', a5:'pending', b1:'pending', b2:'pending', b3:'progress', b4:'pending', b5:'progress', b6:'pending', c1:'done', c2:'done', c3:'progress', c4:'done', d1:'progress', d2:'pending', d3:'pending', e1:'pending', e2:'pending' }},
+  { name: 'Limeira', pop: '310.000', score: 61, data: { a1:'done', a2:'done', a3:'progress', a4:'done', a5:'pending', b1:'progress', b2:'pending', b3:'pending', b4:'pending', b5:'done', b6:'pending', c1:'done', c2:'done', c3:'done', c4:'done', d1:'done', d2:'pending', d3:'pending', e1:'pending', e2:'pending' }},
+  { name: 'Itapetininga', pop: '165.000', score: 30, data: { a1:'pending', a2:'late', a3:'pending', a4:'pending', a5:'pending', b1:'pending', b2:'pending', b3:'pending', b4:'pending', b5:'pending', b6:'pending', c1:'late', c2:'pending', c3:'pending', c4:'pending', d1:'pending', d2:'pending', d3:'pending', e1:'pending', e2:'pending' }},
+  { name: 'Votuporanga', pop: '95.000', score: 85, data: { a1:'done', a2:'done', a3:'done', a4:'done', a5:'done', b1:'done', b2:'done', b3:'done', b4:'progress', b5:'done', b6:'progress', c1:'done', c2:'done', c3:'done', c4:'done', d1:'done', d2:'done', d3:'progress', e1:'done', e2:'progress' }},
+  { name: 'Registro', pop: '55.000', score: 25, data: { a1:'pending', a2:'late', a3:'pending', a4:'pending', a5:'pending', b1:'pending', b2:'pending', b3:'pending', b4:'pending', b5:'pending', b6:'pending', c1:'late', c2:'pending', c3:'pending', c4:'late', d1:'pending', d2:'pending', d3:'pending', e1:'pending', e2:'pending' }}
+];
+
+// =========================================================
+// STATE
+// =========================================================
+
+let currentCity = null;
+let itemStatuses = {};  // { itemId: 'done'|'progress'|'pending'|'late' }
+
+// =========================================================
+// INITIALIZATION
+// =========================================================
+
+function init() {
+  populateCitySelect();
+  renderTimeline();
+  renderSections();
+  renderRiskTable();
+  renderActionPlan();
+  updateAll();
+  document.getElementById('printDate').textContent = new Date().toLocaleDateString('pt-BR');
+}
+
+function populateCitySelect() {
+  const sel = document.getElementById('citySelect');
+  CITIES.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+  CITIES.forEach((c, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = c.name + ' (pop. ' + c.pop + ')';
+    sel.appendChild(opt);
+  });
+}
+
+// =========================================================
+// CITY LOADING
+// =========================================================
+
+function loadCity(idx) {
+  if (idx === '' || idx === null || idx === undefined) return;
+  const city = CITIES[idx];
+  currentCity = city;
+  itemStatuses = {};
+  ALL_ITEM_IDS.forEach(id => {
+    itemStatuses[id] = city.data[id] || 'pending';
+  });
+  updateAll();
+}
+
+function resetAll() {
+  currentCity = null;
+  itemStatuses = {};
+  ALL_ITEM_IDS.forEach(id => { itemStatuses[id] = 'pending'; });
+  document.getElementById('citySelect').value = '';
+  updateAll();
+}
+
+// =========================================================
+// RENDERING
+// =========================================================
+
+function renderTimeline() {
+  const container = document.getElementById('timelineContainer');
+  const now = new Date();
+  container.innerHTML = '';
+  DEADLINES.forEach(d => {
+    const diff = Math.ceil((d.date - now) / (1000 * 60 * 60 * 24));
+    let cls = '';
+    if (diff < 0) cls = 'past';
+    else if (diff <= 30) cls = 'urgent';
+    else if (diff <= 90) cls = 'near';
+    const label = diff < 0 ? 'dias atr\u00e1s' : (diff === 0 ? 'HOJE' : 'dias restantes');
+    const num = Math.abs(diff);
+    container.innerHTML += `
+      <div class="deadline-item ${cls}">
+        <div class="deadline-icon">${d.icon}</div>
+        <div class="deadline-info">
+          <div class="deadline-name">${d.name}</div>
+          <div class="deadline-date">${d.date.toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' })}</div>
+        </div>
+        <div class="deadline-countdown">
+          <div class="countdown-number">${diff === 0 ? '!' : num}</div>
+          <div class="countdown-label">${label}</div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function renderSections() {
+  const grid = document.getElementById('sectionsGrid');
+  grid.innerHTML = '';
+  SECTIONS.forEach(sec => {
+    const card = document.createElement('div');
+    card.className = 'section-card';
+    card.id = 'section-' + sec.id;
+    card.innerHTML = `
+      <div class="section-header">
+        <div class="section-title-group">
+          <div class="section-letter ${sec.letter}">${sec.id}</div>
+          <div>
+            <div class="section-name">${sec.name}</div>
+            <div class="section-deadline">Prazo: ${sec.deadline}</div>
+          </div>
+        </div>
+        <div class="section-score" id="score-${sec.id}">0%</div>
+      </div>
+      <div class="section-progress"><div class="section-progress-fill" id="bar-${sec.id}"></div></div>
+      <ul class="checklist" id="list-${sec.id}"></ul>
+    `;
+    grid.appendChild(card);
+
+    const list = card.querySelector(`#list-${sec.id}`);
+    sec.items.forEach(item => {
+      const li = document.createElement('li');
+      li.className = 'checklist-item';
+      li.id = 'item-' + item.id;
+      li.innerHTML = `
+        <div class="check-status pending" id="status-${item.id}" onclick="cycleStatus(event, '${item.id}')" style="position:relative;">
+          <div class="status-selector" id="dropdown-${item.id}">
+            <div class="status-option opt-done" onclick="setStatus(event, '${item.id}', 'done')">
+              <div class="opt-icon">\u2713</div> Conclu\u00eddo
+            </div>
+            <div class="status-option opt-progress" onclick="setStatus(event, '${item.id}', 'progress')">
+              <div class="opt-icon">\u21BB</div> Em Andamento
+            </div>
+            <div class="status-option opt-pending" onclick="setStatus(event, '${item.id}', 'pending')">
+              <div class="opt-icon">\u2717</div> Pendente
+            </div>
+            <div class="status-option opt-late" onclick="setStatus(event, '${item.id}', 'late')">
+              <div class="opt-icon">!</div> Atrasado
+            </div>
+          </div>
+        </div>
+        <div class="check-text" id="text-${item.id}" onclick="cycleStatus(event, '${item.id}')">${item.text}</div>
+      `;
+      list.appendChild(li);
+    });
+  });
+}
+
+function renderRiskTable() {
+  const tbody = document.getElementById('riskTableBody');
+  tbody.innerHTML = '';
+  RISKS.forEach((r, i) => {
+    const tr = document.createElement('tr');
+    tr.id = 'risk-' + i;
+    tr.innerHTML = `
+      <td>${r.item}</td>
+      <td>${r.consequence}</td>
+      <td><strong>${r.impact}</strong></td>
+      <td><span class="risk-tag ${r.severity}">${r.severity === 'critical' ? 'CR\u00cdTICO' : r.severity === 'high' ? 'ALTO' : 'M\u00c9DIO'}</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderActionPlan() {
+  const list = document.getElementById('actionList');
+  list.innerHTML = '';
+
+  const pendingItems = ALL_ITEM_IDS.filter(id => {
+    const s = itemStatuses[id];
+    return s === 'pending' || s === 'late' || !s;
+  });
+
+  if (pendingItems.length === 0) {
+    list.innerHTML = '<div class="no-actions"><span class="big-check">\u2713</span>Parab\u00e9ns! Todos os itens est\u00e3o conclu\u00eddos ou em andamento.</div>';
+    return;
+  }
+
+  // Sort: late first, then by priority
+  const priorityOrder = { high: 0, medium: 1, low: 2 };
+  const actions = pendingItems
+    .filter(id => ACTION_TEMPLATES[id])
+    .map(id => ({
+      id,
+      ...ACTION_TEMPLATES[id],
+      isLate: itemStatuses[id] === 'late'
+    }))
+    .sort((a, b) => {
+      if (a.isLate !== b.isLate) return a.isLate ? -1 : 1;
+      return (priorityOrder[a.priority] || 2) - (priorityOrder[b.priority] || 2);
+    });
+
+  let counter = 0;
+  actions.forEach(a => {
+    counter++;
+    const li = document.createElement('li');
+    li.className = 'action-item priority-' + a.priority;
+    li.innerHTML = `
+      <div class="action-priority">${counter}</div>
+      <div class="action-text">
+        <strong>${a.isLate ? '\u26A0 ' : ''}${a.text}</strong>
+        <span>${a.detail}</span>
+      </div>
+    `;
+    list.appendChild(li);
+  });
+}
+
+// =========================================================
+// STATUS MANAGEMENT
+// =========================================================
+
+function cycleStatus(e, itemId) {
+  e.stopPropagation();
+  const current = itemStatuses[itemId] || 'pending';
+  const idx = STATUS_CYCLE.indexOf(current);
+  const next = STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length];
+  itemStatuses[itemId] = next;
+  updateAll();
+}
+
+function setStatus(e, itemId, status) {
+  e.stopPropagation();
+  itemStatuses[itemId] = status;
+  closeAllDropdowns();
+  updateAll();
+}
+
+function openDropdown(itemId) {
+  closeAllDropdowns();
+  document.getElementById('dropdown-' + itemId).classList.add('open');
+  document.getElementById('dropdownOverlay').classList.add('open');
+}
+
+function closeAllDropdowns() {
+  document.querySelectorAll('.status-selector').forEach(el => el.classList.remove('open'));
+  document.getElementById('dropdownOverlay').classList.remove('open');
+}
+
+// =========================================================
+// UPDATE UI
+// =========================================================
+
+function updateAll() {
+  updateItemVisuals();
+  updateSectionScores();
+  updateGauge();
+  updateSummary();
+  updateRiskHighlights();
+  renderActionPlan();
+}
+
+function updateItemVisuals() {
+  ALL_ITEM_IDS.forEach(id => {
+    const status = itemStatuses[id] || 'pending';
+    const el = document.getElementById('status-' + id);
+    const textEl = document.getElementById('text-' + id);
+    if (el) {
+      el.className = 'check-status ' + status;
+      el.style.position = 'relative';
+    }
+    if (textEl) {
+      textEl.className = 'check-text' + (status === 'done' ? ' completed' : '');
+    }
+  });
+}
+
+function updateSectionScores() {
+  SECTIONS.forEach(sec => {
+    const total = sec.items.length;
+    let doneCount = 0;
+    let partialCount = 0;
+    sec.items.forEach(item => {
+      const s = itemStatuses[item.id] || 'pending';
+      if (s === 'done') doneCount++;
+      else if (s === 'progress') partialCount++;
+    });
+    const pct = Math.round(((doneCount + partialCount * 0.5) / total) * 100);
+    const scoreEl = document.getElementById('score-' + sec.id);
+    const barEl = document.getElementById('bar-' + sec.id);
+    if (scoreEl) {
+      scoreEl.textContent = pct + '%';
+      scoreEl.className = 'section-score ' + (pct >= 70 ? 'high' : pct >= 40 ? 'mid' : 'low');
+    }
+    if (barEl) {
+      barEl.style.width = pct + '%';
+      barEl.style.background = pct >= 70 ? 'var(--green)' : pct >= 40 ? 'var(--orange)' : 'var(--red)';
+    }
+  });
+}
+
+function updateGauge() {
+  let doneCount = 0;
+  let partialCount = 0;
+  ALL_ITEM_IDS.forEach(id => {
+    const s = itemStatuses[id] || 'pending';
+    if (s === 'done') doneCount++;
+    else if (s === 'progress') partialCount++;
+  });
+  const pct = Math.round(((doneCount + partialCount * 0.5) / TOTAL_ITEMS) * 100);
+  const circumference = 2 * Math.PI * 82;
+  const offset = circumference - (pct / 100) * circumference;
+
+  const fill = document.getElementById('gaugeFill');
+  const percentEl = document.getElementById('gaugePercent');
+  const statusEl = document.getElementById('gaugeStatus');
+
+  fill.style.strokeDasharray = circumference;
+  fill.style.strokeDashoffset = offset;
+
+  let color, statusText, statusClass;
+  if (pct >= 80) {
+    color = 'var(--green)';
+    statusText = 'Excelente';
+    statusClass = 'excellent';
+  } else if (pct >= 60) {
+    color = 'var(--cyan)';
+    statusText = 'Bom \u2013 ajustes necess\u00e1rios';
+    statusClass = 'good';
+  } else if (pct >= 40) {
+    color = 'var(--orange)';
+    statusText = 'Aten\u00e7\u00e3o \u2013 risco moderado';
+    statusClass = 'warning';
+  } else {
+    color = 'var(--red)';
+    statusText = 'Cr\u00edtico \u2013 a\u00e7\u00e3o imediata';
+    statusClass = 'critical';
+  }
+
+  fill.style.stroke = color;
+  percentEl.textContent = pct + '%';
+  statusEl.textContent = statusText;
+  statusEl.className = 'gauge-status ' + statusClass;
+}
+
+function updateSummary() {
+  let done = 0, progress = 0, late = 0, pending = 0;
+  ALL_ITEM_IDS.forEach(id => {
+    const s = itemStatuses[id] || 'pending';
+    if (s === 'done') done++;
+    else if (s === 'progress') progress++;
+    else if (s === 'late') late++;
+    else pending++;
+  });
+  document.getElementById('sumDone').textContent = done;
+  document.getElementById('sumProgress').textContent = progress;
+  document.getElementById('sumLate').textContent = late;
+  document.getElementById('sumPending').textContent = pending;
+}
+
+function updateRiskHighlights() {
+  RISKS.forEach((r, i) => {
+    const row = document.getElementById('risk-' + i);
+    if (!row) return;
+    // Check if any related items are NOT done
+    const anyNotDone = r.relatedIds.some(id => {
+      const s = itemStatuses[id] || 'pending';
+      return s !== 'done';
+    });
+    if (anyNotDone) {
+      row.classList.remove('risk-hidden');
+      row.style.background = '';
+    } else {
+      row.style.background = 'rgba(0,229,160,0.05)';
+      row.style.opacity = '0.5';
+    }
+  });
+}
+
+// =========================================================
+// EXPORT
+// =========================================================
+
+function exportReport() {
+  const cityName = currentCity ? currentCity.name : 'N\u00e3o selecionado';
+  const now = new Date().toLocaleDateString('pt-BR');
+
+  let doneCount = 0, progressCount = 0, lateCount = 0, pendingCount = 0;
+  ALL_ITEM_IDS.forEach(id => {
+    const s = itemStatuses[id] || 'pending';
+    if (s === 'done') doneCount++;
+    else if (s === 'progress') progressCount++;
+    else if (s === 'late') lateCount++;
+    else pendingCount++;
+  });
+  const pct = Math.round(((doneCount + progressCount * 0.5) / TOTAL_ITEMS) * 100);
+
+  let report = '';
+  report += '='.repeat(60) + '\n';
+  report += 'RELAT\u00d3RIO DE COMPLIANCE FUNDEB/BNCC 2026\n';
+  report += 'Instituto i10\n';
+  report += '='.repeat(60) + '\n\n';
+  report += 'Munic\u00edpio: ' + cityName + '\n';
+  report += 'Data: ' + now + '\n';
+  report += 'Score Geral: ' + pct + '%\n\n';
+  report += 'Resumo: ' + doneCount + ' conclu\u00eddos | ' + progressCount + ' em andamento | ' + lateCount + ' atrasados | ' + pendingCount + ' pendentes\n';
+  report += '-'.repeat(60) + '\n\n';
+
+  SECTIONS.forEach(sec => {
+    const total = sec.items.length;
+    let sd = 0, sp = 0;
+    sec.items.forEach(item => {
+      const s = itemStatuses[item.id] || 'pending';
+      if (s === 'done') sd++;
+      else if (s === 'progress') sp++;
+    });
+    const secPct = Math.round(((sd + sp * 0.5) / total) * 100);
+    report += `[${sec.id}] ${sec.name} - ${secPct}% (Prazo: ${sec.deadline})\n`;
+    sec.items.forEach(item => {
+      const s = itemStatuses[item.id] || 'pending';
+      const icon = s === 'done' ? '[OK]' : s === 'progress' ? '[..]' : s === 'late' ? '[!!]' : '[  ]';
+      report += `  ${icon} ${item.text}\n`;
+    });
+    report += '\n';
+  });
+
+  report += '-'.repeat(60) + '\n';
+  report += 'A\u00c7\u00d5ES PRIORIT\u00c1RIAS:\n\n';
+  const pendingItems = ALL_ITEM_IDS.filter(id => {
+    const s = itemStatuses[id];
+    return s === 'pending' || s === 'late' || !s;
+  });
+  if (pendingItems.length === 0) {
+    report += '  Todos os itens conclu\u00eddos ou em andamento!\n';
+  } else {
+    let c = 0;
+    pendingItems.forEach(id => {
+      if (ACTION_TEMPLATES[id]) {
+        c++;
+        const a = ACTION_TEMPLATES[id];
+        report += `  ${c}. ${a.text}\n     ${a.detail}\n\n`;
+      }
+    });
+  }
+
+  report += '='.repeat(60) + '\n';
+  report += 'Gerado por Instituto i10 - Monitoramento de Compliance FUNDEB\n';
+
+  // Download as text file
+  const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'compliance-' + (currentCity ? currentCity.name.toLowerCase().replace(/\s+/g, '-').normalize('NFD').replace(/[\u0300-\u036f]/g, '') : 'geral') + '-' + new Date().toISOString().split('T')[0] + '.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// =========================================================
+// CLOSE DROPDOWNS ON OUTSIDE CLICK
+// =========================================================
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.status-selector') && !e.target.closest('.check-status')) {
+    closeAllDropdowns();
+  }
+});
+
+// =========================================================
+// INIT
+// =========================================================
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

@@ -1,0 +1,1862 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia SIMEC — Condicionalidade V | Instituto i10</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #0A2463;
+            --navy-light: #1B3A7D;
+            --cyan: #00B4D8;
+            --cyan-light: #90E0EF;
+            --cyan-pale: #CAF0F8;
+            --bg: #F4F7FA;
+            --white: #FFFFFF;
+            --gray-50: #F8FAFC;
+            --gray-100: #F1F5F9;
+            --gray-200: #E2E8F0;
+            --gray-300: #CBD5E1;
+            --gray-400: #94A3B8;
+            --gray-500: #64748B;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1E293B;
+            --red: #DC2626;
+            --red-light: #FEF2F2;
+            --red-border: #FECACA;
+            --green: #16A34A;
+            --green-light: #F0FDF4;
+            --green-border: #BBF7D0;
+            --amber: #D97706;
+            --amber-light: #FFFBEB;
+            --amber-border: #FDE68A;
+            --shadow-sm: 0 1px 2px rgba(10, 36, 99, 0.05);
+            --shadow-md: 0 4px 12px rgba(10, 36, 99, 0.08);
+            --shadow-lg: 0 8px 30px rgba(10, 36, 99, 0.12);
+            --shadow-xl: 0 20px 60px rgba(10, 36, 99, 0.15);
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--gray-700);
+            line-height: 1.7;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 50%, #0D3B8E 100%);
+            color: var(--white);
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 180, 216, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 180, 216, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 32px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--cyan);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 16px;
+            color: var(--navy);
+            letter-spacing: -0.5px;
+        }
+
+        .brand-text {
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0.9;
+            letter-spacing: 0.5px;
+        }
+
+        .header-badge {
+            background: rgba(0, 180, 216, 0.2);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--cyan-light);
+        }
+
+        .header-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 32px 60px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 180, 216, 0.15);
+            border: 1px solid rgba(0, 180, 216, 0.25);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--cyan-light);
+            margin-bottom: 24px;
+        }
+
+        .header-eyebrow-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--cyan);
+            border-radius: 50%;
+        }
+
+        .header h1 {
+            font-size: 42px;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -1.5px;
+            margin-bottom: 16px;
+        }
+
+        .header h1 span {
+            color: var(--cyan);
+        }
+
+        .header-subtitle {
+            font-size: 18px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.75);
+            max-width: 680px;
+            line-height: 1.6;
+        }
+
+        .header-meta {
+            display: flex;
+            gap: 24px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+
+        .header-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        .header-meta-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(0, 180, 216, 0.15);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+        }
+
+        /* ===== NAVIGATION / TABLE OF CONTENTS ===== */
+        .toc {
+            max-width: 1100px;
+            margin: -30px auto 0;
+            padding: 0 32px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .toc-inner {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 24px 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            overflow-x: auto;
+        }
+
+        .toc-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-400);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            margin-right: 8px;
+        }
+
+        .toc-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-600);
+            text-decoration: none;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .toc-link:hover {
+            background: var(--cyan-pale);
+            color: var(--navy);
+        }
+
+        .toc-link-num {
+            width: 22px;
+            height: 22px;
+            background: var(--gray-100);
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gray-500);
+            transition: all 0.2s ease;
+        }
+
+        .toc-link:hover .toc-link-num {
+            background: var(--cyan);
+            color: var(--white);
+        }
+
+        /* ===== MAIN CONTAINER ===== */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 48px 32px;
+        }
+
+        /* ===== SECTIONS ===== */
+        .section {
+            margin-bottom: 64px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .section-number {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--cyan), #0096B7);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--white);
+            flex-shrink: 0;
+        }
+
+        .section-title-group {
+            flex: 1;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--navy);
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .section-description {
+            font-size: 15px;
+            color: var(--gray-500);
+            margin-top: 4px;
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 32px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            transition: box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* ===== INFO CARDS (Section 1) ===== */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .info-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 28px;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            border-top: 4px solid var(--cyan);
+            transition: all 0.2s ease;
+        }
+
+        .info-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .info-card-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--cyan-pale);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+
+        .info-card h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+
+        .info-card p {
+            font-size: 14px;
+            color: var(--gray-600);
+            line-height: 1.6;
+        }
+
+        /* ===== ALERT BOXES ===== */
+        .alert {
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            margin: 24px 0;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        .alert-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-content strong {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .alert-content p {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .alert-danger {
+            background: var(--red-light);
+            border: 1px solid var(--red-border);
+        }
+
+        .alert-danger .alert-content strong {
+            color: var(--red);
+        }
+
+        .alert-danger .alert-content p {
+            color: #991B1B;
+        }
+
+        .alert-success {
+            background: var(--green-light);
+            border: 1px solid var(--green-border);
+        }
+
+        .alert-success .alert-content strong {
+            color: var(--green);
+        }
+
+        .alert-success .alert-content p {
+            color: #166534;
+        }
+
+        .alert-warning {
+            background: var(--amber-light);
+            border: 1px solid var(--amber-border);
+        }
+
+        .alert-warning .alert-content strong {
+            color: var(--amber);
+        }
+
+        .alert-warning .alert-content p {
+            color: #92400E;
+        }
+
+        /* ===== DEADLINE BANNER ===== */
+        .deadline-banner {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            border-radius: var(--radius-lg);
+            padding: 28px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .deadline-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .deadline-icon {
+            width: 52px;
+            height: 52px;
+            background: rgba(0, 180, 216, 0.2);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .deadline-text h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .deadline-text p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .deadline-date {
+            background: var(--cyan);
+            color: var(--navy);
+            font-weight: 800;
+            font-size: 18px;
+            padding: 12px 28px;
+            border-radius: 12px;
+            white-space: nowrap;
+        }
+
+        /* ===== CHECKLIST (Section 2) ===== */
+        .checklist {
+            list-style: none;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .checklist-box {
+            width: 28px;
+            height: 28px;
+            border: 2px solid var(--gray-300);
+            border-radius: 8px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 2px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .checklist-box:hover {
+            border-color: var(--cyan);
+            background: var(--cyan-pale);
+        }
+
+        .checklist-box.checked {
+            border-color: var(--cyan);
+            background: var(--cyan);
+        }
+
+        .checklist-box.checked::after {
+            content: '\2713';
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .checklist-text {
+            flex: 1;
+        }
+
+        .checklist-text h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 4px;
+        }
+
+        .checklist-text p {
+            font-size: 14px;
+            color: var(--gray-500);
+        }
+
+        .checklist-tag {
+            display: inline-block;
+            background: var(--cyan-pale);
+            color: #0077B6;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 8px;
+        }
+
+        /* ===== STEP CARDS (Section 3) ===== */
+        .steps-progress {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 48px;
+            padding: 0 16px;
+            flex-wrap: wrap;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+
+        .progress-dot {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--gray-500);
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .progress-dot:hover {
+            background: var(--cyan);
+            color: white;
+            transform: scale(1.15);
+        }
+
+        .progress-line {
+            width: 40px;
+            height: 3px;
+            background: var(--gray-200);
+        }
+
+        @media (max-width: 640px) {
+            .progress-line {
+                width: 20px;
+            }
+        }
+
+        .step-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            margin-bottom: 28px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .step-card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .step-card-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 28px 32px;
+            border-bottom: 1px solid var(--gray-100);
+            background: var(--gray-50);
+        }
+
+        .step-number {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--cyan), #0096B7);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--white);
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0, 180, 216, 0.3);
+        }
+
+        .step-card-header h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--navy);
+            letter-spacing: -0.3px;
+        }
+
+        .step-card-header .step-tag {
+            display: inline-block;
+            background: var(--cyan-pale);
+            color: #0077B6;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            margin-top: 4px;
+        }
+
+        .step-card-body {
+            padding: 28px 32px;
+        }
+
+        .step-card-body p {
+            margin-bottom: 12px;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .step-card-body ul {
+            margin: 12px 0;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .step-card-body ul li {
+            padding: 8px 0 8px 28px;
+            position: relative;
+            font-size: 15px;
+            color: var(--gray-700);
+        }
+
+        .step-card-body ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 15px;
+            width: 8px;
+            height: 8px;
+            background: var(--cyan);
+            border-radius: 50%;
+        }
+
+        .step-action {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            margin: 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .step-action-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .step-action code {
+            background: var(--navy);
+            color: var(--cyan-light);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .step-action span {
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+
+        .step-nav-path {
+            background: var(--navy);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            margin: 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .step-nav-item {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .step-nav-arrow {
+            color: var(--cyan);
+            font-size: 14px;
+        }
+
+        .step-nav-item.active {
+            color: var(--cyan);
+            font-weight: 700;
+        }
+
+        /* Screenshot placeholder */
+        .screenshot-placeholder {
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius);
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .screenshot-placeholder-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .screenshot-placeholder p {
+            font-size: 13px;
+            color: var(--gray-400);
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .screenshot-placeholder small {
+            font-size: 12px;
+            color: var(--gray-400);
+        }
+
+        /* ===== KEY HIGHLIGHT ===== */
+        .key-highlight {
+            background: linear-gradient(135deg, var(--cyan-pale) 0%, #E0F7FA 100%);
+            border-left: 4px solid var(--cyan);
+            border-radius: 0 var(--radius) var(--radius) 0;
+            padding: 20px 24px;
+            margin: 20px 0;
+        }
+
+        .key-highlight p {
+            font-size: 14px;
+            color: var(--navy);
+            font-weight: 500;
+            margin-bottom: 0 !important;
+        }
+
+        .key-highlight strong {
+            color: var(--navy);
+        }
+
+        /* ===== TAG GRID (3 axes) ===== */
+        .axes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 640px) {
+            .axes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .axis-card {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .axis-card:hover {
+            border-color: var(--cyan);
+            background: var(--cyan-pale);
+        }
+
+        .axis-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .axis-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        /* ===== POST-SEND TIMELINE ===== */
+        .timeline {
+            position: relative;
+            padding-left: 36px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 14px;
+            top: 8px;
+            bottom: 8px;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--cyan), var(--green));
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding: 16px 0 24px;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -30px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            background: var(--cyan);
+            border: 3px solid var(--white);
+            border-radius: 50%;
+            box-shadow: 0 0 0 3px var(--cyan-pale);
+        }
+
+        .timeline-item:last-child .timeline-dot {
+            background: var(--green);
+            box-shadow: 0 0 0 3px var(--green-light);
+        }
+
+        .timeline-item h4 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 4px;
+        }
+
+        .timeline-item p {
+            font-size: 14px;
+            color: var(--gray-600);
+            line-height: 1.6;
+        }
+
+        /* ===== ERRORS LIST ===== */
+        .error-list {
+            list-style: none;
+        }
+
+        .error-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 18px 20px;
+            background: var(--red-light);
+            border: 1px solid var(--red-border);
+            border-radius: var(--radius);
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .error-item:hover {
+            transform: translateX(4px);
+        }
+
+        .error-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .error-text {
+            flex: 1;
+        }
+
+        .error-text h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #991B1B;
+            margin-bottom: 2px;
+        }
+
+        .error-text p {
+            font-size: 13px;
+            color: #B91C1C;
+            line-height: 1.5;
+        }
+
+        /* ===== CONTACT BOX ===== */
+        .contact-box {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            color: var(--white);
+        }
+
+        .contact-box h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .contact-channels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .contact-channel {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .contact-channel-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 180, 216, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .contact-channel-text {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .contact-channel-value {
+            display: block;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--white);
+            margin-top: 2px;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: var(--navy);
+            color: var(--white);
+            text-align: center;
+            padding: 48px 32px;
+            margin-top: 24px;
+        }
+
+        .footer-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .footer-logo {
+            width: 44px;
+            height: 44px;
+            background: var(--cyan);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 17px;
+            color: var(--navy);
+        }
+
+        .footer-name {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .footer p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            max-width: 480px;
+            margin: 0 auto 8px;
+            line-height: 1.6;
+        }
+
+        .footer-divider {
+            width: 40px;
+            height: 3px;
+            background: var(--cyan);
+            border-radius: 2px;
+            margin: 24px auto;
+        }
+
+        .footer-legal {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 30px;
+            }
+
+            .header-subtitle {
+                font-size: 16px;
+            }
+
+            .header-content {
+                padding: 24px 20px 48px;
+            }
+
+            .toc-inner {
+                padding: 16px 20px;
+            }
+
+            .container {
+                padding: 32px 20px;
+            }
+
+            .section-title {
+                font-size: 22px;
+            }
+
+            .card, .step-card-body, .step-card-header {
+                padding: 20px;
+            }
+
+            .step-number {
+                width: 44px;
+                height: 44px;
+                font-size: 20px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .deadline-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .deadline-left {
+                flex-direction: column;
+            }
+
+            .axes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .steps-progress {
+                display: none;
+            }
+        }
+
+        /* ===== PRINT STYLES ===== */
+        @media print {
+            .header {
+                background: var(--navy) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .step-card, .card, .info-card {
+                break-inside: avoid;
+            }
+
+            .toc {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <div class="header-top">
+            <div class="header-brand">
+                <div class="brand-logo">i10</div>
+                <span class="brand-text">Instituto i10</span>
+            </div>
+            <div class="header-badge">Guia Oficial 2026</div>
+        </div>
+        <div class="header-content">
+            <div class="header-eyebrow">
+                <span class="header-eyebrow-dot"></span>
+                FUNDEB &middot; VAAR &middot; Condicionalidade V
+            </div>
+            <h1>Guia SIMEC &mdash;<br><span>Condicionalidade V</span></h1>
+            <p class="header-subtitle">
+                Passo a passo para registro do curr&iacute;culo BNCC Computa&ccedil;&atilde;o e elegibilidade ao VAAR/FUNDEB
+            </p>
+            <div class="header-meta">
+                <div class="header-meta-item">
+                    <div class="header-meta-icon">&#128197;</div>
+                    <span>Atualizado em Abril 2026</span>
+                </div>
+                <div class="header-meta-item">
+                    <div class="header-meta-icon">&#9202;</div>
+                    <span>~15 min de leitura</span>
+                </div>
+                <div class="header-meta-item">
+                    <div class="header-meta-icon">&#127891;</div>
+                    <span>Para Secretarias Municipais de Educa&ccedil;&atilde;o</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== TABLE OF CONTENTS ===== -->
+    <nav class="toc">
+        <div class="toc-inner">
+            <span class="toc-label">Navegar</span>
+            <a href="#sec-oque" class="toc-link">
+                <span class="toc-link-num">1</span> O que &eacute;
+            </a>
+            <a href="#sec-pre" class="toc-link">
+                <span class="toc-link-num">2</span> Pr&eacute;-requisitos
+            </a>
+            <a href="#sec-passos" class="toc-link">
+                <span class="toc-link-num">3</span> Passo a passo
+            </a>
+            <a href="#sec-pos" class="toc-link">
+                <span class="toc-link-num">4</span> P&oacute;s-envio
+            </a>
+            <a href="#sec-erros" class="toc-link">
+                <span class="toc-link-num">5</span> Erros comuns
+            </a>
+        </div>
+    </nav>
+
+    <main class="container">
+
+        <!-- ===== SECTION 1: O QUE E POR QUE ===== -->
+        <section id="sec-oque" class="section">
+            <div class="section-header">
+                <div class="section-number">1</div>
+                <div class="section-title-group">
+                    <h2 class="section-title">O que &eacute; e por que fazer</h2>
+                    <p class="section-description">Entenda o VAAR, a Condicionalidade V e o impacto financeiro para seu munic&iacute;pio</p>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-card-icon">&#128176;</div>
+                    <h3>O que &eacute; o VAAR?</h3>
+                    <p><strong>Valor Aluno Ano Resultado</strong> &mdash; &eacute; a complementa&ccedil;&atilde;o federal do FUNDEB destinada a munic&iacute;pios que cumprem as condicionalidades de melhoria da educa&ccedil;&atilde;o. Representa recursos adicionais significativos para o or&ccedil;amento da educa&ccedil;&atilde;o municipal.</p>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-icon">&#128218;</div>
+                    <h3>O que &eacute; a Condicionalidade V?</h3>
+                    <p>Exige que o munic&iacute;pio possua <strong>curr&iacute;culo alinhado &agrave; BNCC incluindo Computa&ccedil;&atilde;o</strong> (Pensamento Computacional, Mundo Digital e Cultura Digital) e que este curr&iacute;culo esteja devidamente registrado no SIMEC.</p>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-icon">&#128187;</div>
+                    <h3>Por que Computa&ccedil;&atilde;o?</h3>
+                    <p>A BNCC inclui o <strong>Complemento de Computa&ccedil;&atilde;o</strong> com 3 eixos obrigat&oacute;rios. Munic&iacute;pios devem demonstrar que seu curr&iacute;culo incorpora essas compet&ecirc;ncias e habilidades para receber o VAAR.</p>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-icon">&#128196;</div>
+                    <h3>Onde registrar?</h3>
+                    <p>O registro &eacute; feito no <strong>SIMEC</strong> (Sistema Integrado de Monitoramento Execu&ccedil;&atilde;o e Controle do MEC), no m&oacute;dulo FUNDEB-VAAR. O Secret&aacute;rio de Educa&ccedil;&atilde;o &eacute; o respons&aacute;vel final pelo envio.</p>
+                </div>
+            </div>
+
+            <div class="alert alert-danger">
+                <div class="alert-icon">&#9888;&#65039;</div>
+                <div class="alert-content">
+                    <strong>Aten&ccedil;&atilde;o: sem registro = sem VAAR</strong>
+                    <p>Sem o registro correto no SIMEC, o munic&iacute;pio <strong>N&Atilde;O recebe</strong> a complementa&ccedil;&atilde;o VAAR do FUNDEB. Isso pode representar milh&otilde;es de reais a menos no or&ccedil;amento da educa&ccedil;&atilde;o municipal.</p>
+                </div>
+            </div>
+
+            <div class="deadline-banner">
+                <div class="deadline-left">
+                    <div class="deadline-icon">&#128197;</div>
+                    <div class="deadline-text">
+                        <h3>Prazo para VAAR 2027</h3>
+                        <p>Registro deve estar completo e enviado at&eacute; esta data</p>
+                    </div>
+                </div>
+                <div class="deadline-date">31 / AGO / 2026</div>
+            </div>
+        </section>
+
+        <!-- ===== SECTION 2: PRE-REQUISITOS ===== -->
+        <section id="sec-pre" class="section">
+            <div class="section-header">
+                <div class="section-number">2</div>
+                <div class="section-title-group">
+                    <h2 class="section-title">Pr&eacute;-requisitos</h2>
+                    <p class="section-description">Prepare tudo isso ANTES de acessar o SIMEC</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <ul class="checklist">
+                    <li class="checklist-item">
+                        <div class="checklist-box" onclick="this.classList.toggle('checked')"></div>
+                        <div class="checklist-text">
+                            <h4>Curr&iacute;culo municipal atualizado com BNCC Computa&ccedil;&atilde;o <span class="checklist-tag">PDF</span></h4>
+                            <p>O Referencial Curricular municipal deve conter explicitamente as compet&ecirc;ncias e habilidades de Computa&ccedil;&atilde;o nos 3 eixos: Pensamento Computacional, Mundo Digital e Cultura Digital. Deve ser o documento completo, n&atilde;o apenas a matriz curricular.</p>
+                        </div>
+                    </li>
+                    <li class="checklist-item">
+                        <div class="checklist-box" onclick="this.classList.toggle('checked')"></div>
+                        <div class="checklist-text">
+                            <h4>Resolu&ccedil;&atilde;o do CME aprovando o curr&iacute;culo <span class="checklist-tag">PDF</span></h4>
+                            <p>Documento oficial do Conselho Municipal de Educa&ccedil;&atilde;o (Resolu&ccedil;&atilde;o, Delibera&ccedil;&atilde;o ou Parecer) aprovando formalmente o curr&iacute;culo. Deve conter data de aprova&ccedil;&atilde;o e assinaturas dos conselheiros.</p>
+                        </div>
+                    </li>
+                    <li class="checklist-item">
+                        <div class="checklist-box" onclick="this.classList.toggle('checked')"></div>
+                        <div class="checklist-text">
+                            <h4>Credenciais de acesso ao SIMEC</h4>
+                            <p>CPF do Secret&aacute;rio de Educa&ccedil;&atilde;o cadastrado no sistema. Se n&atilde;o possuir acesso, solicite via <strong>vaarfundeb.seb@mec.gov.br</strong> com anteced&ecirc;ncia.</p>
+                        </div>
+                    </li>
+                    <li class="checklist-item">
+                        <div class="checklist-box" onclick="this.classList.toggle('checked')"></div>
+                        <div class="checklist-text">
+                            <h4>Certificado digital ou login Gov.br do Secret&aacute;rio</h4>
+                            <p>Necess&aacute;rio para autentica&ccedil;&atilde;o no SIMEC. O login Gov.br deve estar com n&iacute;vel Prata ou Ouro para acesso completo ao sistema.</p>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="alert alert-success">
+                    <div class="alert-icon">&#9989;</div>
+                    <div class="alert-content">
+                        <strong>Dica: prepare tudo antes</strong>
+                        <p>Ter todos os documentos prontos antes de acessar o SIMEC torna o processo muito mais r&aacute;pido. O preenchimento em si leva cerca de 20-30 minutos quando tudo est&aacute; organizado.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SECTION 3: PASSO A PASSO ===== -->
+        <section id="sec-passos" class="section">
+            <div class="section-header">
+                <div class="section-number">3</div>
+                <div class="section-title-group">
+                    <h2 class="section-title">Passo a passo</h2>
+                    <p class="section-description">8 etapas para completar o registro da Condicionalidade V no SIMEC</p>
+                </div>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="steps-progress">
+                <div class="progress-step">
+                    <a href="#step1" class="progress-dot">1</a>
+                    <div class="progress-line"></div>
+                </div>
+                <div class="progress-step">
+                    <a href="#step2" class="progress-dot">2</a>
+                    <div class="progress-line"></div>
+                </div>
+                <div class="progress-step">
+                    <a href="#step3" class="progress-dot">3</a>
+                    <div class="progress-line"></div>
+                </div>
+                <div class="progress-step">
+                    <a href="#step4" class="progress-dot">4</a>
+                    <div class="progress-line"></div>
+                </div>
+                <div class="progress-step">
+                    <a href="#step5" class="progress-dot">5</a>
+                    <div class="progress-line"></div>
+                </div>
+                <div class="progress-step">
+                    <a href="#step6" class="progress-dot">6</a>
+                    <div class="progress-line"></div>
+                </div>
+                <div class="progress-step">
+                    <a href="#step7" class="progress-dot">7</a>
+                    <div class="progress-line"></div>
+                </div>
+                <div class="progress-step">
+                    <a href="#step8" class="progress-dot">8</a>
+                </div>
+            </div>
+
+            <!-- STEP 1 -->
+            <div id="step1" class="step-card">
+                <div class="step-card-header">
+                    <div class="step-number">1</div>
+                    <div>
+                        <h3>Acessar o SIMEC</h3>
+                        <span class="step-tag">Acesso ao sistema</span>
+                    </div>
+                </div>
+                <div class="step-card-body">
+                    <p>O primeiro passo &eacute; acessar o SIMEC com as credenciais do Secret&aacute;rio de Educa&ccedil;&atilde;o.</p>
+
+                    <div class="step-action">
+                        <span class="step-action-icon">&#127760;</span>
+                        <div>
+                            <span>Acesse o endere&ccedil;o:</span><br>
+                            <code>https://simec.mec.gov.br</code>
+                        </div>
+                    </div>
+
+                    <ul>
+                        <li>Fa&ccedil;a login com o <strong>CPF do Secret&aacute;rio de Educa&ccedil;&atilde;o</strong> + senha Gov.br</li>
+                        <li>Utilize navegador atualizado (Chrome, Firefox ou Edge)</li>
+                        <li>Se n&atilde;o possuir acesso, solicite via e-mail <strong>vaarfundeb.seb@mec.gov.br</strong></li>
+                    </ul>
+
+                    <div class="screenshot-placeholder">
+                        <div class="screenshot-placeholder-icon">&#128248;</div>
+                        <p>Captura de tela: P&aacute;gina de login do SIMEC</p>
+                        <small>Tela de autentica&ccedil;&atilde;o Gov.br integrada ao SIMEC</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2 -->
+            <div id="step2" class="step-card">
+                <div class="step-card-header">
+                    <div class="step-number">2</div>
+                    <div>
+                        <h3>Navegar at&eacute; o m&oacute;dulo FUNDEB-VAAR</h3>
+                        <span class="step-tag">Navega&ccedil;&atilde;o</span>
+                    </div>
+                </div>
+                <div class="step-card-body">
+                    <p>Ap&oacute;s o login, navegue at&eacute; o m&oacute;dulo espec&iacute;fico de condicionalidades do VAAR.</p>
+
+                    <div class="step-nav-path">
+                        <span class="step-nav-item">Menu lateral</span>
+                        <span class="step-nav-arrow">&#8594;</span>
+                        <span class="step-nav-item">&ldquo;FUNDEB&rdquo;</span>
+                        <span class="step-nav-arrow">&#8594;</span>
+                        <span class="step-nav-item active">&ldquo;VAAR - Condicionalidades&rdquo;</span>
+                    </div>
+
+                    <p>O m&oacute;dulo VAAR possui <strong>4 abas principais</strong>:</p>
+
+                    <div class="axes-grid" style="grid-template-columns: repeat(4, 1fr);">
+                        <div class="axis-card">
+                            <div class="axis-icon">&#128196;</div>
+                            <h4>Apresenta&ccedil;&atilde;o</h4>
+                        </div>
+                        <div class="axis-card">
+                            <div class="axis-icon">&#128202;</div>
+                            <h4>Situa&ccedil;&atilde;o</h4>
+                        </div>
+                        <div class="axis-card">
+                            <div class="axis-icon">&#9997;&#65039;</div>
+                            <h4>Registro</h4>
+                        </div>
+                        <div class="axis-card">
+                            <div class="axis-icon">&#128228;</div>
+                            <h4>Envio</h4>
+                        </div>
+                    </div>
+
+                    <div class="screenshot-placeholder">
+                        <div class="screenshot-placeholder-icon">&#128248;</div>
+                        <p>Captura de tela: Menu lateral do SIMEC com m&oacute;dulo FUNDEB</p>
+                        <small>Destaque para o item &ldquo;VAAR - Condicionalidades&rdquo; no menu</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 3 -->
+            <div id="step3" class="step-card">
+                <div class="step-card-header">
+                    <div class="step-number">3</div>
+                    <div>
+                        <h3>Verificar situa&ccedil;&atilde;o atual</h3>
+                        <span class="step-tag">Diagn&oacute;stico</span>
+                    </div>
+                </div>
+                <div class="step-card-body">
+                    <p>Antes de come&ccedil;ar o registro, verifique o status atual de cada condicionalidade do seu munic&iacute;pio.</p>
+
+                    <div class="step-nav-path">
+                        <span class="step-nav-item">M&oacute;dulo VAAR</span>
+                        <span class="step-nav-arrow">&#8594;</span>
+                        <span class="step-nav-item active">Aba &ldquo;Situa&ccedil;&atilde;o&rdquo;</span>
+                    </div>
+
+                    <ul>
+                        <li>A aba <strong>&ldquo;Situa&ccedil;&atilde;o&rdquo;</strong> mostra o status de cada condicionalidade</li>
+                        <li>Verifique se a <strong>Condicionalidade V</strong> est&aacute; como <strong>&ldquo;Pendente&rdquo;</strong> ou <strong>&ldquo;Em an&aacute;lise&rdquo;</strong></li>
+                        <li>Se estiver como &ldquo;Aprovada&rdquo;, seu munic&iacute;pio j&aacute; cumpriu esta etapa</li>
+                    </ul>
+
+                    <div class="screenshot-placeholder">
+                        <div class="screenshot-placeholder-icon">&#128248;</div>
+                        <p>Captura de tela: Aba &ldquo;Situa&ccedil;&atilde;o&rdquo; com lista de condicionalidades</p>
+                        <small>Status &ldquo;Pendente&rdquo; destacado na Condicionalidade V</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 4 -->
+            <div id="step4" class="step-card">
+                <div class="step-card-header">
+                    <div class="step-number">4</div>
+                    <div>
+                        <h3>Iniciar o registro</h3>
+                        <span class="step-tag">Registro</span>
+                    </div>
+                </div>
+                <div class="step-card-body">
+                    <p>Agora &eacute; hora de iniciar o preenchimento dos dados da Condicionalidade V.</p>
+
+                    <div class="step-nav-path">
+                        <span class="step-nav-item">M&oacute;dulo VAAR</span>
+                        <span class="step-nav-arrow">&#8594;</span>
+                        <span class="step-nav-item">Aba &ldquo;Registro&rdquo;</span>
+                        <span class="step-nav-arrow">&#8594;</span>
+                        <span class="step-nav-item active">Condicionalidade V</span>
+                    </div>
+
+                    <div class="step-action">
+                        <span class="step-action-icon">&#128433;&#65039;</span>
+                        <div>
+                            <span>Clique no bot&atilde;o:</span><br>
+                            <code>Registrar / Atualizar</code>
+                        </div>
+                    </div>
+
+                    <div class="key-highlight">
+                        <p>&#128161; <strong>Dica:</strong> Qualquer servidor da Secretaria pode preencher os campos, mas somente o Secret&aacute;rio de Educa&ccedil;&atilde;o poder&aacute; finalizar o envio no Passo 8.</p>
+                    </div>
+
+                    <div class="screenshot-placeholder">
+                        <div class="screenshot-placeholder-icon">&#128248;</div>
+                        <p>Captura de tela: Aba &ldquo;Registro&rdquo; com bot&atilde;o &ldquo;Registrar/Atualizar&rdquo;</p>
+                        <small>Bot&atilde;o de a&ccedil;&atilde;o destacado na Condicionalidade V</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 5 -->
+            <div id="step5" class="step-card">
+                <div class="step-card-header">
+                    <div class="step-number">5</div>
+                    <div>
+                        <h3>Upload do Curr&iacute;culo</h3>
+                        <span class="step-tag">Anexar documento</span>
+                    </div>
+                </div>
+                <div class="step-card-body">
+                    <p>Anexe o Referencial Curricular completo do munic&iacute;pio com as compet&ecirc;ncias de Computa&ccedil;&atilde;o.</p>
+
+                    <div class="step-action">
+                        <span class="step-action-icon">&#128206;</span>
+                        <div>
+                            <span>Campo:</span><br>
+                            <code>Referencial Curricular</code>
+                            <span> &rarr; Anexar PDF</span>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-danger">
+                        <div class="alert-icon">&#128680;</div>
+                        <div class="alert-content">
+                            <strong>IMPORTANTE: documento correto</strong>
+                            <p>Deve ser o <strong>REFERENCIAL CURRICULAR</strong> completo. <strong>N&Atilde;O</strong> envie: matriz curricular, projeto pedag&oacute;gico, plano de curso ou outro documento parcial. O MEC rejeitar&aacute; documentos incorretos.</p>
+                        </div>
+                    </div>
+
+                    <p>O documento <strong>deve conter explicitamente</strong> as compet&ecirc;ncias e habilidades de Computa&ccedil;&atilde;o organizadas nos 3 eixos da BNCC:</p>
+
+                    <div class="axes-grid">
+                        <div class="axis-card">
+                            <div class="axis-icon">&#129504;</div>
+                            <h4>Pensamento Computacional</h4>
+                        </div>
+                        <div class="axis-card">
+                            <div class="axis-icon">&#127760;</div>
+                            <h4>Mundo Digital</h4>
+                        </div>
+                        <div class="axis-card">
+                            <div class="axis-icon">&#128241;</div>
+                            <h4>Cultura Digital</h4>
+                        </div>
+                    </div>
+
+                    <div class="screenshot-placeholder">
+                        <div class="screenshot-placeholder-icon">&#128248;</div>
+                        <p>Captura de tela: Campo de upload &ldquo;Referencial Curricular&rdquo;</p>
+                        <small>Bot&atilde;o &ldquo;Anexar PDF&rdquo; e campo de sele&ccedil;&atilde;o de arquivo</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 6 -->
+            <div id="step6" class="step-card">
+                <div class="step-card-header">
+                    <div class="step-number">6</div>
+                    <div>
+                        <h3>Upload da aprova&ccedil;&atilde;o do Conselho</h3>
+                        <span class="step-tag">Anexar documento</span>
+                    </div>
+                </div>
+                <div class="step-card-body">
+                    <p>Anexe o documento oficial que comprova a aprova&ccedil;&atilde;o do curr&iacute;culo pelo Conselho Municipal de Educa&ccedil;&atilde;o.</p>
+
+                    <div class="step-action">
+                        <span class="step-action-icon">&#128206;</span>
+                        <div>
+                            <span>Campo:</span><br>
+                            <code>Documento de aprova&ccedil;&atilde;o</code>
+                            <span> &rarr; Anexar PDF</span>
+                        </div>
+                    </div>
+
+                    <p>Documentos aceitos:</p>
+                    <ul>
+                        <li><strong>Resolu&ccedil;&atilde;o</strong> do Conselho Municipal de Educa&ccedil;&atilde;o (CME)</li>
+                        <li><strong>Delibera&ccedil;&atilde;o</strong> do CME aprovando o curr&iacute;culo</li>
+                        <li><strong>Parecer</strong> do CME com aprova&ccedil;&atilde;o formal</li>
+                    </ul>
+
+                    <div class="alert alert-warning">
+                        <div class="alert-icon">&#9888;&#65039;</div>
+                        <div class="alert-content">
+                            <strong>Requisitos obrigat&oacute;rios do documento</strong>
+                            <p>O documento de aprova&ccedil;&atilde;o deve conter: <strong>data de aprova&ccedil;&atilde;o</strong> leg&iacute;vel e <strong>assinaturas</strong> dos conselheiros respons&aacute;veis. Documentos sem estes elementos ser&atilde;o recusados.</p>
+                        </div>
+                    </div>
+
+                    <div class="screenshot-placeholder">
+                        <div class="screenshot-placeholder-icon">&#128248;</div>
+                        <p>Captura de tela: Campo de upload &ldquo;Documento de aprova&ccedil;&atilde;o&rdquo;</p>
+                        <small>Interface de anexa&ccedil;&atilde;o com documento j&aacute; carregado</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 7 -->
+            <div id="step7" class="step-card">
+                <div class="step-card-header">
+                    <div class="step-number">7</div>
+                    <div>
+                        <h3>Responder perguntas sobre Computa&ccedil;&atilde;o</h3>
+                        <span class="step-tag">Preenchimento</span>
+                    </div>
+                </div>
+                <div class="step-card-body">
+                    <p>O SIMEC apresentar&aacute; perguntas espec&iacute;ficas sobre como a Computa&ccedil;&atilde;o est&aacute; organizada no curr&iacute;culo.</p>
+
+                    <div class="key-highlight">
+                        <p>&#128161; O sistema pergunta se o curr&iacute;culo inclui <strong>BNCC Computa&ccedil;&atilde;o</strong>. Responda <strong>SIM</strong> e indique como o conte&uacute;do est&aacute; organizado.</p>
+                    </div>
+
+                    <p><strong>Indique a forma de organiza&ccedil;&atilde;o:</strong></p>
+                    <ul>
+                        <li><strong>Transversal</strong> &mdash; Computa&ccedil;&atilde;o integrada a todos os componentes curriculares</li>
+                        <li><strong>Componente espec&iacute;fico</strong> &mdash; Computa&ccedil;&atilde;o como disciplina pr&oacute;pria na grade</li>
+                        <li><strong>Modelo h&iacute;brido</strong> &mdash; Combina&ccedil;&atilde;o de abordagem transversal + componente espec&iacute;fico</li>
+                    </ul>
+
+                    <p style="margin-top: 20px;"><strong>Confirme a presen&ccedil;a dos 3 eixos obrigat&oacute;rios:</strong></p>
+
+                    <div class="axes-grid">
+                        <div class="axis-card">
+                            <div class="axis-icon">&#129504;</div>
+                            <h4>Pensamento Computacional</h4>
+                        </div>
+                        <div class="axis-card">
+                            <div class="axis-icon">&#127760;</div>
+                            <h4>Mundo Digital</h4>
+                        </div>
+                        <div class="axis-card">
+                            <div class="axis-icon">&#128241;</div>
+                            <h4>Cultura Digital</h4>
+                        </div>
+                    </div>
+
+                    <div class="screenshot-placeholder">
+                        <div class="screenshot-placeholder-icon">&#128248;</div>
+                        <p>Captura de tela: Formul&aacute;rio com perguntas sobre Computa&ccedil;&atilde;o</p>
+                        <small>Campos de resposta sobre organiza&ccedil;&atilde;o curricular e eixos</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 8 -->
+            <div id="step8" class="step-card">
+                <div class="step-card-header">
+                    <div class="step-number">8</div>
+                    <div>
+                        <h3>Valida&ccedil;&atilde;o e envio pelo Secret&aacute;rio</h3>
+                        <span class="step-tag">Finaliza&ccedil;&atilde;o</span>
+                    </div>
+                </div>
+                <div class="step-card-body">
+                    <div class="alert alert-danger">
+                        <div class="alert-icon">&#128272;</div>
+                        <div class="alert-content">
+                            <strong>Somente o Secret&aacute;rio de Educa&ccedil;&atilde;o pode finalizar</strong>
+                            <p>Qualquer servidor pode preencher os campos anteriores, mas a <strong>valida&ccedil;&atilde;o e envio final</strong> &eacute; exclusiva do Secret&aacute;rio de Educa&ccedil;&atilde;o, que precisa estar logado com suas pr&oacute;prias credenciais.</p>
+                        </div>
+                    </div>
+
+                    <p>O Secret&aacute;rio deve:</p>
+                    <ul>
+                        <li>Revisar todos os campos preenchidos e documentos anexados</li>
+                        <li>Confirmar que as informa&ccedil;&otilde;es est&atilde;o corretas</li>
+                        <li>Clicar em <strong>&ldquo;Validar e Enviar&rdquo;</strong></li>
+                    </ul>
+
+                    <div class="step-action">
+                        <span class="step-action-icon">&#128228;</span>
+                        <div>
+                            <span>Clique no bot&atilde;o:</span><br>
+                            <code>Validar e Enviar</code>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-success">
+                        <div class="alert-icon">&#127881;</div>
+                        <div class="alert-content">
+                            <strong>Ap&oacute;s o envio</strong>
+                            <p>O status da Condicionalidade V mudar&aacute; para <strong>&ldquo;Enviado - Aguardando an&aacute;lise&rdquo;</strong>. O MEC analisar&aacute; a documenta&ccedil;&atilde;o e o munic&iacute;pio ser&aacute; notificado do resultado.</p>
+                        </div>
+                    </div>
+
+                    <div class="screenshot-placeholder">
+                        <div class="screenshot-placeholder-icon">&#128248;</div>
+                        <p>Captura de tela: Bot&atilde;o &ldquo;Validar e Enviar&rdquo; e confirma&ccedil;&atilde;o</p>
+                        <small>Tela de confirma&ccedil;&atilde;o com status &ldquo;Enviado - Aguardando an&aacute;lise&rdquo;</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SECTION 4: POS-ENVIO ===== -->
+        <section id="sec-pos" class="section">
+            <div class="section-header">
+                <div class="section-number">4</div>
+                <div class="section-title-group">
+                    <h2 class="section-title">P&oacute;s-envio</h2>
+                    <p class="section-description">O que acontece depois que voc&ecirc; envia o registro</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <h4>&#128228; Registro enviado</h4>
+                        <p>O munic&iacute;pio completou o envio no SIMEC. O status muda para &ldquo;Enviado - Aguardando an&aacute;lise&rdquo;.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <h4>&#128269; An&aacute;lise pelo MEC</h4>
+                        <p>A equipe do MEC analisa a documenta&ccedil;&atilde;o enviada, verificando o Referencial Curricular e o documento de aprova&ccedil;&atilde;o do Conselho.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <h4>&#128231; Notifica&ccedil;&atilde;o de pend&ecirc;ncia (se houver)</h4>
+                        <p>Se houver alguma pend&ecirc;ncia, o SIMEC notifica o Secret&aacute;rio por e-mail. O prazo de corre&ccedil;&atilde;o &eacute; geralmente de <strong>15 a 30 dias</strong>. Fique atento &agrave; caixa de entrada.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <h4>&#9989; Aprovado: elegibilidade ao VAAR</h4>
+                        <p>Se aprovado, o munic&iacute;pio fica <strong>eleg&iacute;vel ao VAAR do ano seguinte</strong>. Parab&eacute;ns! O recurso complementar do FUNDEB est&aacute; garantido para esta condicionalidade.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-box">
+                <h3>&#128222; Canais de suporte do MEC</h3>
+                <div class="contact-channels">
+                    <div class="contact-channel">
+                        <div class="contact-channel-icon">&#128172;</div>
+                        <div>
+                            <span class="contact-channel-text">WhatsApp MEC</span>
+                            <span class="contact-channel-value">(61) 2022-2066</span>
+                        </div>
+                    </div>
+                    <div class="contact-channel">
+                        <div class="contact-channel-icon">&#128231;</div>
+                        <div>
+                            <span class="contact-channel-text">E-mail de suporte VAAR</span>
+                            <span class="contact-channel-value">vaarfundeb.seb@mec.gov.br</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SECTION 5: ERROS COMUNS ===== -->
+        <section id="sec-erros" class="section">
+            <div class="section-header">
+                <div class="section-number">5</div>
+                <div class="section-title-group">
+                    <h2 class="section-title">Erros comuns a evitar</h2>
+                    <p class="section-description">Os 4 erros que mais causam reprova&ccedil;&atilde;o no registro</p>
+                </div>
+            </div>
+
+            <ul class="error-list">
+                <li class="error-item">
+                    <div class="error-icon">&#10060;</div>
+                    <div class="error-text">
+                        <h4>Enviar matriz curricular em vez de referencial curricular</h4>
+                        <p>O MEC exige o <strong>Referencial Curricular completo</strong>, que inclui fundamenta&ccedil;&atilde;o te&oacute;rica, compet&ecirc;ncias, habilidades e orienta&ccedil;&otilde;es. A matriz curricular (grade de disciplinas e carga hor&aacute;ria) n&atilde;o &eacute; suficiente e ser&aacute; rejeitada.</p>
+                    </div>
+                </li>
+                <li class="error-item">
+                    <div class="error-icon">&#10060;</div>
+                    <div class="error-text">
+                        <h4>Esquecer de incluir Computa&ccedil;&atilde;o no documento</h4>
+                        <p>O Referencial Curricular deve conter <strong>explicitamente</strong> as compet&ecirc;ncias e habilidades de Computa&ccedil;&atilde;o nos 3 eixos (Pensamento Computacional, Mundo Digital, Cultura Digital). Se a Computa&ccedil;&atilde;o n&atilde;o estiver no documento, o registro ser&aacute; reprovado.</p>
+                    </div>
+                </li>
+                <li class="error-item">
+                    <div class="error-icon">&#10060;</div>
+                    <div class="error-text">
+                        <h4>N&atilde;o ter a aprova&ccedil;&atilde;o formal do Conselho de Educa&ccedil;&atilde;o</h4>
+                        <p>O curr&iacute;culo precisa ser <strong>formalmente aprovado</strong> pelo Conselho Municipal de Educa&ccedil;&atilde;o (CME) via Resolu&ccedil;&atilde;o, Delibera&ccedil;&atilde;o ou Parecer. Sem este documento com data e assinaturas, o registro n&atilde;o ser&aacute; aceito.</p>
+                    </div>
+                </li>
+                <li class="error-item">
+                    <div class="error-icon">&#10060;</div>
+                    <div class="error-text">
+                        <h4>Perder o deadline de 31 de agosto</h4>
+                        <p>O prazo de <strong>31/ago/2026</strong> &eacute; inadi&aacute;vel. Sem o registro completo e enviado at&eacute; esta data, o munic&iacute;pio perde a elegibilidade ao VAAR 2027. N&atilde;o deixe para a &uacute;ltima hora &mdash; imprevistos acontecem.</p>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="alert alert-success" style="margin-top: 24px;">
+                <div class="alert-icon">&#128161;</div>
+                <div class="alert-content">
+                    <strong>Recomenda&ccedil;&atilde;o do Instituto i10</strong>
+                    <p>Inicie o processo com pelo menos <strong>60 dias de anteced&ecirc;ncia</strong> ao deadline. Assim, h&aacute; tempo para resolver eventuais pend&ecirc;ncias do CME, ajustar o curr&iacute;culo e corrigir problemas apontados pelo MEC.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="footer-brand">
+            <div class="footer-logo">i10</div>
+            <span class="footer-name">Instituto i10</span>
+        </div>
+        <p>Apoiando munic&iacute;pios na implementa&ccedil;&atilde;o do curr&iacute;culo BNCC Computa&ccedil;&atilde;o e na conquista de recursos do FUNDEB/VAAR.</p>
+        <div class="footer-divider"></div>
+        <p class="footer-legal">
+            Este guia &eacute; um material de apoio elaborado pelo Instituto i10. As informa&ccedil;&otilde;es oficiais devem ser confirmadas diretamente no SIMEC e nos canais do MEC.<br>
+            &copy; 2026 Instituto i10. Todos os direitos reservados.
+        </p>
+    </footer>
+
+</body>
+</html>
