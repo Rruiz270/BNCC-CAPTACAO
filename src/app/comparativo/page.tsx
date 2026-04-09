@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   BarChart,
   Bar,
@@ -16,6 +16,7 @@ import {
 import { PageHeader } from "@/components/page-header";
 import { MunicipalitySelector } from "@/components/municipality-selector";
 import { formatCurrency, formatNumber, formatPercent } from "@/lib/utils";
+import { useConsultoria } from "@/lib/consultoria-context";
 
 /* ---------- Types ---------- */
 interface Municipality {
@@ -180,10 +181,12 @@ function ProgressComparison({
 
 /* ---------- Main Page ---------- */
 export default function ComparativoPage() {
+  const { activeSession, municipality: activeMunicipality } = useConsultoria();
   const [allMunicipalities, setAllMunicipalities] = useState<Municipality[]>([]);
   const [loading, setLoading] = useState(true);
   const [idA, setIdA] = useState<number | undefined>(undefined);
   const [idB, setIdB] = useState<number | undefined>(undefined);
+  const autoSelectedRef = useRef(false);
 
   useEffect(() => {
     fetch("/api/municipalities?limit=645")
@@ -194,6 +197,32 @@ export default function ComparativoPage() {
       })
       .catch(() => setLoading(false));
   }, []);
+
+  // Auto-select municipalities when consultoria is active
+  useEffect(() => {
+    if (autoSelectedRef.current || loading || allMunicipalities.length === 0) return;
+    if (!activeSession || !activeMunicipality) return;
+
+    autoSelectedRef.current = true;
+    const activeId = activeSession.municipalityId;
+    setIdA(activeId);
+
+    // Find a similar municipality by closest receitaTotal
+    const activeMuni = allMunicipalities.find((m) => m.id === activeId);
+    const activeReceita = activeMuni?.receitaTotal ?? activeMunicipality.receitaTotal ?? 0;
+
+    if (activeReceita > 0) {
+      const similar = allMunicipalities
+        .filter((m) => m.id !== activeId && m.receitaTotal != null)
+        .sort((a, b) =>
+          Math.abs((a.receitaTotal ?? 0) - activeReceita) -
+          Math.abs((b.receitaTotal ?? 0) - activeReceita)
+        );
+      if (similar.length > 0) {
+        setIdB(similar[0].id);
+      }
+    }
+  }, [activeSession, activeMunicipality, allMunicipalities, loading]);
 
   const muniA = allMunicipalities.find((m) => m.id === idA) ?? null;
   const muniB = allMunicipalities.find((m) => m.id === idB) ?? null;
@@ -216,7 +245,7 @@ export default function ComparativoPage() {
           [muniB.nome]: safe(muniB.receitaTotal),
         },
         {
-          metric: "Matr\u00edculas",
+          metric: "Matriculas",
           [muniA.nome]: safe(muniA.totalMatriculas),
           [muniB.nome]: safe(muniB.totalMatriculas),
         },
@@ -271,7 +300,7 @@ export default function ComparativoPage() {
           [muniB.nome]: safe(muniB.revenue.totalEstado),
         },
         {
-          fonte: "Total Uni\u00e3o",
+          fonte: "Total Uniao",
           [muniA.nome]: safe(muniA.revenue.totalUniao),
           [muniB.nome]: safe(muniB.revenue.totalUniao),
         },
@@ -298,14 +327,27 @@ export default function ComparativoPage() {
     <div className="min-h-screen">
       <PageHeader
         title="Comparativo Municipal"
-        description="Compare indicadores entre munic\u00edpios paulistas"
+        description="Compare indicadores entre municipios paulistas"
       />
 
       <div className="max-w-7xl mx-auto px-8 py-6 space-y-8">
+        {/* ---------- Consultoria Banner ---------- */}
+        {activeSession && activeMunicipality && (
+          <div className="px-4 py-3 rounded-xl bg-[#00B4D8]/10 border border-[#00B4D8]/30 flex items-center gap-3 animate-fade-in">
+            <div className="w-2 h-2 rounded-full bg-[#00B4D8]" />
+            <span className="text-sm font-semibold text-[var(--navy)]">
+              Consultoria ativa: {activeMunicipality.nome}
+            </span>
+            <span className="text-xs text-[var(--text3)]">
+              Municipio A pre-selecionado com municipio similar sugerido
+            </span>
+          </div>
+        )}
+
         {/* ---------- Municipality Selectors ---------- */}
         <div className="bg-white rounded-xl border border-[var(--border)] p-6 animate-fade-in">
           <div className="text-sm font-semibold text-[var(--text)] mb-4">
-            Selecione dois munic\u00edpios para comparar
+            Selecione dois municipios para comparar
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -314,7 +356,7 @@ export default function ComparativoPage() {
                   className="inline-block w-3 h-3 rounded-full mr-2"
                   style={{ background: COLOR_A }}
                 />
-                Munic\u00edpio A
+                Municipio A
               </label>
               <MunicipalitySelector value={idA as number} onChange={handleSelectA} />
             </div>
@@ -324,7 +366,7 @@ export default function ComparativoPage() {
                   className="inline-block w-3 h-3 rounded-full mr-2"
                   style={{ background: COLOR_B }}
                 />
-                Munic\u00edpio B
+                Municipio B
               </label>
               <MunicipalitySelector value={idB as number} onChange={handleSelectB} />
             </div>
@@ -355,7 +397,7 @@ export default function ComparativoPage() {
               />
             </svg>
             <p className="text-sm font-medium">
-              Selecione dois munic\u00edpios acima para iniciar a compara\u00e7\u00e3o
+              Selecione dois municipios acima para iniciar a comparacao
             </p>
           </div>
         )}
@@ -366,7 +408,7 @@ export default function ComparativoPage() {
             {/* ===== Financial Comparison Cards ===== */}
             <section>
               <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text3)] mb-4">
-                Compara\u00e7\u00e3o Financeira
+                Comparacao Financeira
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <ComparisonCard
@@ -386,7 +428,7 @@ export default function ComparativoPage() {
                   formatter={formatCurrency}
                 />
                 <ComparisonCard
-                  label="Potencial de Capta\u00e7\u00e3o"
+                  label="Potencial de Captacao"
                   valueA={safe(muniA.potTotal)}
                   valueB={safe(muniB.potTotal)}
                   nameA={muniA.nome}
@@ -394,7 +436,7 @@ export default function ComparativoPage() {
                   formatter={formatCurrency}
                 />
                 <ComparisonCard
-                  label="Total Matr\u00edculas"
+                  label="Total Matriculas"
                   valueA={safe(muniA.totalMatriculas)}
                   valueB={safe(muniB.totalMatriculas)}
                   nameA={muniA.nome}
@@ -440,7 +482,7 @@ export default function ComparativoPage() {
             {/* ===== Revenue Breakdown ===== */}
             <section className="bg-white rounded-xl border border-[var(--border)] p-6 animate-fade-in">
               <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text3)] mb-4">
-                Composi\u00e7\u00e3o de Receita
+                Composicao de Receita
               </h2>
               <ResponsiveContainer width="100%" height={360}>
                 <BarChart
@@ -473,7 +515,7 @@ export default function ComparativoPage() {
             {/* ===== Historical Trend ===== */}
             <section className="bg-white rounded-xl border border-[var(--border)] p-6 animate-fade-in">
               <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text3)] mb-4">
-                Evolu\u00e7\u00e3o Hist\u00f3rica (2022-2026)
+                Evolucao Historica (2022-2026)
               </h2>
               <ResponsiveContainer width="100%" height={320}>
                 <LineChart
@@ -524,7 +566,7 @@ export default function ComparativoPage() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <ProgressComparison
-                  label="Acesso \u00e0 Internet (%)"
+                  label="Acesso a Internet (%)"
                   valueA={safe(muniA.pctInternet)}
                   valueB={safe(muniB.pctInternet)}
                   nameA={muniA.nome}
@@ -561,10 +603,10 @@ export default function ComparativoPage() {
                     </thead>
                     <tbody>
                       {[
-                        { label: "Portugu\u00eas 5\u00ba ano", a: muniA.saeb.port5, b: muniB.saeb.port5 },
-                        { label: "Matem\u00e1tica 5\u00ba ano", a: muniA.saeb.mat5, b: muniB.saeb.mat5 },
-                        { label: "Portugu\u00eas 9\u00ba ano", a: muniA.saeb.port9, b: muniB.saeb.port9 },
-                        { label: "Matem\u00e1tica 9\u00ba ano", a: muniA.saeb.mat9, b: muniB.saeb.mat9 },
+                        { label: "Portugues 5o ano", a: muniA.saeb.port5, b: muniB.saeb.port5 },
+                        { label: "Matematica 5o ano", a: muniA.saeb.mat5, b: muniB.saeb.mat5 },
+                        { label: "Portugues 9o ano", a: muniA.saeb.port9, b: muniB.saeb.port9 },
+                        { label: "Matematica 9o ano", a: muniA.saeb.mat9, b: muniB.saeb.mat9 },
                       ].map((row) => (
                         <tr key={row.label} className="border-b border-[var(--border)]/50">
                           <td className="py-2.5 pr-4 font-medium text-[var(--text)]">{row.label}</td>

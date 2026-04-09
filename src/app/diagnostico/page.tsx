@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { formatCurrency, formatNumber, formatPercent } from "@/lib/utils";
+import { useConsultoria } from "@/lib/consultoria-context";
 import Link from "next/link";
 
 interface Municipality {
@@ -54,6 +56,8 @@ type FilterGp = "" | "gain" | "loss";
 const PAGE_SIZE = 20;
 
 export default function DiagnosticoPage() {
+  const router = useRouter();
+  const { activeSession, municipality: activeMunicipality, loading: consultoriaLoading } = useConsultoria();
   const [data, setData] = useState<Municipality[]>([]);
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
   const [stats, setStats] = useState<ApiResponse["stats"]>(null);
@@ -64,6 +68,13 @@ export default function DiagnosticoPage() {
   const [filterGp, setFilterGp] = useState<FilterGp>("");
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+
+  // Auto-redirect to municipality detail when consultoria is active
+  useEffect(() => {
+    if (!consultoriaLoading && activeSession) {
+      router.replace(`/diagnostico/${activeSession.municipalityId}`);
+    }
+  }, [consultoriaLoading, activeSession, router]);
 
   // Debounce search
   useEffect(() => {
@@ -164,6 +175,32 @@ export default function DiagnosticoPage() {
   }
 
   const totalPages = pagination?.totalPages ?? 1;
+
+  // While consultoria is loading or about to redirect, show a brief loading state
+  if (consultoriaLoading || activeSession) {
+    return (
+      <div>
+        <PageHeader
+          title="Diagnostico Municipal"
+          description="Analise detalhada dos 645 municipios paulistas"
+        />
+        <div className="max-w-7xl mx-auto px-8 py-6">
+          {activeSession && activeMunicipality && (
+            <div className="mb-6 px-4 py-3 rounded-xl bg-[#00B4D8]/10 border border-[#00B4D8]/30 flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-[#00B4D8] animate-pulse" />
+              <span className="text-sm font-semibold text-[var(--navy)]">
+                Consultoria ativa: {activeMunicipality.nome}
+              </span>
+              <span className="text-xs text-[var(--text3)]">Redirecionando...</span>
+            </div>
+          )}
+          <div className="flex items-center justify-center py-20">
+            <div className="w-8 h-8 border-4 border-[var(--cyan)] border-t-transparent rounded-full animate-spin" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>

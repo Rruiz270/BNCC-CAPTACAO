@@ -113,19 +113,7 @@ export function Sidebar() {
   const pathname = usePathname();
   const { sessions, activeSession, municipality, startSession, switchSession, endSession, loading } = useConsultoria();
   const [showNewSession, setShowNewSession] = useState(false);
-  const [showSessionList, setShowSessionList] = useState(false);
   const [creating, setCreating] = useState(false);
-
-  // Close dropdowns on outside click
-  useEffect(() => {
-    function handler() {
-      setShowSessionList(false);
-    }
-    if (showSessionList) {
-      document.addEventListener("click", handler);
-      return () => document.removeEventListener("click", handler);
-    }
-  }, [showSessionList]);
 
   const activeSessions = sessions.filter((s) => s.status === "active");
 
@@ -170,29 +158,6 @@ export function Sidebar() {
 
             {/* Session actions */}
             <div className="flex gap-2 mt-2">
-              {activeSessions.length > 1 && (
-                <div className="relative flex-1">
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setShowSessionList(!showSessionList); }}
-                    className="w-full text-[10px] px-2 py-1 rounded bg-white/10 text-white/70 hover:bg-white/15 transition-colors"
-                  >
-                    Trocar
-                  </button>
-                  {showSessionList && (
-                    <div className="absolute left-0 top-full mt-1 w-48 bg-[#0A2463] border border-white/20 rounded-lg shadow-xl z-50 overflow-hidden" onClick={(e) => e.stopPropagation()}>
-                      {activeSessions.filter((s) => s.id !== activeSession.id).map((s) => (
-                        <button
-                          key={s.id}
-                          onClick={() => { switchSession(s.id); setShowSessionList(false); }}
-                          className="w-full text-left px-3 py-2 text-xs text-white/80 hover:bg-white/10 transition-colors"
-                        >
-                          {s.municipality?.nome}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
               <button
                 onClick={() => endSession(activeSession.id)}
                 className="text-[10px] px-2 py-1 rounded bg-white/10 text-white/50 hover:bg-red-500/20 hover:text-red-300 transition-colors"
@@ -224,6 +189,36 @@ export function Sidebar() {
             onSelect={(id) => handleStartSession(id)}
             creating={creating}
           />
+        )}
+
+        {/* Active sessions list */}
+        {activeSessions.length > 1 && (
+          <div className="mt-3 pt-3 border-t border-white/10">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-white/40 mb-2">
+              Consultorias Ativas
+            </div>
+            <div className="space-y-1">
+              {activeSessions.map((s) => {
+                const isCurrentSession = s.id === activeSession?.id;
+                return (
+                  <button
+                    key={s.id}
+                    onClick={() => !isCurrentSession && switchSession(s.id)}
+                    className={`w-full text-left px-2.5 py-2 rounded-lg text-xs transition-colors flex items-center justify-between gap-2 ${
+                      isCurrentSession
+                        ? "bg-[#00B4D8]/20 text-white font-semibold"
+                        : "text-white/60 hover:bg-white/10 hover:text-white/90"
+                    }`}
+                  >
+                    <span className="truncate">{s.municipality?.nome ?? `Sessao #${s.id}`}</span>
+                    <span className={`text-[10px] tabular-nums whitespace-nowrap ${isCurrentSession ? "text-[#00E5A0]" : "text-white/40"}`}>
+                      {s.complianceProgress ?? 0}%
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         )}
       </div>
 
