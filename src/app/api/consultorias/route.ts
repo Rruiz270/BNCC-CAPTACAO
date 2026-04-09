@@ -18,7 +18,7 @@ const WEEK_TASKS: Record<number, string[]> = {
   7: ['Verificacao final do Censo', 'Confirmar envio'],
 };
 
-// Ensure consultorias table exists
+// Ensure consultorias table and required columns exist
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function ensureTable(sql: any) {
   await sql`
@@ -33,6 +33,16 @@ async function ensureTable(sql: any) {
       updated_at TIMESTAMP DEFAULT NOW()
     )
   `;
+  // Add missing columns to action_plans if table was created with old schema
+  const migrations = [
+    `ALTER TABLE fundeb.action_plans ADD COLUMN IF NOT EXISTS phase TEXT DEFAULT 'curto'`,
+    `ALTER TABLE fundeb.action_plans ADD COLUMN IF NOT EXISTS task_key TEXT`,
+    `ALTER TABLE fundeb.action_plans ADD COLUMN IF NOT EXISTS descricao TEXT`,
+    `ALTER TABLE fundeb.action_plans ADD COLUMN IF NOT EXISTS notes TEXT`,
+  ];
+  for (const m of migrations) {
+    try { await sql.query(m); } catch { /* column may already exist */ }
+  }
 }
 
 // GET /api/consultorias - list sessions with municipality data
