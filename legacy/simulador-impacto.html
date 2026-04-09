@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador de Impacto FUNDEB | Instituto i10</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0A2463;
+  --cyan: #00B4D8;
+  --green: #00E5A0;
+  --green-dark: #00C88A;
+  --red: #D4553A;
+  --orange: #E8A838;
+  --bg: #F4F7FA;
+  --card: #fff;
+  --border: #DDE3EB;
+  --text: #0A2463;
+  --text2: #5A6B80;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* TOP BAR */
+.topbar {
+  background: var(--navy);
+  padding: 0 2rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(10,36,99,0.3);
+}
+.topbar-brand {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--cyan);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.topbar-nav {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+.topbar-nav a {
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.topbar-nav a:hover { color: var(--cyan); }
+.topbar-nav a.active { color: var(--cyan); }
+
+/* HERO */
+.hero {
+  background: linear-gradient(135deg, var(--navy) 0%, #0D2F7A 50%, #1240A0 100%);
+  padding: 3rem 2rem 2.5rem;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0,180,216,0.12) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -40%;
+  left: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(0,229,160,0.08) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.hero-inner { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+.hero h1 {
+  font-family: 'Source Serif 4', serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.hero h1 span { color: var(--green); }
+.hero p {
+  font-size: 1.05rem;
+  opacity: 0.85;
+  max-width: 700px;
+  line-height: 1.7;
+}
+
+/* MUNICIPALITY SELECTOR */
+.selector-bar {
+  max-width: 1200px;
+  margin: -1.5rem auto 0;
+  padding: 0 2rem;
+  position: relative;
+  z-index: 10;
+}
+.selector-card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 8px 32px rgba(10,36,99,0.1);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.selector-card label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text2);
+  white-space: nowrap;
+}
+.selector-card select {
+  flex: 1;
+  min-width: 280px;
+  padding: 0.7rem 1rem;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: var(--text);
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235A6B80' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+}
+.selector-card select:focus { outline: none; border-color: var(--cyan); }
+.muni-stats {
+  display: flex;
+  gap: 2rem;
+  margin-left: auto;
+}
+.muni-stat {
+  text-align: center;
+}
+.muni-stat .val {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--navy);
+}
+.muni-stat .lbl {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text2);
+}
+
+/* MAIN LAYOUT */
+.main {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 2rem;
+}
+@media (max-width: 960px) {
+  .main { grid-template-columns: 1fr; }
+}
+
+/* CARDS */
+.card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(10,36,99,0.05);
+  border: 1px solid var(--border);
+}
+.card-title {
+  font-family: 'Source Serif 4', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.card-title .icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.icon-blue { background: rgba(0,180,216,0.12); color: var(--cyan); }
+.icon-green { background: rgba(0,229,160,0.12); color: var(--green-dark); }
+.icon-orange { background: rgba(232,168,56,0.12); color: var(--orange); }
+.icon-red { background: rgba(212,85,58,0.12); color: var(--red); }
+
+/* CURRENT SITUATION TABLE */
+.enroll-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+.enroll-table th {
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  font-weight: 600;
+  color: var(--text2);
+  border-bottom: 2px solid var(--border);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.enroll-table td {
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid #f0f2f5;
+}
+.enroll-table tr:last-child td { border-bottom: none; }
+.enroll-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.enroll-table .factor { color: var(--cyan); font-weight: 600; }
+.enroll-table .revenue { color: var(--green-dark); font-weight: 600; }
+.enroll-table .cat-name { max-width: 200px; }
+.total-row { font-weight: 700; background: rgba(0,229,160,0.05); }
+.total-row td { border-top: 2px solid var(--green-dark) !important; padding-top: 0.7rem; }
+
+/* SLIDERS */
+.slider-group {
+  margin-bottom: 1.2rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid #f0f2f5;
+}
+.slider-group:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+.slider-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.slider-value {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--navy);
+  background: rgba(0,180,216,0.08);
+  padding: 0.15rem 0.6rem;
+  border-radius: 6px;
+  min-width: 50px;
+  text-align: center;
+}
+.slider-impact {
+  font-size: 0.78rem;
+  color: var(--green-dark);
+  font-weight: 600;
+  margin-top: 0.2rem;
+}
+.slider-impact.zero { color: var(--text2); }
+input[type="range"] {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--border);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--cyan);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,180,216,0.3);
+  transition: transform 0.15s;
+}
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--cyan);
+  cursor: pointer;
+  border: none;
+}
+
+/* TOGGLES & CHECKBOXES */
+.toggle-group {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f0f2f5;
+}
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+}
+.toggle-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text);
+  flex: 1;
+}
+.toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--border);
+  border-radius: 12px;
+  transition: 0.3s;
+}
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+.toggle-switch input:checked + .toggle-slider { background: var(--green); }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); }
+
+.checkbox-group {
+  margin-top: 0.5rem;
+}
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0;
+}
+.checkbox-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--green-dark);
+  cursor: pointer;
+}
+.checkbox-row label {
+  font-size: 0.82rem;
+  color: var(--text);
+  cursor: pointer;
+}
+
+/* DASHBOARD PANEL (right side) */
+.dashboard { display: flex; flex-direction: column; gap: 1.5rem; }
+
+.gain-hero {
+  background: linear-gradient(135deg, var(--navy) 0%, #1240A0 100%);
+  border-radius: 16px;
+  padding: 2rem;
+  color: #fff;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.gain-hero::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -20%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(0,229,160,0.2), transparent 70%);
+  border-radius: 50%;
+}
+.gain-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.75;
+  margin-bottom: 0.3rem;
+}
+.gain-value {
+  font-family: 'Source Serif 4', serif;
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--green);
+  line-height: 1.1;
+  transition: all 0.3s ease;
+}
+.gain-value.pulse {
+  animation: gainPulse 0.4s ease;
+}
+@keyframes gainPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+.gain-sub {
+  margin-top: 0.8rem;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+.gain-sub-item .val {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+.gain-sub-item .val.green { color: var(--green); }
+.gain-sub-item .val.cyan { color: var(--cyan); }
+.gain-sub-item .lbl {
+  font-size: 0.7rem;
+  opacity: 0.65;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* COMPARISON BARS */
+.comparison-bars { display: flex; flex-direction: column; gap: 1rem; }
+.comp-bar-group label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 0.3rem;
+}
+.comp-bar-wrap {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+.comp-bar {
+  height: 24px;
+  border-radius: 6px;
+  transition: width 0.5s ease;
+  position: relative;
+  min-width: 2px;
+}
+.comp-bar.before { background: rgba(10,36,99,0.2); }
+.comp-bar.after { background: linear-gradient(90deg, var(--cyan), var(--green)); }
+.comp-bar-val {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+/* DONUT */
+.donut-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  justify-content: center;
+}
+.donut-container {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  flex-shrink: 0;
+}
+.donut-container canvas {
+  width: 160px;
+  height: 160px;
+}
+.donut-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.donut-center .val {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--navy);
+}
+.donut-center .lbl {
+  font-size: 0.65rem;
+  color: var(--text2);
+}
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  color: var(--text);
+}
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* ACTION BREAKDOWN */
+.action-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  background: rgba(0,229,160,0.04);
+  transition: background 0.2s;
+}
+.action-row:hover { background: rgba(0,229,160,0.08); }
+.action-name {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text);
+}
+.action-val {
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.action-val.positive { color: var(--green-dark); }
+.action-val.zero { color: var(--text2); }
+
+/* TIMELINE */
+.timeline {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  padding: 0 2rem;
+}
+.timeline-track {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  padding: 2rem 0 1rem;
+}
+.timeline-track::before {
+  content: '';
+  position: absolute;
+  top: 2.5rem;
+  left: 5%;
+  right: 5%;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+}
+.timeline-point {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  width: 20%;
+}
+.timeline-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.6rem;
+}
+.timeline-dot.cyan { background: var(--cyan); }
+.timeline-dot.green { background: var(--green-dark); }
+.timeline-dot.orange { background: var(--orange); }
+.timeline-dot.navy { background: var(--navy); }
+.timeline-month {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--navy);
+}
+.timeline-desc {
+  font-size: 0.68rem;
+  color: var(--text2);
+  text-align: center;
+  margin-top: 0.2rem;
+  line-height: 1.4;
+  max-width: 140px;
+}
+
+/* EXPORT BUTTON */
+.btn-export {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.5rem;
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-export:hover { background: #0D2F7A; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(10,36,99,0.2); }
+.export-bar {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  padding: 0 2rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 2rem;
+  font-size: 0.78rem;
+  color: var(--text2);
+  border-top: 1px solid var(--border);
+  margin-top: 2rem;
+}
+
+/* RESPONSIVE */
+@media (max-width: 640px) {
+  .hero h1 { font-size: 1.6rem; }
+  .selector-card { flex-direction: column; align-items: stretch; }
+  .muni-stats { margin-left: 0; justify-content: space-around; }
+  .gain-value { font-size: 2rem; }
+  .timeline-track { flex-wrap: wrap; gap: 1rem; }
+  .timeline-point { width: 45%; }
+}
+
+@media print {
+  .topbar, .selector-bar, .export-bar { display: none; }
+  .main { grid-template-columns: 1fr 1fr; }
+  .card { break-inside: avoid; }
+  body { background: #fff; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<nav class="topbar">
+  <div class="topbar-brand">INSTITUTO i10</div>
+  <div class="topbar-nav">
+    <a href="playbook.html">Voltar ao Playbook</a>
+    <a href="#" class="active">Simulador de Impacto</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <h1>Simulador de <span>Impacto FUNDEB</span></h1>
+    <p>Calcule em tempo real quanto sua cidade pode ganhar otimizando matr&iacute;culas, condi&ccedil;&otilde;es VAAR e reclassifica&ccedil;&otilde;es. Cada ajuste recalcula automaticamente a receita projetada.</p>
+  </div>
+</section>
+
+<!-- MUNICIPALITY SELECTOR -->
+<div class="selector-bar">
+  <div class="selector-card">
+    <label for="muniSelect">Munic&iacute;pio:</label>
+    <select id="muniSelect"></select>
+    <div class="muni-stats">
+      <div class="muni-stat">
+        <div class="val" id="statPop">--</div>
+        <div class="lbl">Popula&ccedil;&atilde;o</div>
+      </div>
+      <div class="muni-stat">
+        <div class="val" id="statEnroll">--</div>
+        <div class="lbl">Matr&iacute;culas</div>
+      </div>
+      <div class="muni-stat">
+        <div class="val" id="statRevenue">--</div>
+        <div class="lbl">Receita Atual</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+  <!-- LEFT COLUMN -->
+  <div class="left-col">
+    <!-- Current Situation -->
+    <div class="card" style="margin-bottom:1.5rem;">
+      <div class="card-title">
+        <span class="icon icon-blue">&#128202;</span>
+        Situa&ccedil;&atilde;o Atual &mdash; Matr&iacute;culas e Receita
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="enroll-table" id="enrollTable">
+          <thead>
+            <tr>
+              <th>Categoria</th>
+              <th class="num">Matr&iacute;culas</th>
+              <th class="num">Fator VAAF</th>
+              <th class="num">R$/aluno</th>
+              <th class="num">Receita</th>
+            </tr>
+          </thead>
+          <tbody id="enrollBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Optimization Sliders -->
+    <div class="card" style="margin-bottom:1.5rem;">
+      <div class="card-title">
+        <span class="icon icon-green">&#9881;</span>
+        A&ccedil;&otilde;es de Otimiza&ccedil;&atilde;o &mdash; Matr&iacute;culas
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <span class="slider-label">Novas matr&iacute;culas Creche Integral P&uacute;blica</span>
+          <span class="slider-value" id="valCreche">0</span>
+        </div>
+        <input type="range" id="sliderCreche" min="0" max="500" value="0" step="5">
+        <div class="slider-impact" id="impactCreche">+R$ 0</div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <span class="slider-label">Converter Parcial &rarr; Integral (EF)</span>
+          <span class="slider-value" id="valIntegral">0</span>
+        </div>
+        <input type="range" id="sliderIntegral" min="0" max="1000" value="0" step="10">
+        <div class="slider-impact" id="impactIntegral">+R$ 0</div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <span class="slider-label">Registrar dupla matr&iacute;cula AEE</span>
+          <span class="slider-value" id="valAEE">0</span>
+        </div>
+        <input type="range" id="sliderAEE" min="0" max="200" value="0" step="1">
+        <div class="slider-impact" id="impactAEE">+R$ 0</div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <span class="slider-label">Abrir vagas EJA</span>
+          <span class="slider-value" id="valEJA">0</span>
+        </div>
+        <input type="range" id="sliderEJA" min="0" max="300" value="0" step="5">
+        <div class="slider-impact" id="impactEJA">+R$ 0</div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <span class="slider-label">Reclassificar escolas como Campo (+15%)</span>
+          <span class="slider-value" id="valCampo">0</span>
+        </div>
+        <input type="range" id="sliderCampo" min="0" max="20" value="0" step="1">
+        <div class="slider-impact" id="impactCampo">+R$ 0</div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <span class="slider-label">Formalizar conv&ecirc;nios (creches)</span>
+          <span class="slider-value" id="valConvenio">0</span>
+        </div>
+        <input type="range" id="sliderConvenio" min="0" max="10" value="0" step="1">
+        <div class="slider-impact" id="impactConvenio">+R$ 0</div>
+      </div>
+    </div>
+
+    <!-- VAAR Actions -->
+    <div class="card" style="margin-bottom:1.5rem;">
+      <div class="card-title">
+        <span class="icon icon-orange">&#127942;</span>
+        A&ccedil;&otilde;es VAAR &mdash; Valor Aluno Resultado
+      </div>
+
+      <div class="toggle-group">
+        <div class="toggle-row">
+          <span class="toggle-label">Registrar BNCC Computa&ccedil;&atilde;o no curr&iacute;culo</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggleBNCC">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="slider-impact" id="impactBNCC">Desbloqueia componente VAAR Computa&ccedil;&atilde;o</div>
+      </div>
+
+      <div class="card-title" style="font-size:0.95rem; margin-top:0.5rem;">
+        <span class="icon icon-green">&#9989;</span>
+        5 Condicionalidades VAAR
+      </div>
+      <p style="font-size:0.78rem; color:var(--text2); margin-bottom:0.7rem;">
+        Cada condicionalidade cumprida adiciona ~2,5% sobre a receita VAAF ao VAAR do munic&iacute;pio.
+      </p>
+      <div class="checkbox-group">
+        <div class="checkbox-row">
+          <input type="checkbox" id="vaar1">
+          <label for="vaar1">1. Rede de aprendizagem e evid&ecirc;ncias (SAEB)</label>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="vaar2">
+          <label for="vaar2">2. Redu&ccedil;&atilde;o de desigualdades (INSE)</label>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="vaar3">
+          <label for="vaar3">3. Profissionais da educa&ccedil;&atilde;o valorizados</label>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="vaar4">
+          <label for="vaar4">4. Gest&atilde;o democr&aacute;tica e transparente</label>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="vaar5">
+          <label for="vaar5">5. Inova&ccedil;&atilde;o curricular (BNCC Computa&ccedil;&atilde;o)</label>
+        </div>
+      </div>
+      <div class="slider-impact" id="impactVAAR" style="margin-top:0.8rem; font-size:0.85rem;">+R$ 0 via VAAR</div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="card">
+      <div class="card-title">
+        <span class="icon icon-blue">&#128197;</span>
+        Linha do Tempo &mdash; Quando cada ganho se materializa
+      </div>
+      <div class="timeline-track">
+        <div class="timeline-point">
+          <div class="timeline-dot cyan">1</div>
+          <div class="timeline-month">Mai/2026</div>
+          <div class="timeline-desc">Censo Escolar: registrar todas as matr&iacute;culas otimizadas</div>
+        </div>
+        <div class="timeline-point">
+          <div class="timeline-dot orange">2</div>
+          <div class="timeline-month">Ago/2026</div>
+          <div class="timeline-desc">SIMEC: enviar dados VAAR e condicionalidades</div>
+        </div>
+        <div class="timeline-point">
+          <div class="timeline-dot green">3</div>
+          <div class="timeline-month">Out/2026</div>
+          <div class="timeline-desc">Publica&ccedil;&atilde;o VAAF e VAAR provis&oacute;rios pelo FNDE</div>
+        </div>
+        <div class="timeline-point">
+          <div class="timeline-dot navy">4</div>
+          <div class="timeline-month">Jan/2027</div>
+          <div class="timeline-desc">Receita otimizada come&ccedil;a a ser creditada mensalmente</div>
+        </div>
+        <div class="timeline-point">
+          <div class="timeline-dot green">5</div>
+          <div class="timeline-month">Dez/2027</div>
+          <div class="timeline-desc">Total do ganho anual realizado na &iacute;ntegra</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN (Dashboard) -->
+  <div class="dashboard">
+    <!-- Gain Hero -->
+    <div class="gain-hero">
+      <div class="gain-label">Ganho Total Estimado</div>
+      <div class="gain-value" id="gainTotal">R$ 0</div>
+      <div class="gain-sub">
+        <div class="gain-sub-item">
+          <div class="val green" id="gainPct">+0%</div>
+          <div class="lbl">Aumento</div>
+        </div>
+        <div class="gain-sub-item">
+          <div class="val cyan" id="gainPerStudent">R$ 0</div>
+          <div class="lbl">Novo R$/aluno</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Before vs After -->
+    <div class="card">
+      <div class="card-title">
+        <span class="icon icon-blue">&#128200;</span>
+        Antes vs Depois
+      </div>
+      <div class="comparison-bars">
+        <div class="comp-bar-group">
+          <label>Receita FUNDEB</label>
+          <div class="comp-bar-wrap">
+            <div class="comp-bar before" id="barBefore" style="width:80%;"></div>
+            <span class="comp-bar-val" id="barBeforeVal">--</span>
+          </div>
+          <div class="comp-bar-wrap" style="margin-top:0.3rem;">
+            <div class="comp-bar after" id="barAfter" style="width:80%;"></div>
+            <span class="comp-bar-val" id="barAfterVal">--</span>
+          </div>
+        </div>
+        <div class="comp-bar-group">
+          <label>R$ por Aluno</label>
+          <div class="comp-bar-wrap">
+            <div class="comp-bar before" id="barPerStudentBefore" style="width:70%;"></div>
+            <span class="comp-bar-val" id="barPSBeforeVal">--</span>
+          </div>
+          <div class="comp-bar-wrap" style="margin-top:0.3rem;">
+            <div class="comp-bar after" id="barPerStudentAfter" style="width:70%;"></div>
+            <span class="comp-bar-val" id="barPSAfterVal">--</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Donut Chart -->
+    <div class="card">
+      <div class="card-title">
+        <span class="icon icon-green">&#128640;</span>
+        Composi&ccedil;&atilde;o da Receita Projetada
+      </div>
+      <div class="donut-wrap">
+        <div class="donut-container">
+          <canvas id="donutCanvas" width="320" height="320"></canvas>
+          <div class="donut-center">
+            <div class="val" id="donutTotal">--</div>
+            <div class="lbl">Total</div>
+          </div>
+        </div>
+        <div class="donut-legend" id="donutLegend"></div>
+      </div>
+    </div>
+
+    <!-- Action Breakdown -->
+    <div class="card">
+      <div class="card-title">
+        <span class="icon icon-orange">&#128176;</span>
+        Detalhe por A&ccedil;&atilde;o
+      </div>
+      <div class="action-breakdown" id="actionBreakdown"></div>
+    </div>
+
+    <!-- Export -->
+    <div style="display:flex; gap:0.8rem;">
+      <button class="btn-export" onclick="exportPrint()" style="flex:1;">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 1v3H1v8h3v3h8v-3h3V4h-3V1H4zm1 1h6v2H5V2zm-3 4h12v5h-2V9H5v2H3V6zm3 4h6v4H5v-4z" fill="currentColor"/></svg>
+        Imprimir / PDF
+      </button>
+      <button class="btn-export" onclick="exportCSV()" style="flex:1; background:var(--green-dark);">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 1h8l4 4v10H2V1zm1 1v12h10V6h-3V2H3zm7 0v3h3l-3-3z" fill="currentColor"/></svg>
+        Exportar CSV
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  Simulador de Impacto FUNDEB &mdash; Instituto i10 &copy; 2026. Dados baseados nos par&acirc;metros VAAF 2025 (base R$ 5.963,41). Valores s&atilde;o estimativas para planejamento.
+</footer>
+
+<script>
+// ==================== DATA ====================
+const CATEGORIES = [
+  { id: 'creche_pub_int', name: 'Creche Publica Integral', factor: 1.55, perStudent: 9242 },
+  { id: 'creche_conv_int', name: 'Creche Conveniada Integral', factor: 1.45, perStudent: 8646 },
+  { id: 'creche_pub_parc', name: 'Creche Publica Parcial', factor: 1.25, perStudent: 7453 },
+  { id: 'creche_conv_parc', name: 'Creche Conveniada Parcial', factor: 1.15, perStudent: 6857 },
+  { id: 'pre_pub_int', name: 'Pre-escola Publica Integral', factor: 1.50, perStudent: 8944 },
+  { id: 'pre_conv_int', name: 'Pre-escola Conveniada Integral', factor: 1.40, perStudent: 8348 },
+  { id: 'pre_pub_parc', name: 'Pre-escola Publica Parcial', factor: 1.15, perStudent: 6857 },
+  { id: 'pre_conv_parc', name: 'Pre-escola Conveniada Parcial', factor: 1.05, perStudent: 6261 },
+  { id: 'ef_iniciais', name: 'EF Anos Iniciais Parcial (BASE)', factor: 1.00, perStudent: 5963 },
+  { id: 'ef_finais', name: 'EF Anos Finais Parcial', factor: 1.10, perStudent: 6559 },
+  { id: 'ef_integral', name: 'EF Integral', factor: 1.50, perStudent: 8944 },
+  { id: 'eja', name: 'EJA', factor: 1.00, perStudent: 5963 },
+  { id: 'ed_esp_creche', name: 'Ed Especial Creche', factor: 1.00, perStudent: 5963 },
+  { id: 'ed_esp_pre', name: 'Ed Especial Pre', factor: 1.00, perStudent: 5963 },
+  { id: 'aee', name: 'AEE (dupla matricula)', factor: 1.40, perStudent: 8348 }
+];
+
+const BASE_VALUE = 5963;
+
+// 25 real SP municipalities with realistic data
+const MUNICIPALITIES = {
+  'Sao Paulo': {
+    pop: 12400000, enrollments: {
+      creche_pub_int:18500, creche_conv_int:12000, creche_pub_parc:8500, creche_conv_parc:5200,
+      pre_pub_int:14200, pre_conv_int:6800, pre_pub_parc:22000, pre_conv_parc:4500,
+      ef_iniciais:185000, ef_finais:142000, ef_integral:28000, eja:42000,
+      ed_esp_creche:1800, ed_esp_pre:2400, aee:8500
+    }, campoStudents: 0, avgStudentsPerConvenio: 80
+  },
+  'Guarulhos': {
+    pop: 1400000, enrollments: {
+      creche_pub_int:2200, creche_conv_int:1400, creche_pub_parc:1100, creche_conv_parc:650,
+      pre_pub_int:1800, pre_conv_int:850, pre_pub_parc:3200, pre_conv_parc:520,
+      ef_iniciais:24000, ef_finais:18500, ef_integral:3200, eja:5800,
+      ed_esp_creche:210, ed_esp_pre:280, aee:950
+    }, campoStudents: 0, avgStudentsPerConvenio: 60
+  },
+  'Campinas': {
+    pop: 1230000, enrollments: {
+      creche_pub_int:1900, creche_conv_int:1200, creche_pub_parc:950, creche_conv_parc:580,
+      pre_pub_int:1600, pre_conv_int:720, pre_pub_parc:2800, pre_conv_parc:450,
+      ef_iniciais:20000, ef_finais:15200, ef_integral:4500, eja:4200,
+      ed_esp_creche:180, ed_esp_pre:240, aee:820
+    }, campoStudents: 320, avgStudentsPerConvenio: 55
+  },
+  'Sao Bernardo do Campo': {
+    pop: 850000, enrollments: {
+      creche_pub_int:1400, creche_conv_int:900, creche_pub_parc:720, creche_conv_parc:420,
+      pre_pub_int:1200, pre_conv_int:540, pre_pub_parc:2100, pre_conv_parc:340,
+      ef_iniciais:14500, ef_finais:11200, ef_integral:2800, eja:3400,
+      ed_esp_creche:140, ed_esp_pre:185, aee:620
+    }, campoStudents: 0, avgStudentsPerConvenio: 50
+  },
+  'Santo Andre': {
+    pop: 730000, enrollments: {
+      creche_pub_int:1100, creche_conv_int:680, creche_pub_parc:560, creche_conv_parc:340,
+      pre_pub_int:920, pre_conv_int:420, pre_pub_parc:1650, pre_conv_parc:270,
+      ef_iniciais:11800, ef_finais:9100, ef_integral:2200, eja:2800,
+      ed_esp_creche:110, ed_esp_pre:150, aee:490
+    }, campoStudents: 0, avgStudentsPerConvenio: 48
+  },
+  'Osasco': {
+    pop: 700000, enrollments: {
+      creche_pub_int:980, creche_conv_int:620, creche_pub_parc:510, creche_conv_parc:310,
+      pre_pub_int:840, pre_conv_int:380, pre_pub_parc:1500, pre_conv_parc:245,
+      ef_iniciais:10800, ef_finais:8300, ef_integral:1800, eja:2600,
+      ed_esp_creche:100, ed_esp_pre:135, aee:440
+    }, campoStudents: 0, avgStudentsPerConvenio: 45
+  },
+  'Sorocaba': {
+    pop: 700000, enrollments: {
+      creche_pub_int:1050, creche_conv_int:660, creche_pub_parc:540, creche_conv_parc:320,
+      pre_pub_int:880, pre_conv_int:400, pre_pub_parc:1580, pre_conv_parc:260,
+      ef_iniciais:11200, ef_finais:8600, ef_integral:2400, eja:2500,
+      ed_esp_creche:105, ed_esp_pre:140, aee:460
+    }, campoStudents: 480, avgStudentsPerConvenio: 50
+  },
+  'Ribeirao Preto': {
+    pop: 720000, enrollments: {
+      creche_pub_int:1080, creche_conv_int:700, creche_pub_parc:550, creche_conv_parc:330,
+      pre_pub_int:900, pre_conv_int:410, pre_pub_parc:1620, pre_conv_parc:265,
+      ef_iniciais:11500, ef_finais:8800, ef_integral:2600, eja:2700,
+      ed_esp_creche:108, ed_esp_pre:145, aee:480
+    }, campoStudents: 350, avgStudentsPerConvenio: 52
+  },
+  'Sao Jose dos Campos': {
+    pop: 740000, enrollments: {
+      creche_pub_int:1150, creche_conv_int:720, creche_pub_parc:580, creche_conv_parc:350,
+      pre_pub_int:950, pre_conv_int:430, pre_pub_parc:1700, pre_conv_parc:280,
+      ef_iniciais:12000, ef_finais:9200, ef_integral:3000, eja:2400,
+      ed_esp_creche:115, ed_esp_pre:155, aee:510
+    }, campoStudents: 280, avgStudentsPerConvenio: 55
+  },
+  'Santos': {
+    pop: 435000, enrollments: {
+      creche_pub_int:680, creche_conv_int:420, creche_pub_parc:350, creche_conv_parc:210,
+      pre_pub_int:570, pre_conv_int:260, pre_pub_parc:1020, pre_conv_parc:165,
+      ef_iniciais:7200, ef_finais:5500, ef_integral:1800, eja:1800,
+      ed_esp_creche:68, ed_esp_pre:90, aee:310
+    }, campoStudents: 0, avgStudentsPerConvenio: 42
+  },
+  'Mogi das Cruzes': {
+    pop: 450000, enrollments: {
+      creche_pub_int:650, creche_conv_int:400, creche_pub_parc:330, creche_conv_parc:200,
+      pre_pub_int:540, pre_conv_int:245, pre_pub_parc:980, pre_conv_parc:160,
+      ef_iniciais:7000, ef_finais:5400, ef_integral:1400, eja:1900,
+      ed_esp_creche:65, ed_esp_pre:86, aee:290
+    }, campoStudents: 520, avgStudentsPerConvenio: 40
+  },
+  'Piracicaba': {
+    pop: 410000, enrollments: {
+      creche_pub_int:600, creche_conv_int:380, creche_pub_parc:310, creche_conv_parc:185,
+      pre_pub_int:500, pre_conv_int:230, pre_pub_parc:900, pre_conv_parc:148,
+      ef_iniciais:6500, ef_finais:5000, ef_integral:1200, eja:1700,
+      ed_esp_creche:60, ed_esp_pre:80, aee:270
+    }, campoStudents: 600, avgStudentsPerConvenio: 38
+  },
+  'Bauru': {
+    pop: 380000, enrollments: {
+      creche_pub_int:550, creche_conv_int:340, creche_pub_parc:280, creche_conv_parc:170,
+      pre_pub_int:460, pre_conv_int:210, pre_pub_parc:830, pre_conv_parc:135,
+      ef_iniciais:6000, ef_finais:4600, ef_integral:1100, eja:1500,
+      ed_esp_creche:55, ed_esp_pre:74, aee:250
+    }, campoStudents: 380, avgStudentsPerConvenio: 36
+  },
+  'Jundiai': {
+    pop: 425000, enrollments: {
+      creche_pub_int:680, creche_conv_int:430, creche_pub_parc:340, creche_conv_parc:210,
+      pre_pub_int:560, pre_conv_int:255, pre_pub_parc:1010, pre_conv_parc:165,
+      ef_iniciais:7100, ef_finais:5450, ef_integral:2000, eja:1600,
+      ed_esp_creche:67, ed_esp_pre:90, aee:300
+    }, campoStudents: 200, avgStudentsPerConvenio: 44
+  },
+  'Franca': {
+    pop: 360000, enrollments: {
+      creche_pub_int:480, creche_conv_int:300, creche_pub_parc:245, creche_conv_parc:150,
+      pre_pub_int:400, pre_conv_int:182, pre_pub_parc:720, pre_conv_parc:118,
+      ef_iniciais:5200, ef_finais:4000, ef_integral:800, eja:1400,
+      ed_esp_creche:48, ed_esp_pre:64, aee:215
+    }, campoStudents: 440, avgStudentsPerConvenio: 32
+  },
+  'Praia Grande': {
+    pop: 340000, enrollments: {
+      creche_pub_int:440, creche_conv_int:270, creche_pub_parc:225, creche_conv_parc:135,
+      pre_pub_int:365, pre_conv_int:166, pre_pub_parc:660, pre_conv_parc:108,
+      ef_iniciais:4800, ef_finais:3700, ef_integral:700, eja:1300,
+      ed_esp_creche:44, ed_esp_pre:58, aee:195
+    }, campoStudents: 0, avgStudentsPerConvenio: 30
+  },
+  'Sao Jose do Rio Preto': {
+    pop: 470000, enrollments: {
+      creche_pub_int:720, creche_conv_int:450, creche_pub_parc:365, creche_conv_parc:220,
+      pre_pub_int:600, pre_conv_int:275, pre_pub_parc:1080, pre_conv_parc:176,
+      ef_iniciais:7600, ef_finais:5850, ef_integral:1600, eja:2100,
+      ed_esp_creche:72, ed_esp_pre:96, aee:325
+    }, campoStudents: 300, avgStudentsPerConvenio: 42
+  },
+  'Taubate': {
+    pop: 320000, enrollments: {
+      creche_pub_int:410, creche_conv_int:255, creche_pub_parc:210, creche_conv_parc:128,
+      pre_pub_int:340, pre_conv_int:155, pre_pub_parc:615, pre_conv_parc:100,
+      ef_iniciais:4500, ef_finais:3450, ef_integral:650, eja:1200,
+      ed_esp_creche:41, ed_esp_pre:55, aee:185
+    }, campoStudents: 180, avgStudentsPerConvenio: 28
+  },
+  'Limeira': {
+    pop: 310000, enrollments: {
+      creche_pub_int:390, creche_conv_int:240, creche_pub_parc:198, creche_conv_parc:120,
+      pre_pub_int:325, pre_conv_int:148, pre_pub_parc:585, pre_conv_parc:96,
+      ef_iniciais:4300, ef_finais:3300, ef_integral:580, eja:1150,
+      ed_esp_creche:39, ed_esp_pre:52, aee:175
+    }, campoStudents: 350, avgStudentsPerConvenio: 26
+  },
+  'Marilia': {
+    pop: 240000, enrollments: {
+      creche_pub_int:290, creche_conv_int:180, creche_pub_parc:148, creche_conv_parc:90,
+      pre_pub_int:242, pre_conv_int:110, pre_pub_parc:436, pre_conv_parc:72,
+      ef_iniciais:3200, ef_finais:2460, ef_integral:420, eja:850,
+      ed_esp_creche:29, ed_esp_pre:39, aee:130
+    }, campoStudents: 280, avgStudentsPerConvenio: 22
+  },
+  'Araraquara': {
+    pop: 240000, enrollments: {
+      creche_pub_int:310, creche_conv_int:195, creche_pub_parc:158, creche_conv_parc:96,
+      pre_pub_int:258, pre_conv_int:118, pre_pub_parc:465, pre_conv_parc:76,
+      ef_iniciais:3400, ef_finais:2600, ef_integral:500, eja:900,
+      ed_esp_creche:31, ed_esp_pre:42, aee:140
+    }, campoStudents: 320, avgStudentsPerConvenio: 24
+  },
+  'Presidente Prudente': {
+    pop: 230000, enrollments: {
+      creche_pub_int:270, creche_conv_int:168, creche_pub_parc:138, creche_conv_parc:84,
+      pre_pub_int:225, pre_conv_int:102, pre_pub_parc:405, pre_conv_parc:66,
+      ef_iniciais:2980, ef_finais:2290, ef_integral:380, eja:800,
+      ed_esp_creche:27, ed_esp_pre:36, aee:122
+    }, campoStudents: 400, avgStudentsPerConvenio: 20
+  },
+  'Itapetininga': {
+    pop: 165000, enrollments: {
+      creche_pub_int:185, creche_conv_int:115, creche_pub_parc:95, creche_conv_parc:58,
+      pre_pub_int:154, pre_conv_int:70, pre_pub_parc:278, pre_conv_parc:46,
+      ef_iniciais:2050, ef_finais:1580, ef_integral:260, eja:580,
+      ed_esp_creche:18, ed_esp_pre:25, aee:84
+    }, campoStudents: 520, avgStudentsPerConvenio: 18
+  },
+  'Registro': {
+    pop: 56000, enrollments: {
+      creche_pub_int:58, creche_conv_int:35, creche_pub_parc:30, creche_conv_parc:18,
+      pre_pub_int:48, pre_conv_int:22, pre_pub_parc:87, pre_conv_parc:14,
+      ef_iniciais:640, ef_finais:492, ef_integral:80, eja:180,
+      ed_esp_creche:6, ed_esp_pre:8, aee:26
+    }, campoStudents: 280, avgStudentsPerConvenio: 12
+  },
+  'Itapeva': {
+    pop: 95000, enrollments: {
+      creche_pub_int:98, creche_conv_int:60, creche_pub_parc:50, creche_conv_parc:30,
+      pre_pub_int:82, pre_conv_int:37, pre_pub_parc:148, pre_conv_parc:24,
+      ef_iniciais:1080, ef_finais:830, ef_integral:135, eja:310,
+      ed_esp_creche:10, ed_esp_pre:13, aee:44
+    }, campoStudents: 380, avgStudentsPerConvenio: 14
+  }
+};
+
+// ==================== STATE ====================
+let currentMuni = null;
+let currentData = null;
+
+// ==================== HELPERS ====================
+function fmt(n) {
+  if (n >= 1e9) return 'R$ ' + (n / 1e9).toFixed(2).replace('.', ',') + ' bi';
+  if (n >= 1e6) return 'R$ ' + (n / 1e6).toFixed(2).replace('.', ',') + ' mi';
+  if (n >= 1e3) return 'R$ ' + (n / 1e3).toFixed(1).replace('.', ',') + ' mil';
+  return 'R$ ' + n.toLocaleString('pt-BR');
+}
+
+function fmtFull(n) {
+  return 'R$ ' + Math.round(n).toLocaleString('pt-BR');
+}
+
+function fmtShort(n) {
+  if (n >= 1e9) return (n / 1e9).toFixed(1).replace('.', ',') + 'bi';
+  if (n >= 1e6) return (n / 1e6).toFixed(1).replace('.', ',') + 'mi';
+  if (n >= 1e3) return (n / 1e3).toFixed(0) + 'mil';
+  return n.toLocaleString('pt-BR');
+}
+
+function fmtNum(n) {
+  return Math.round(n).toLocaleString('pt-BR');
+}
+
+// ==================== INIT ====================
+function init() {
+  const select = document.getElementById('muniSelect');
+  const names = Object.keys(MUNICIPALITIES).sort();
+  names.forEach(name => {
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = name;
+    select.appendChild(opt);
+  });
+  select.addEventListener('change', () => selectMuni(select.value));
+
+  // Bind sliders
+  ['Creche', 'Integral', 'AEE', 'EJA', 'Campo', 'Convenio'].forEach(s => {
+    const slider = document.getElementById('slider' + s);
+    slider.addEventListener('input', () => {
+      document.getElementById('val' + s).textContent = slider.value;
+      recalculate();
+    });
+  });
+
+  // Bind toggles & checkboxes
+  document.getElementById('toggleBNCC').addEventListener('change', recalculate);
+  for (let i = 1; i <= 5; i++) {
+    document.getElementById('vaar' + i).addEventListener('change', recalculate);
+  }
+
+  // Default: first city
+  select.value = 'Campinas';
+  selectMuni('Campinas');
+}
+
+function selectMuni(name) {
+  currentMuni = name;
+  currentData = MUNICIPALITIES[name];
+
+  // Reset sliders
+  ['Creche', 'Integral', 'AEE', 'EJA', 'Campo', 'Convenio'].forEach(s => {
+    const slider = document.getElementById('slider' + s);
+    slider.value = 0;
+    document.getElementById('val' + s).textContent = '0';
+  });
+  document.getElementById('toggleBNCC').checked = false;
+  for (let i = 1; i <= 5; i++) {
+    document.getElementById('vaar' + i).checked = false;
+  }
+
+  // Stats
+  const totalEnroll = Object.values(currentData.enrollments).reduce((a, b) => a + b, 0);
+  const totalRevenue = calcBaseRevenue();
+  document.getElementById('statPop').textContent = fmtNum(currentData.pop);
+  document.getElementById('statEnroll').textContent = fmtNum(totalEnroll);
+  document.getElementById('statRevenue').textContent = fmt(totalRevenue);
+
+  // Table
+  renderEnrollTable();
+  recalculate();
+}
+
+function calcBaseRevenue() {
+  let total = 0;
+  CATEGORIES.forEach(cat => {
+    const n = currentData.enrollments[cat.id] || 0;
+    total += n * cat.perStudent;
+  });
+  return total;
+}
+
+function getTotalEnroll() {
+  return Object.values(currentData.enrollments).reduce((a, b) => a + b, 0);
+}
+
+function renderEnrollTable() {
+  const tbody = document.getElementById('enrollBody');
+  let html = '';
+  let totalEnroll = 0;
+  let totalRevenue = 0;
+
+  CATEGORIES.forEach(cat => {
+    const n = currentData.enrollments[cat.id] || 0;
+    const rev = n * cat.perStudent;
+    totalEnroll += n;
+    totalRevenue += rev;
+    html += `<tr>
+      <td class="cat-name">${cat.name}</td>
+      <td class="num">${fmtNum(n)}</td>
+      <td class="num factor">${cat.factor.toFixed(2)}</td>
+      <td class="num">${fmtFull(cat.perStudent)}</td>
+      <td class="num revenue">${fmt(rev)}</td>
+    </tr>`;
+  });
+
+  html += `<tr class="total-row">
+    <td><strong>TOTAL</strong></td>
+    <td class="num"><strong>${fmtNum(totalEnroll)}</strong></td>
+    <td class="num"></td>
+    <td class="num"></td>
+    <td class="num revenue"><strong>${fmt(totalRevenue)}</strong></td>
+  </tr>`;
+
+  tbody.innerHTML = html;
+}
+
+// ==================== RECALCULATE ====================
+function recalculate() {
+  if (!currentData) return;
+
+  const baseRevenue = calcBaseRevenue();
+  const baseEnroll = getTotalEnroll();
+
+  // Get slider values
+  const nCreche = parseInt(document.getElementById('sliderCreche').value);
+  const nIntegral = parseInt(document.getElementById('sliderIntegral').value);
+  const nAEE = parseInt(document.getElementById('sliderAEE').value);
+  const nEJA = parseInt(document.getElementById('sliderEJA').value);
+  const nCampo = parseInt(document.getElementById('sliderCampo').value);
+  const nConvenio = parseInt(document.getElementById('sliderConvenio').value);
+  const bncc = document.getElementById('toggleBNCC').checked;
+  let vaarCount = 0;
+  for (let i = 1; i <= 5; i++) {
+    if (document.getElementById('vaar' + i).checked) vaarCount++;
+  }
+
+  // --- Calculate each action impact ---
+
+  // 1. New Creche Integral students: each gets R$9,242
+  const gainCreche = nCreche * 9242;
+
+  // 2. Convert Parcial -> Integral EF: difference = 8944 - 5963 (iniciais) or 8944 - 6559 (finais)
+  // Average: assume 60% iniciais, 40% finais
+  const avgGainIntegral = 0.6 * (8944 - 5963) + 0.4 * (8944 - 6559);
+  const gainIntegral = Math.round(nIntegral * avgGainIntegral);
+
+  // 3. AEE double enrollment: each AEE adds R$8,348
+  const gainAEE = nAEE * 8348;
+
+  // 4. EJA new spots: each gets R$5,963
+  const gainEJA = nEJA * 5963;
+
+  // 5. Campo reclassification: +15% on avg students per school (assume ~120 students/school)
+  const studentsPerSchool = 120;
+  // Average revenue per student across all categories
+  const avgRevPerStudent = baseRevenue / baseEnroll;
+  const gainCampo = Math.round(nCampo * studentsPerSchool * avgRevPerStudent * 0.15);
+
+  // 6. Formalize convenios: each new convenio adds ~avgStudentsPerConvenio creche conveniada integral students
+  const convStudents = currentData.avgStudentsPerConvenio || 40;
+  const gainConvenio = nConvenio * convStudents * 8646;
+
+  // 7. VAAR: each conditionality = ~2.5% of base VAAF revenue
+  // BNCC toggle enables checkbox 5 effectively but also we count it separately
+  const vaarPctPerCond = 0.025;
+  const totalVaarRevenue = baseRevenue * vaarPctPerCond * vaarCount;
+
+  // Impact labels
+  updateImpact('impactCreche', gainCreche);
+  updateImpact('impactIntegral', gainIntegral);
+  updateImpact('impactAEE', gainAEE);
+  updateImpact('impactEJA', gainEJA);
+  updateImpact('impactCampo', gainCampo);
+  updateImpact('impactConvenio', gainConvenio);
+
+  if (bncc) {
+    document.getElementById('impactBNCC').textContent = 'BNCC Computacao ativada - componente VAAR desbloqueado';
+    document.getElementById('impactBNCC').classList.remove('zero');
+  } else {
+    document.getElementById('impactBNCC').textContent = 'Desbloqueia componente VAAR Computacao';
+    document.getElementById('impactBNCC').classList.add('zero');
+  }
+
+  updateImpact('impactVAAR', totalVaarRevenue, ' via VAAR (' + vaarCount + '/5 condicionalidades)');
+
+  // Grand totals
+  const totalGain = gainCreche + gainIntegral + gainAEE + gainEJA + gainCampo + gainConvenio + totalVaarRevenue;
+  const newRevenue = baseRevenue + totalGain;
+  const newEnroll = baseEnroll + nCreche + nAEE + nEJA + (nConvenio * convStudents);
+  const pctIncrease = baseRevenue > 0 ? ((totalGain / baseRevenue) * 100) : 0;
+  const newPerStudent = newEnroll > 0 ? (newRevenue / newEnroll) : 0;
+
+  // Update Gain Hero
+  const gainEl = document.getElementById('gainTotal');
+  gainEl.textContent = fmt(Math.round(totalGain));
+  gainEl.classList.remove('pulse');
+  void gainEl.offsetWidth; // force reflow
+  if (totalGain > 0) gainEl.classList.add('pulse');
+
+  document.getElementById('gainPct').textContent = '+' + pctIncrease.toFixed(1) + '%';
+  document.getElementById('gainPerStudent').textContent = fmtFull(Math.round(newPerStudent));
+
+  // Update Before vs After bars
+  const maxRevenue = Math.max(baseRevenue, newRevenue);
+  document.getElementById('barBefore').style.width = (baseRevenue / maxRevenue * 75) + '%';
+  document.getElementById('barAfter').style.width = (newRevenue / maxRevenue * 75) + '%';
+  document.getElementById('barBeforeVal').textContent = fmt(baseRevenue);
+  document.getElementById('barAfterVal').textContent = fmt(Math.round(newRevenue));
+
+  const basePerStudent = baseEnroll > 0 ? baseRevenue / baseEnroll : 0;
+  const maxPS = Math.max(basePerStudent, newPerStudent);
+  document.getElementById('barPerStudentBefore').style.width = (basePerStudent / maxPS * 75) + '%';
+  document.getElementById('barPerStudentAfter').style.width = (newPerStudent / maxPS * 75) + '%';
+  document.getElementById('barPSBeforeVal').textContent = fmtFull(Math.round(basePerStudent));
+  document.getElementById('barPSAfterVal').textContent = fmtFull(Math.round(newPerStudent));
+
+  // Update Donut Chart
+  drawDonut(baseRevenue, gainCreche, gainIntegral, gainAEE, gainEJA, gainCampo, gainConvenio, totalVaarRevenue);
+
+  // Update Action Breakdown
+  renderActionBreakdown([
+    { name: 'Creche Integral (+' + nCreche + ')', val: gainCreche },
+    { name: 'Parcial -> Integral (' + nIntegral + ')', val: gainIntegral },
+    { name: 'AEE dupla matricula (+' + nAEE + ')', val: gainAEE },
+    { name: 'EJA novas vagas (+' + nEJA + ')', val: gainEJA },
+    { name: 'Escolas Campo (' + nCampo + ')', val: gainCampo },
+    { name: 'Convenios (+' + nConvenio + ')', val: gainConvenio },
+    { name: 'VAAR (' + vaarCount + '/5)', val: totalVaarRevenue }
+  ]);
+}
+
+function updateImpact(id, val, suffix) {
+  const el = document.getElementById(id);
+  if (val > 0) {
+    el.textContent = '+' + fmt(Math.round(val)) + (suffix || '');
+    el.classList.remove('zero');
+  } else {
+    el.textContent = '+R$ 0' + (suffix || '');
+    el.classList.add('zero');
+  }
+}
+
+// ==================== DONUT CHART ====================
+const DONUT_COLORS = ['#0A2463', '#00B4D8', '#00E5A0', '#E8A838', '#D4553A', '#7B61FF', '#FF6B9D', '#00C88A'];
+const DONUT_LABELS = ['Receita Base', 'Creche Integral', 'Parcial->Integral', 'AEE', 'EJA', 'Campo', 'Convenios', 'VAAR'];
+
+function drawDonut(base, ...gains) {
+  const canvas = document.getElementById('donutCanvas');
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width;
+  const h = canvas.height;
+  const cx = w / 2;
+  const cy = h / 2;
+  const outerR = Math.min(w, h) / 2 - 10;
+  const innerR = outerR * 0.62;
+
+  ctx.clearRect(0, 0, w, h);
+
+  const totalGain = gains.reduce((a, b) => a + b, 0);
+  const total = base + totalGain;
+
+  if (total === 0) return;
+
+  const slices = [base, ...gains];
+  const colors = DONUT_COLORS;
+  let startAngle = -Math.PI / 2;
+
+  slices.forEach((val, i) => {
+    if (val <= 0) return;
+    const sliceAngle = (val / total) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, outerR, startAngle, startAngle + sliceAngle);
+    ctx.arc(cx, cy, innerR, startAngle + sliceAngle, startAngle, true);
+    ctx.closePath();
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.fill();
+    startAngle += sliceAngle;
+  });
+
+  // Center text
+  document.getElementById('donutTotal').textContent = fmt(Math.round(total));
+
+  // Legend
+  const legendEl = document.getElementById('donutLegend');
+  let legendHTML = '';
+  slices.forEach((val, i) => {
+    if (val <= 0) return;
+    const pct = ((val / total) * 100).toFixed(1);
+    legendHTML += `<div class="legend-item">
+      <span class="legend-dot" style="background:${colors[i % colors.length]}"></span>
+      <span>${DONUT_LABELS[i]} (${pct}%)</span>
+    </div>`;
+  });
+  legendEl.innerHTML = legendHTML;
+}
+
+// ==================== ACTION BREAKDOWN ====================
+function renderActionBreakdown(actions) {
+  const el = document.getElementById('actionBreakdown');
+  let html = '';
+  actions.forEach(a => {
+    const cls = a.val > 0 ? 'positive' : 'zero';
+    html += `<div class="action-row">
+      <span class="action-name">${a.name}</span>
+      <span class="action-val ${cls}">${a.val > 0 ? '+' : ''}${fmt(Math.round(a.val))}</span>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
+// ==================== EXPORT ====================
+function exportPrint() {
+  window.print();
+}
+
+function exportCSV() {
+  if (!currentData) return;
+
+  const baseRevenue = calcBaseRevenue();
+  const baseEnroll = getTotalEnroll();
+
+  const nCreche = parseInt(document.getElementById('sliderCreche').value);
+  const nIntegral = parseInt(document.getElementById('sliderIntegral').value);
+  const nAEE = parseInt(document.getElementById('sliderAEE').value);
+  const nEJA = parseInt(document.getElementById('sliderEJA').value);
+  const nCampo = parseInt(document.getElementById('sliderCampo').value);
+  const nConvenio = parseInt(document.getElementById('sliderConvenio').value);
+  let vaarCount = 0;
+  for (let i = 1; i <= 5; i++) {
+    if (document.getElementById('vaar' + i).checked) vaarCount++;
+  }
+
+  let csv = 'Simulador de Impacto FUNDEB - ' + currentMuni + '\n\n';
+  csv += 'Categoria,Matriculas,Fator VAAF,R$/Aluno,Receita\n';
+  CATEGORIES.forEach(cat => {
+    const n = currentData.enrollments[cat.id] || 0;
+    csv += `"${cat.name}",${n},${cat.factor},${cat.perStudent},${n * cat.perStudent}\n`;
+  });
+
+  csv += '\n\nAcoes de Otimizacao,Quantidade,Ganho Estimado\n';
+  csv += `Creche Integral,${nCreche},${nCreche * 9242}\n`;
+  const avgG = Math.round(0.6 * (8944 - 5963) + 0.4 * (8944 - 6559));
+  csv += `Parcial->Integral,${nIntegral},${nIntegral * avgG}\n`;
+  csv += `AEE dupla matricula,${nAEE},${nAEE * 8348}\n`;
+  csv += `EJA novas vagas,${nEJA},${nEJA * 5963}\n`;
+  const avgRPS = baseRevenue / baseEnroll;
+  csv += `Escolas Campo,${nCampo},${Math.round(nCampo * 120 * avgRPS * 0.15)}\n`;
+  const convS = currentData.avgStudentsPerConvenio || 40;
+  csv += `Convenios,${nConvenio},${nConvenio * convS * 8646}\n`;
+  csv += `VAAR condicionalidades,${vaarCount}/5,${Math.round(baseRevenue * 0.025 * vaarCount)}\n`;
+
+  csv += '\n\nResumo\n';
+  csv += `Receita Base,${Math.round(baseRevenue)}\n`;
+
+  const totalGain = (nCreche * 9242) + (nIntegral * avgG) + (nAEE * 8348) + (nEJA * 5963) +
+    Math.round(nCampo * 120 * avgRPS * 0.15) + (nConvenio * convS * 8646) + Math.round(baseRevenue * 0.025 * vaarCount);
+  csv += `Ganho Total,${totalGain}\n`;
+  csv += `Nova Receita,${Math.round(baseRevenue + totalGain)}\n`;
+  csv += `Aumento %,${((totalGain / baseRevenue) * 100).toFixed(1)}%\n`;
+
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'simulador-fundeb-' + currentMuni.replace(/ /g, '-').toLowerCase() + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ==================== START ====================
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

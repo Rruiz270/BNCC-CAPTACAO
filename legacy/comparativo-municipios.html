@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparativo de Municipios SP - FUNDEB 2026 | Instituto i10</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0A2463;
+  --cyan: #00B4D8;
+  --green: #00E5A0;
+  --green-dark: #00C88A;
+  --red: #D4553A;
+  --orange: #E8A838;
+  --bg: #F4F7FA;
+  --card: #fff;
+  --border: #DDE3EB;
+  --text: #0A2463;
+  --text2: #5A6B80;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ========== TOP BAR ========== */
+.topbar {
+  background: var(--navy);
+  padding: 0 2rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 12px rgba(10,36,99,0.3);
+}
+.topbar-brand {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--cyan);
+  letter-spacing: 1.5px;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.topbar-nav { display: flex; align-items: center; gap: 1.5rem; }
+.topbar-nav a {
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: color 0.2s;
+  letter-spacing: 0.3px;
+}
+.topbar-nav a:hover { color: var(--cyan); }
+.topbar-nav a.active { color: var(--cyan); }
+
+/* ========== HERO ========== */
+.hero {
+  background: linear-gradient(135deg, var(--navy) 0%, #0D2E7A 40%, #11378E 100%);
+  padding: 3rem 2rem 2.5rem;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%; right: -20%;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(0,180,216,0.08) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -30%; left: -10%;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(0,229,160,0.06) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.hero-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+.hero h1 {
+  font-family: 'Source Serif 4', serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.hero h1 span { color: var(--cyan); }
+.hero p {
+  color: rgba(255,255,255,0.7);
+  font-size: 1.05rem;
+  max-width: 640px;
+  margin-bottom: 1.5rem;
+}
+.hero-stats {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.hero-stat {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  min-width: 180px;
+}
+.hero-stat .label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 0.25rem;
+}
+.hero-stat .value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--cyan);
+}
+.hero-stat .value.green { color: var(--green); }
+
+/* ========== MAIN CONTENT ========== */
+.main { max-width: 1360px; margin: 0 auto; padding: 2rem; }
+
+/* ========== SELECTOR PANEL ========== */
+.selector-panel {
+  background: var(--card);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  padding: 1.75rem 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(10,36,99,0.04);
+}
+.selector-panel h2 {
+  font-family: 'Source Serif 4', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+.selector-panel .subtitle {
+  color: var(--text2);
+  font-size: 0.9rem;
+  margin-bottom: 1.25rem;
+}
+.selector-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+.selector-group {
+  flex: 1;
+  min-width: 200px;
+}
+.selector-group label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text2);
+  margin-bottom: 0.4rem;
+}
+.selector-group select {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.92rem;
+  color: var(--text);
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%235A6B80'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+.selector-group select:focus {
+  outline: none;
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px rgba(0,180,216,0.12);
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.5rem;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--cyan), #0096B7);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0,180,216,0.3);
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0,180,216,0.4);
+}
+.btn-secondary {
+  background: var(--navy);
+  color: #fff;
+}
+.btn-secondary:hover {
+  background: #0D2E7A;
+  transform: translateY(-1px);
+}
+.btn-outline {
+  background: transparent;
+  color: var(--text);
+  border: 1.5px solid var(--border);
+}
+.btn-outline:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+.btn-group {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ========== SELECTED CHIPS ========== */
+.chips-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  min-height: 36px;
+  align-items: center;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  background: rgba(0,180,216,0.08);
+  border: 1px solid rgba(0,180,216,0.2);
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--navy);
+}
+.chip .color-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.chip .remove {
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--text2);
+  margin-left: 0.2rem;
+  line-height: 1;
+}
+.chip .remove:hover { color: var(--red); }
+.chips-hint {
+  font-size: 0.8rem;
+  color: var(--text2);
+  font-style: italic;
+}
+
+/* ========== COMPARISON TABLE ========== */
+.comparison-section {
+  margin-bottom: 2rem;
+}
+.comparison-section > h2 {
+  font-family: 'Source Serif 4', serif;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+.table-wrapper {
+  background: var(--card);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(10,36,99,0.04);
+}
+.table-scroll { overflow-x: auto; }
+.comp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+.comp-table thead th {
+  background: var(--navy);
+  color: #fff;
+  padding: 0.85rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.3px;
+  position: sticky;
+  top: 0;
+  white-space: nowrap;
+}
+.comp-table thead th:first-child {
+  border-radius: 0;
+  min-width: 200px;
+}
+.comp-table thead th .city-color {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  margin-right: 0.4rem;
+  vertical-align: middle;
+}
+.comp-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.comp-table tbody tr:hover { background: rgba(0,180,216,0.03); }
+.comp-table tbody tr:last-child { border-bottom: none; }
+.comp-table tbody td {
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+}
+.comp-table tbody td:first-child {
+  font-weight: 600;
+  color: var(--text2);
+  background: #FAFBFC;
+  border-right: 1px solid var(--border);
+  font-size: 0.82rem;
+}
+.comp-table .metric-icon {
+  display: inline-block;
+  margin-right: 0.3rem;
+  font-size: 0.95rem;
+}
+.comp-table .best-val {
+  color: var(--green-dark);
+  font-weight: 700;
+}
+.comp-table .worst-val {
+  color: var(--red);
+  font-weight: 600;
+}
+.comp-table .badge {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.badge-green { background: rgba(0,229,160,0.12); color: var(--green-dark); }
+.badge-red { background: rgba(212,85,58,0.1); color: var(--red); }
+.badge-orange { background: rgba(232,168,56,0.12); color: #B07D1A; }
+.badge-cyan { background: rgba(0,180,216,0.1); color: #0096B7; }
+.comp-table .bar-cell {
+  min-width: 140px;
+}
+.mini-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.mini-bar {
+  flex: 1;
+  height: 8px;
+  background: #EDF0F4;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.mini-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.6s cubic-bezier(0.22,1,0.36,1);
+}
+.mini-bar-val {
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  min-width: 65px;
+  text-align: right;
+}
+
+/* ========== CHARTS ========== */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.chart-card {
+  background: var(--card);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(10,36,99,0.04);
+}
+.chart-card.full-width {
+  grid-column: 1 / -1;
+}
+.chart-card h3 {
+  font-family: 'Source Serif 4', serif;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+.chart-card .chart-subtitle {
+  color: var(--text2);
+  font-size: 0.8rem;
+  margin-bottom: 1.25rem;
+}
+
+/* CSS Bar Charts */
+.css-bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.bar-label {
+  min-width: 120px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bar-track {
+  flex: 1;
+  height: 28px;
+  background: #EDF0F4;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.8s cubic-bezier(0.22,1,0.36,1);
+  display: flex;
+  align-items: center;
+  padding-left: 0.6rem;
+  min-width: fit-content;
+}
+.bar-fill span {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+.bar-amount {
+  min-width: 90px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* Radar / Category Comparison */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.6rem;
+}
+.cat-cell {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.6rem;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.cat-cell .cat-name {
+  color: var(--text2);
+  margin-bottom: 0.35rem;
+  line-height: 1.3;
+  min-height: 2.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cat-dots {
+  display: flex;
+  gap: 3px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.cat-dot {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+}
+.cat-dot.active { opacity: 1; }
+.cat-dot.inactive {
+  background: #E0E5EC !important;
+  opacity: 0.5;
+}
+
+/* ========== EMPTY STATE ========== */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text2);
+}
+.empty-state .icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.4;
+}
+.empty-state h3 {
+  font-family: 'Source Serif 4', serif;
+  font-size: 1.3rem;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+.empty-state p {
+  font-size: 0.92rem;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* ========== FOOTER ========== */
+.page-footer {
+  background: var(--navy);
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+  padding: 2rem;
+  font-size: 0.8rem;
+  margin-top: 2rem;
+}
+.page-footer a { color: var(--cyan); text-decoration: none; }
+
+/* ========== PRINT ========== */
+@media print {
+  .topbar, .selector-panel, .btn-group, .page-footer { display: none !important; }
+  .hero { padding: 1.5rem; }
+  .main { padding: 0.5rem; }
+  .chart-card, .table-wrapper { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
+  body { background: #fff; }
+  .comp-table thead th { background: #0A2463 !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 960px) {
+  .charts-grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 1.6rem; }
+  .hero-stats { gap: 1rem; }
+}
+@media (max-width: 680px) {
+  .topbar { padding: 0 1rem; }
+  .topbar-nav { gap: 0.75rem; }
+  .topbar-nav a { font-size: 0.78rem; }
+  .hero { padding: 2rem 1rem 1.5rem; }
+  .main { padding: 1rem; }
+  .selector-panel { padding: 1.25rem; }
+  .selector-row { flex-direction: column; }
+  .selector-group { min-width: 100%; }
+  .bar-label { min-width: 80px; font-size: 0.75rem; }
+  .category-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-in {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+/* Nse indicator */
+.nse-bar {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+}
+.nse-segment {
+  width: 8px;
+  border-radius: 2px;
+  transition: height 0.3s;
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <a href="playbook.html" class="topbar-brand">INSTITUTO i10</a>
+  <nav class="topbar-nav">
+    <a href="playbook.html">Voltar ao Playbook</a>
+    <a href="#" class="active">Comparativo</a>
+    <a href="#">Metodologia</a>
+    <a href="#">Dados Abertos</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <h1>Comparativo de Municipios <span>FUNDEB 2026</span></h1>
+    <p>Selecione de 2 a 4 municipios paulistas para comparar indicadores de receita, matriculas, complementacao e eficiencia na captacao de recursos do FUNDEB.</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="label">Municipios Disponiveis</div>
+        <div class="value" id="heroTotal">25</div>
+      </div>
+      <div class="hero-stat">
+        <div class="label">Total FUNDEB SP</div>
+        <div class="value green">R$ 28,4 bi</div>
+      </div>
+      <div class="hero-stat">
+        <div class="label">Matriculas Rede Municipal</div>
+        <div class="value">3,2 M</div>
+      </div>
+      <div class="hero-stat">
+        <div class="label">Ano Referencia</div>
+        <div class="value">2026</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- SELECTOR -->
+  <section class="selector-panel">
+    <h2>Selecione os Municipios</h2>
+    <p class="subtitle">Escolha de 2 a 4 municipios para gerar a comparacao lado a lado.</p>
+    <div class="selector-row">
+      <div class="selector-group">
+        <label>Adicionar Municipio</label>
+        <select id="citySelect">
+          <option value="">-- Selecione um municipio --</option>
+        </select>
+      </div>
+      <div class="btn-group" style="margin-bottom: 2px;">
+        <button class="btn btn-primary" onclick="addCity()">+ Adicionar</button>
+        <button class="btn btn-outline" onclick="clearAll()">Limpar Tudo</button>
+        <button class="btn btn-secondary" onclick="window.print()">Exportar PDF</button>
+      </div>
+    </div>
+    <div class="chips-row" id="chipsRow">
+      <span class="chips-hint">Nenhum municipio selecionado. Adicione pelo menos 2 para comparar.</span>
+    </div>
+  </section>
+
+  <!-- CONTENT AREA -->
+  <div id="contentArea">
+    <div class="empty-state">
+      <div class="icon">&#9878;</div>
+      <h3>Selecione municipios para iniciar</h3>
+      <p>Adicione de 2 a 4 municipios usando o painel acima para ver a comparacao detalhada de indicadores FUNDEB.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="page-footer">
+  Instituto i10 &mdash; Comparativo FUNDEB SP 2026 &mdash; Dados estimados com base em fontes oficiais (FNDE, IBGE, Censo Escolar 2024).<br>
+  <a href="playbook.html">Voltar ao Playbook</a>
+</footer>
+
+<script>
+// ============================================================
+// DATA: 25 SP municipalities with realistic FUNDEB data
+// ============================================================
+const CITY_COLORS = ['#00B4D8', '#00E5A0', '#E8A838', '#D4553A', '#8B5CF6'];
+
+const municipios = [
+  {
+    nome: "Sao Paulo",
+    populacao: 11451999,
+    receitaFundeb: 11200000000,
+    matriculas: 982000,
+    categoriasAtivas: 14,
+    ganhoPerda: "ganho",
+    complementoVAAT: true,
+    percentOrcamento: 28.5,
+    escolas: 3500,
+    professores: 68000,
+    nse: 4,
+    categorias: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,0]
+  },
+  {
+    nome: "Campinas",
+    populacao: 1223237,
+    receitaFundeb: 1240000000,
+    matriculas: 98500,
+    categoriasAtivas: 12,
+    ganhoPerda: "ganho",
+    complementoVAAT: false,
+    percentOrcamento: 24.1,
+    escolas: 420,
+    professores: 7800,
+    nse: 5,
+    categorias: [1,1,1,1,1,1,1,1,1,1,1,1,0,0,0]
+  },
+  {
+    nome: "Guarulhos",
+    populacao: 1392121,
+    receitaFundeb: 1180000000,
+    matriculas: 118000,
+    categoriasAtivas: 13,
+    ganhoPerda: "ganho",
+    complementoVAAT: true,
+    percentOrcamento: 31.2,
+    escolas: 380,
+    professores: 8200,
+    nse: 3,
+    categorias: [1,1,1,1,1,1,1,1,1,1,1,1,1,0,0]
+  },
+  {
+    nome: "Santos",
+    populacao: 433656,
+    receitaFundeb: 520000000,
+    matriculas: 38200,
+    categoriasAtivas: 11,
+    ganhoPerda: "perda",
+    complementoVAAT: false,
+    percentOrcamento: 19.8,
+    escolas: 148,
+    professores: 3200,
+    nse: 6,
+    categorias: [1,1,1,1,1,1,1,1,1,0,1,0,0,0,0]
+  },
+  {
+    nome: "Sao Bernardo do Campo",
+    populacao: 844483,
+    receitaFundeb: 890000000,
+    matriculas: 75600,
+    categoriasAtivas: 12,
+    ganhoPerda: "ganho",
+    complementoVAAT: false,
+    percentOrcamento: 25.7,
+    escolas: 260,
+    professores: 5400,
+    nse: 5,
+    categorias: [1,1,1,1,1,1,1,1,1,1,1,1,0,0,0]
+  },
+  {
+    nome: "Osasco",
+    populacao: 699944,
+    receitaFundeb: 710000000,
+    matriculas: 65800,
+    categoriasAtivas: 11,
+    ganhoPerda: "ganho",
+    complementoVAAT: true,
+    percentOrcamento: 29.3,
+    escolas: 205,
+    professores: 4500,
+    nse: 4,
+    categorias: [1,1,1,1,1,1,1,0,1,1,1,0,0,0,0]
+  },
+  {
+    nome: "Ribeirao Preto",
+    populacao: 711825,
+    receitaFundeb: 680000000,
+    matriculas: 56200,
+    categoriasAtivas: 12,
+    ganhoPerda: "ganho",
+    complementoVAAT: false,
+    percentOrcamento: 22.8,
+    escolas: 218,
+    professores: 4100,
+    nse: 5,
+    categorias: [1,1,1,1,1,1,1,1,1,1,0,1,0,0,0]
+  },
+  {
+    nome: "Sorocaba",
+    populacao: 695328,
+    receitaFundeb: 650000000,
+    matriculas: 58900,
+    categoriasAtivas: 11,
+    ganhoPerda: "perda",
+    complementoVAAT: false,
+    percentOrcamento: 23.4,
+    escolas: 195,
+    professores: 3900,
+    nse: 5,
+    categorias: [1,1,1,1,1,1,1,1,1,0,1,0,0,0,0]
+  },
+  {
+    nome: "Sao Jose dos Campos",
+    populacao: 737310,
+    receitaFundeb: 740000000,
+    matriculas: 61500,
+    categoriasAtivas: 13,
+    ganhoPerda: "ganho",
+    complementoVAAT: false,
+    percentOrcamento: 22.1,
+    escolas: 230,
+    professores: 4400,
+    nse: 5,
+    categorias: [1,1,1,1,1,1,1,1,1,1,1,1,1,0,0]
+  },
+  {
+    nome: "Jundiai",
+    populacao: 423006,
+    receitaFundeb: 480000000,
+    matriculas: 35800,
+    categoriasAtivas: 10,
+    ganhoPerda: "perda",
+    complementoVAAT: false,
+    percentOrcamento: 18.5,
+    escolas: 132,
+    professores: 2800,
+    nse: 6,
+    categorias: [1,1,1,1,1,1,1,1,0,0,1,0,0,0,0]
+  },
+  {
+    nome: "Piracicaba",
+    populacao: 410275,
+    receitaFundeb: 420000000,
+    matriculas: 34200,
+    categoriasAtivas: 11,
+    ganhoPerda: "ganho",
+    complementoVAAT: false,
+    percentOrcamento: 24.6,
+    escolas: 128,
+    professores: 2600,
+    nse: 5,
+    categorias: [1,1,1,1,1,1,1,0,1,1,1,0,0,0,0]
+  },
+  {
+    nome: "Bauru",
+    populacao: 381706,
+    receitaFundeb: 380000000,
+    matriculas: 31800,
+    categoriasAtivas: 10,
+    ganhoPerda: "ganho",
+    complementoVAAT: false,
+    percentOrcamento: 25.2,
+    escolas: 115,
+    professores: 2400,
+    nse: 5,
+    categorias: [1,1,1,1,1,1,1,0,1,0,1,0,0,0,0]
+  },
+  {
+    nome: "Limeira",
+    populacao: 308482,
+    receitaFundeb: 290000000,
+    matriculas: 27100,
+    categoriasAtivas: 10,
+    ganhoPerda: "ganho",
+    complementoVAAT: true,
+    percentOrcamento: 27.8,
+    escolas: 98,
+    professores: 2000,
+    nse: 4,
+    categorias: [1,1,1,1,1,1,1,1,0,0,1,0,0,0,0]
+  },
+  {
+    nome: "Franca",
+    populacao: 358539,
+    receitaFundeb: 340000000,
+    matriculas: 30100,
+    categoriasAtivas: 10,
+    ganhoPerda: "ganho",
+    complementoVAAT: true,
+    percentOrcamento: 28.9,
+    escolas: 105,
+    professores: 2200,
+    nse: 4,
+    categorias: [1,1,1,1,1,1,0,1,1,0,1,0,0,0,0]
+  },
+  {
+    nome: "Marilia",
+    populacao: 240590,
+    receitaFundeb: 230000000,
+    matriculas: 21500,
+    categoriasAtivas: 9,
+    ganhoPerda: "ganho",
+    complementoVAAT: true,
+    percentOrcamento: 30.1,
+    escolas: 78,
+    professores: 1600,
+    nse: 4,
+    categorias: [1,1,1,1,1,1,0,1,1,0,0,0,0,0,0]
+  },
+  {
+    nome: "Presidente Prudente",
+    populacao: 230371,
+    receitaFundeb: 215000000,
+    matriculas: 20200,
+    categoriasAtivas: 9,
+    ganhoPerda: "ganho",
+    complementoVAAT: true,
+    percentOrcamento: 31.4,
+    escolas: 72,
+    professores: 1500,
+    nse: 4,
+    categorias: [1,1,1,1,1,0,1,1,1,0,0,0,0,0,0]
+  },
+  {
+    nome: "Araraquara",
+    populacao: 240542,
+    receitaFundeb: 245000000,
+    matriculas: 21800,
+    categoriasAtivas: 11,
+    ganhoPerda: "ganho",
+    complementoVAAT: false,
+    percentOrcamento: 25.6,
+    escolas: 82,
+    professores: 1700,
+    nse: 5,
+    categorias: [1,1,1,1,1,1,1,0,1,1,1,0,0,0,0]
+  },
+  {
+    nome: "Sao Carlos",
+    populacao: 254484,
+    receitaFundeb: 260000000,
+    matriculas: 22400,
+    categoriasAtivas: 10,
+    ganhoPerda: "perda",
+    complementoVAAT: false,
+    percentOrcamento: 21.3,
+    escolas: 85,
+    professores: 1750,
+    nse: 5,
+    categorias: [1,1,1,1,1,1,0,1,0,0,1,1,0,0,0]
+  },
+  {
+    nome: "Mogi das Cruzes",
+    populacao: 450785,
+    receitaFundeb: 430000000,
+    matriculas: 39800,
+    categoriasAtivas: 12,
+    ganhoPerda: "ganho",
+    complementoVAAT: true,
+    percentOrcamento: 29.7,
+    escolas: 145,
+    professores: 2900,
+    nse: 4,
+    categorias: [1,1,1,1,1,1,1,1,1,0,1,1,0,0,0]
+  },
+  {
+    nome: "Diadema",
+    populacao: 426757,
+    receitaFundeb: 440000000,
+    matriculas: 41200,
+    categoriasAtivas: 11,
+    ganhoPerda: "ganho",
+    complementoVAAT: true,
+    percentOrcamento: 32.5,
+    escolas: 138,
+    professores: 2850,
+    nse: 3,
+    categorias: [1,1,1,1,1,1,1,0,1,1,0,0,1,0,0]
+  },
+  {
+    nome: "Carapicuiba",
+    populacao: 400927,
+    receitaFundeb: 380000000,
+    matriculas: 38500,
+    categoriasAtivas: 10,
+    ganhoPerda: "ganho",
+    complementoVAAT: true,
+    percentOrcamento: 33.8,
+    escolas: 125,
+    professores: 2600,
+    nse: 3,
+    categorias: [1,1,1,1,1,1,0,1,1,0,1,0,0,0,0]
+  },
+  {
+    nome: "Itaquaquecetuba",
+    populacao: 382145,
+    receitaFundeb: 340000000,
+    matriculas: 37200,
+    categoriasAtivas: 10,
+    ganhoPerda: "ganho",
+    complementoVAAT: true,
+    percentOrcamento: 35.1,
+    escolas: 112,
+    professores: 2350,
+    nse: 3,
+    categorias: [1,1,1,1,1,1,0,1,0,1,1,0,0,0,0]
+  },
+  {
+    nome: "Suzano",
+    populacao: 300559,
+    receitaFundeb: 285000000,
+    matriculas: 29800,
+    categoriasAtivas: 10,
+    ganhoPerda: "ganho",
+    complementoVAAT: true,
+    percentOrcamento: 33.2,
+    escolas: 95,
+    professores: 2050,
+    nse: 3,
+    categorias: [1,1,1,1,1,0,1,1,0,1,1,0,0,0,0]
+  },
+  {
+    nome: "Taboao da Serra",
+    populacao: 289664,
+    receitaFundeb: 275000000,
+    matriculas: 27500,
+    categoriasAtivas: 10,
+    ganhoPerda: "ganho",
+    complementoVAAT: true,
+    percentOrcamento: 31.9,
+    escolas: 88,
+    professores: 1900,
+    nse: 3,
+    categorias: [1,1,1,1,1,1,0,0,1,1,1,0,0,0,0]
+  },
+  {
+    nome: "Embu das Artes",
+    populacao: 278510,
+    receitaFundeb: 260000000,
+    matriculas: 28900,
+    categoriasAtivas: 9,
+    ganhoPerda: "ganho",
+    complementoVAAT: true,
+    percentOrcamento: 34.6,
+    escolas: 82,
+    professores: 1800,
+    nse: 3,
+    categorias: [1,1,1,1,1,1,0,0,1,0,1,0,0,0,0]
+  }
+];
+
+const CATEGORY_NAMES = [
+  "Creche Integral",
+  "Creche Parcial",
+  "Pre-escola Integral",
+  "Pre-escola Parcial",
+  "EF Anos Iniciais",
+  "EF Anos Finais",
+  "EF Integral",
+  "EJA",
+  "Ed. Especial",
+  "Ed. Indigena/Quilombola",
+  "Conv. Creche",
+  "Conv. Pre-escola",
+  "Ed. Profissional",
+  "Ed. Campo",
+  "Outras"
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let selectedCities = [];
+
+// ============================================================
+// INIT
+// ============================================================
+function init() {
+  const select = document.getElementById('citySelect');
+  municipios.sort((a, b) => a.nome.localeCompare(b.nome));
+  municipios.forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m.nome;
+    opt.textContent = m.nome;
+    select.appendChild(opt);
+  });
+}
+
+// ============================================================
+// ADD / REMOVE CITIES
+// ============================================================
+function addCity() {
+  const select = document.getElementById('citySelect');
+  const val = select.value;
+  if (!val) return;
+  if (selectedCities.includes(val)) return;
+  if (selectedCities.length >= 4) {
+    alert('Maximo de 4 municipios. Remova um antes de adicionar outro.');
+    return;
+  }
+  selectedCities.push(val);
+  select.value = '';
+  renderChips();
+  renderComparison();
+}
+
+function removeCity(name) {
+  selectedCities = selectedCities.filter(c => c !== name);
+  renderChips();
+  renderComparison();
+}
+
+function clearAll() {
+  selectedCities = [];
+  renderChips();
+  renderComparison();
+}
+
+// ============================================================
+// CHIPS
+// ============================================================
+function renderChips() {
+  const row = document.getElementById('chipsRow');
+  if (selectedCities.length === 0) {
+    row.innerHTML = '<span class="chips-hint">Nenhum municipio selecionado. Adicione pelo menos 2 para comparar.</span>';
+    return;
+  }
+  row.innerHTML = selectedCities.map((c, i) => {
+    const color = CITY_COLORS[i % CITY_COLORS.length];
+    return `<span class="chip">
+      <span class="color-dot" style="background:${color}"></span>
+      ${c}
+      <span class="remove" onclick="removeCity('${c}')">&times;</span>
+    </span>`;
+  }).join('');
+}
+
+// ============================================================
+// FORMAT HELPERS
+// ============================================================
+function fmtCurrency(v) {
+  if (v >= 1e9) return 'R$ ' + (v / 1e9).toFixed(1).replace('.', ',') + ' bi';
+  if (v >= 1e6) return 'R$ ' + (v / 1e6).toFixed(0) + ' mi';
+  return 'R$ ' + v.toLocaleString('pt-BR');
+}
+
+function fmtNumber(v) {
+  return v.toLocaleString('pt-BR');
+}
+
+function fmtCurrencyFull(v) {
+  if (v >= 1e9) return 'R$ ' + (v / 1e9).toFixed(2).replace('.', ',') + ' bi';
+  if (v >= 1e6) return 'R$ ' + (v / 1e6).toFixed(1).replace('.', ',') + ' mi';
+  return 'R$ ' + v.toLocaleString('pt-BR');
+}
+
+// ============================================================
+// RENDER COMPARISON
+// ============================================================
+function renderComparison() {
+  const area = document.getElementById('contentArea');
+
+  if (selectedCities.length < 2) {
+    const hint = selectedCities.length === 1 ? 'Adicione mais 1 municipio para iniciar a comparacao.' : 'Adicione pelo menos 2 municipios usando o painel acima para ver a comparacao detalhada de indicadores FUNDEB.';
+    area.innerHTML = `<div class="empty-state">
+      <div class="icon">&#9878;</div>
+      <h3>Selecione municipios para iniciar</h3>
+      <p>${hint}</p>
+    </div>`;
+    return;
+  }
+
+  const cities = selectedCities.map(name => municipios.find(m => m.nome === name)).filter(Boolean);
+
+  // Compute derived metrics
+  cities.forEach(c => {
+    c.receitaPorAluno = Math.round(c.receitaFundeb / c.matriculas);
+    c.alunosPorEscola = Math.round(c.matriculas / c.escolas);
+    c.alunosPorProfessor = (c.matriculas / c.professores).toFixed(1);
+  });
+
+  // Best/worst per metric (higher is better for some, lower for others)
+  const metrics = getMetricsList();
+
+  let html = '';
+
+  // TABLE
+  html += renderTable(cities, metrics);
+
+  // CHARTS
+  html += '<div class="charts-grid">';
+  html += renderRevenueChart(cities);
+  html += renderEnrollmentChart(cities);
+  html += renderCategoryComparison(cities);
+  html += renderEfficiencyChart(cities);
+  html += '</div>';
+
+  area.innerHTML = html;
+
+  // Animate bars after insert
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.bar-fill[data-w]').forEach(el => {
+      el.style.width = el.dataset.w + '%';
+    });
+    document.querySelectorAll('.mini-bar-fill[data-w]').forEach(el => {
+      el.style.width = el.dataset.w + '%';
+    });
+  });
+}
+
+function getMetricsList() {
+  return [
+    { key: 'populacao', label: 'Populacao Estimada', icon: '&#128101;', format: fmtNumber, higher: true },
+    { key: 'receitaFundeb', label: 'Receita FUNDEB Total', icon: '&#128176;', format: fmtCurrencyFull, higher: true },
+    { key: 'matriculas', label: 'Matriculas Rede Municipal', icon: '&#127891;', format: fmtNumber, higher: true },
+    { key: 'receitaPorAluno', label: 'Receita por Aluno', icon: '&#128200;', format: v => 'R$ ' + fmtNumber(v), higher: true },
+    { key: 'categoriasAtivas', label: 'Categorias Ativas (de 15)', icon: '&#128203;', format: v => v + ' / 15', higher: true },
+    { key: 'ganhoPerda', label: 'Ganho / Perda', icon: '&#128202;', format: v => v, higher: null, badge: true },
+    { key: 'complementoVAAT', label: 'Complemento VAAT', icon: '&#9989;', format: v => v, higher: null, badge: true },
+    { key: 'percentOrcamento', label: '% FUNDEB no Orcamento', icon: '&#128200;', format: v => v.toFixed(1) + '%', higher: true },
+    { key: 'escolas', label: 'Numero de Escolas', icon: '&#127979;', format: fmtNumber, higher: true },
+    { key: 'professores', label: 'Professores', icon: '&#128104;&#8205;&#127979;', format: fmtNumber, higher: true },
+    { key: 'nse', label: 'NSE (Nivel Socioeconomico)', icon: '&#128202;', format: v => 'Nivel ' + v, higher: true },
+    { key: 'alunosPorProfessor', label: 'Alunos por Professor', icon: '&#128101;', format: v => v, higher: false },
+    { key: 'alunosPorEscola', label: 'Alunos por Escola', icon: '&#127979;', format: fmtNumber, higher: null },
+  ];
+}
+
+// ============================================================
+// TABLE RENDER
+// ============================================================
+function renderTable(cities, metrics) {
+  let html = '<section class="comparison-section animate-in">';
+  html += '<h2>Tabela Comparativa Detalhada</h2>';
+  html += '<div class="table-wrapper"><div class="table-scroll"><table class="comp-table">';
+
+  // THEAD
+  html += '<thead><tr><th>Indicador</th>';
+  cities.forEach((c, i) => {
+    const color = CITY_COLORS[i % CITY_COLORS.length];
+    html += `<th><span class="city-color" style="background:${color}"></span>${c.nome}</th>`;
+  });
+  html += '</tr></thead>';
+
+  // TBODY
+  html += '<tbody>';
+  metrics.forEach(m => {
+    html += '<tr>';
+    html += `<td><span class="metric-icon">${m.icon}</span> ${m.label}</td>`;
+
+    if (m.badge) {
+      cities.forEach(c => {
+        const val = c[m.key];
+        if (m.key === 'ganhoPerda') {
+          const cls = val === 'ganho' ? 'badge-green' : 'badge-red';
+          const txt = val === 'ganho' ? 'Ganho' : 'Perda';
+          html += `<td><span class="badge ${cls}">${txt}</span></td>`;
+        } else if (m.key === 'complementoVAAT') {
+          const cls = val ? 'badge-green' : 'badge-orange';
+          const txt = val ? 'Sim' : 'Nao';
+          html += `<td><span class="badge ${cls}">${txt}</span></td>`;
+        }
+      });
+    } else {
+      // Find best/worst
+      const vals = cities.map(c => {
+        const v = c[m.key];
+        return typeof v === 'string' ? parseFloat(v) : v;
+      });
+      const maxV = Math.max(...vals);
+      const minV = Math.min(...vals);
+
+      cities.forEach((c, ci) => {
+        const raw = c[m.key];
+        const numVal = typeof raw === 'string' ? parseFloat(raw) : raw;
+        const formatted = m.format(raw);
+        let cls = '';
+        if (m.higher === true && numVal === maxV && maxV !== minV) cls = 'best-val';
+        if (m.higher === true && numVal === minV && maxV !== minV) cls = 'worst-val';
+        if (m.higher === false && numVal === minV && maxV !== minV) cls = 'best-val';
+        if (m.higher === false && numVal === maxV && maxV !== minV) cls = 'worst-val';
+
+        // Mini bar
+        const pct = maxV > 0 ? Math.round((numVal / maxV) * 100) : 0;
+        const color = CITY_COLORS[ci % CITY_COLORS.length];
+
+        html += `<td class="bar-cell"><div class="mini-bar-wrap">
+          <span class="mini-bar-val ${cls}">${formatted}</span>
+          <div class="mini-bar"><div class="mini-bar-fill" style="width:0%;background:${color}" data-w="${pct}"></div></div>
+        </div></td>`;
+      });
+    }
+    html += '</tr>';
+  });
+  html += '</tbody></table></div></div></section>';
+  return html;
+}
+
+// ============================================================
+// REVENUE BAR CHART
+// ============================================================
+function renderRevenueChart(cities) {
+  const maxVal = Math.max(...cities.map(c => c.receitaFundeb));
+  let bars = '';
+  cities.forEach((c, i) => {
+    const pct = Math.round((c.receitaFundeb / maxVal) * 100);
+    const color = CITY_COLORS[i % CITY_COLORS.length];
+    bars += `<div class="bar-row">
+      <span class="bar-label">${c.nome}</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:0%;background:${color}" data-w="${pct}">
+          <span>${fmtCurrency(c.receitaFundeb)}</span>
+        </div>
+      </div>
+    </div>`;
+  });
+  return `<div class="chart-card animate-in">
+    <h3>Receita FUNDEB Total</h3>
+    <p class="chart-subtitle">Comparativo de receita estimada para 2026</p>
+    <div class="css-bar-chart">${bars}</div>
+  </div>`;
+}
+
+// ============================================================
+// ENROLLMENT BAR CHART
+// ============================================================
+function renderEnrollmentChart(cities) {
+  const maxVal = Math.max(...cities.map(c => c.matriculas));
+  let bars = '';
+  cities.forEach((c, i) => {
+    const pct = Math.round((c.matriculas / maxVal) * 100);
+    const color = CITY_COLORS[i % CITY_COLORS.length];
+    bars += `<div class="bar-row">
+      <span class="bar-label">${c.nome}</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:0%;background:${color}" data-w="${pct}">
+          <span>${fmtNumber(c.matriculas)}</span>
+        </div>
+      </div>
+    </div>`;
+  });
+  return `<div class="chart-card animate-in">
+    <h3>Matriculas Rede Municipal</h3>
+    <p class="chart-subtitle">Total de matriculas ponderadas FUNDEB</p>
+    <div class="css-bar-chart">${bars}</div>
+  </div>`;
+}
+
+// ============================================================
+// CATEGORY COMPARISON
+// ============================================================
+function renderCategoryComparison(cities) {
+  let grid = '';
+  CATEGORY_NAMES.forEach((catName, ci) => {
+    let dots = '';
+    cities.forEach((c, i) => {
+      const color = CITY_COLORS[i % CITY_COLORS.length];
+      const active = c.categorias[ci] === 1;
+      dots += `<span class="cat-dot ${active ? 'active' : 'inactive'}" style="background:${active ? color : ''}" title="${c.nome}: ${active ? 'Ativa' : 'Inativa'}"></span>`;
+    });
+    grid += `<div class="cat-cell">
+      <div class="cat-name">${catName}</div>
+      <div class="cat-dots">${dots}</div>
+    </div>`;
+  });
+
+  // Legend
+  let legend = '<div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--border);">';
+  cities.forEach((c, i) => {
+    const color = CITY_COLORS[i % CITY_COLORS.length];
+    legend += `<span style="font-size:0.78rem;display:flex;align-items:center;gap:0.3rem;">
+      <span style="width:10px;height:10px;border-radius:50%;background:${color};display:inline-block;"></span>
+      ${c.nome} (${c.categoriasAtivas}/15)
+    </span>`;
+  });
+  legend += '</div>';
+
+  return `<div class="chart-card full-width animate-in">
+    <h3>Categorias de Captacao FUNDEB</h3>
+    <p class="chart-subtitle">Presenca em cada uma das 15 categorias de ponderacao de matriculas</p>
+    <div class="category-grid">${grid}</div>
+    ${legend}
+  </div>`;
+}
+
+// ============================================================
+// EFFICIENCY CHART (Revenue per student)
+// ============================================================
+function renderEfficiencyChart(cities) {
+  const data = cities.map(c => ({
+    nome: c.nome,
+    receitaPorAluno: Math.round(c.receitaFundeb / c.matriculas),
+    alunosPorProf: (c.matriculas / c.professores).toFixed(1),
+    percentOrcamento: c.percentOrcamento,
+    nse: c.nse
+  }));
+
+  const maxRPA = Math.max(...data.map(d => d.receitaPorAluno));
+
+  let bars = '';
+  data.forEach((d, i) => {
+    const pct = Math.round((d.receitaPorAluno / maxRPA) * 100);
+    const color = CITY_COLORS[i % CITY_COLORS.length];
+    bars += `<div class="bar-row">
+      <span class="bar-label">${d.nome}</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:0%;background:${color}" data-w="${pct}">
+          <span>R$ ${fmtNumber(d.receitaPorAluno)}</span>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  // Summary cards inside
+  let summaryHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0.75rem;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);">';
+  data.forEach((d, i) => {
+    const color = CITY_COLORS[i % CITY_COLORS.length];
+    summaryHTML += `<div style="background:${color}10;border:1px solid ${color}30;border-radius:10px;padding:0.75rem;text-align:center;">
+      <div style="font-size:0.72rem;color:var(--text2);font-weight:600;margin-bottom:0.3rem;">${d.nome}</div>
+      <div style="font-size:0.78rem;margin-bottom:0.15rem;"><strong>Al/Prof:</strong> ${d.alunosPorProf}</div>
+      <div style="font-size:0.78rem;margin-bottom:0.15rem;"><strong>% Orc:</strong> ${d.percentOrcamento}%</div>
+      <div style="font-size:0.78rem;"><strong>NSE:</strong> Nivel ${d.nse}</div>
+    </div>`;
+  });
+  summaryHTML += '</div>';
+
+  return `<div class="chart-card full-width animate-in">
+    <h3>Eficiencia: Receita por Aluno</h3>
+    <p class="chart-subtitle">Quanto cada municipio recebe do FUNDEB por matricula + indicadores de eficiencia</p>
+    <div class="css-bar-chart">${bars}</div>
+    ${summaryHTML}
+  </div>`;
+}
+
+// ============================================================
+// KEYBOARD SHORTCUT
+// ============================================================
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && document.activeElement && document.activeElement.id === 'citySelect') {
+    addCity();
+  }
+});
+
+// ============================================================
+// BOOT
+// ============================================================
+init();
+</script>
+</body>
+</html>

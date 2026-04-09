@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playbook Consultoria FUNDEB 2026 &mdash; Instituto i10</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0A2463; --navy-dark: #061740; --navy-deeper: #030B1A;
+  --cyan: #00B4D8; --cyan-light: #48CAE4;
+  --green: #00E5A0; --green-dark: #00C88A;
+  --red: #D4553A; --orange: #E8A838;
+  --bg: #F4F7FA; --card: #fff; --border: #DDE3EB;
+  --text: #0A2463; --text2: #5A6B80; --text3: #8896AB;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+
+/* Nav */
+.top-bar { background: var(--navy); color: #fff; padding: 16px 0; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px); }
+.top-bar .inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
+.top-bar .brand { font-weight: 800; font-size: 0.9rem; color: var(--cyan); letter-spacing: 1px; }
+.top-bar .title { font-size: 0.85rem; color: rgba(255,255,255,0.7); }
+.top-bar nav { display: flex; gap: 4px; flex-wrap: wrap; }
+.top-bar nav a { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.7rem; padding: 4px 10px; border-radius: 4px; transition: 0.2s; }
+.top-bar nav a:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+/* Layout */
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+.hero-section { background: linear-gradient(135deg, var(--navy), #0d3280); color: #fff; padding: 60px 0 50px; }
+.hero-section h1 { font-family: 'Source Serif 4', serif; font-size: 2.4rem; font-weight: 700; margin-bottom: 8px; }
+.hero-section .sub { font-size: 1.1rem; opacity: 0.7; font-weight: 300; margin-bottom: 24px; }
+.hero-stats { display: flex; gap: 32px; flex-wrap: wrap; }
+.hero-stat { text-align: center; }
+.hero-stat .num { font-size: 2rem; font-weight: 800; color: var(--green); }
+.hero-stat .lbl { font-size: 0.75rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; }
+
+/* Timeline alert */
+.alert-bar { background: linear-gradient(90deg, #D4553A, #E8A838); color: #fff; padding: 14px 0; text-align: center; font-weight: 700; font-size: 0.95rem; }
+
+/* Section */
+.section { padding: 48px 0; }
+.section:nth-child(even) { background: #fff; }
+.section-header { margin-bottom: 32px; }
+.section-header .label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; color: var(--cyan); margin-bottom: 6px; }
+.section-header h2 { font-family: 'Source Serif 4', serif; font-size: 1.8rem; font-weight: 700; color: var(--navy); }
+.section-header p { font-size: 0.95rem; color: var(--text2); margin-top: 6px; }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 16px 0; }
+thead th { background: var(--navy); color: #fff; padding: 10px 14px; text-align: left; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
+tbody td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+tbody tr:hover { background: rgba(0,180,216,0.04); }
+.highlight-row { background: rgba(0,229,160,0.06) !important; font-weight: 600; }
+.val-green { color: var(--green-dark); font-weight: 700; }
+.val-cyan { color: var(--cyan); font-weight: 700; }
+.val-orange { color: var(--orange); font-weight: 700; }
+.val-red { color: var(--red); font-weight: 700; }
+
+/* Cards */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin: 20px 0; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 28px; position: relative; }
+.card .table-wrap { overflow-x: auto; margin: 12px -8px; padding: 0 8px; }
+.card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: 14px 14px 0 0; }
+.card.t1::before { background: var(--cyan); }
+.card.t2::before { background: var(--green); }
+.card.t3::before { background: #7C3AED; }
+.card.t4::before { background: var(--orange); }
+.card.t5::before { background: var(--red); }
+.card.t6::before { background: #2563EB; }
+.card .tag { display: inline-block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; }
+.card .tag.quick { background: rgba(0,229,160,0.12); color: var(--green-dark); }
+.card .tag.medium { background: rgba(232,168,56,0.12); color: var(--orange); }
+.card .tag.complex { background: rgba(212,85,58,0.12); color: var(--red); }
+.card h3 { font-size: 1.1rem; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+.card h4 { font-size: 0.85rem; font-weight: 700; color: var(--text2); margin: 14px 0 6px; }
+.card p, .card li { font-size: 0.85rem; color: var(--text2); line-height: 1.7; }
+.card ul { padding-left: 18px; }
+.card .roi-box { background: var(--navy); color: #fff; border-radius: 8px; padding: 12px 16px; margin-top: 14px; display: flex; justify-content: space-between; align-items: center; }
+.card .roi-box .roi-val { font-size: 1.2rem; font-weight: 800; color: var(--green); }
+.card .roi-box .roi-lbl { font-size: 0.75rem; opacity: 0.7; }
+
+/* Flow diagram */
+.flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 20px 0; justify-content: center; }
+.flow-box { background: var(--navy); color: #fff; padding: 10px 18px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; text-align: center; }
+.flow-arrow { color: var(--cyan); font-size: 1.2rem; font-weight: 700; }
+
+/* Timeline */
+.timeline { position: relative; padding-left: 40px; margin: 24px 0; }
+.timeline::before { content: ''; position: absolute; left: 14px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+.tl-item { position: relative; margin-bottom: 20px; }
+.tl-item::before { content: ''; position: absolute; left: -32px; top: 4px; width: 14px; height: 14px; border-radius: 50%; border: 3px solid var(--cyan); background: #fff; }
+.tl-item.active::before { background: var(--cyan); border-color: var(--cyan); }
+.tl-item.critical::before { background: var(--red); border-color: var(--red); }
+.tl-item .tl-date { font-size: 0.75rem; font-weight: 700; color: var(--cyan); text-transform: uppercase; letter-spacing: 1px; }
+.tl-item.critical .tl-date { color: var(--red); }
+.tl-item .tl-title { font-size: 0.9rem; font-weight: 600; color: var(--navy); }
+.tl-item .tl-desc { font-size: 0.8rem; color: var(--text2); }
+
+/* Questions */
+.q-list { margin: 16px 0; }
+.q-item { padding: 10px 16px; border-left: 3px solid var(--cyan); margin-bottom: 8px; background: rgba(0,180,216,0.04); border-radius: 0 8px 8px 0; font-size: 0.85rem; color: var(--text); }
+
+/* Checklist */
+.check-grid { display: grid; grid-template-columns: 80px 1fr 160px; gap: 0; font-size: 0.85rem; }
+.check-grid .ch-head { background: var(--navy); color: #fff; padding: 8px 14px; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; }
+.check-grid .ch-cell { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+.check-grid .ch-cell.week { font-weight: 700; color: var(--cyan); background: rgba(0,180,216,0.04); }
+.check-grid .ch-cell.critical { background: rgba(212,85,58,0.06); font-weight: 700; color: var(--red); }
+
+/* Badge */
+.badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; }
+.badge-green { background: rgba(0,229,160,0.12); color: var(--green-dark); }
+.badge-orange { background: rgba(232,168,56,0.12); color: var(--orange); }
+.badge-red { background: rgba(212,85,58,0.12); color: var(--red); }
+.badge-cyan { background: rgba(0,180,216,0.12); color: var(--cyan); }
+.badge-ready { background: rgba(0,229,160,0.15); color: var(--green-dark); border: 1px solid rgba(0,229,160,0.3); }
+.badge-dev { background: rgba(232,168,56,0.15); color: var(--orange); border: 1px solid rgba(232,168,56,0.3); }
+
+/* Print */
+@media print { .top-bar { position: static; } .alert-bar { background: #333; -webkit-print-color-adjust: exact; } }
+@media (max-width: 768px) {
+  .hero-section h1 { font-size: 1.6rem; }
+  .card-grid { grid-template-columns: 1fr; }
+  .check-grid { grid-template-columns: 60px 1fr 100px; font-size: 0.75rem; }
+  .top-bar nav { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="top-bar">
+  <div class="inner">
+    <div>
+      <div class="brand">INSTITUTO i10</div>
+      <div class="title">Playbook Consultoria FUNDEB 2026</div>
+    </div>
+    <nav>
+      <a href="#timeline">Timeline</a>
+      <a href="#categorias">15 Categorias</a>
+      <a href="#alavancas">6 Alavancas</a>
+      <a href="#discovery">Discovery</a>
+      <a href="#report">Report FUNDEB</a>
+      <a href="#modelo">Modelo</a>
+      <a href="#checklist">Checklist</a>
+    </nav>
+  </div>
+</div>
+
+<!-- Alert -->
+<div class="alert-bar">
+  7 SEMANAS at&eacute; o Censo Escolar (27/mai/2026) &mdash; Tudo que o munic&iacute;pio criar at&eacute; l&aacute; gera receita em 2027
+</div>
+
+<!-- Hero -->
+<div class="hero-section">
+  <div class="container">
+    <h1>Playbook de Consultoria FUNDEB 2026</h1>
+    <p class="sub">Estrat&eacute;gia de execu&ccedil;&atilde;o para capta&ccedil;&atilde;o m&aacute;xima de recursos nos munic&iacute;pios de S&atilde;o Paulo</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="num">R$ 370 bi</div><div class="lbl">FUNDEB Total 2026</div></div>
+      <div class="hero-stat"><div class="num">R$ 13 bi</div><div class="lbl">N&atilde;o Captado em SP</div></div>
+      <div class="hero-stat"><div class="num">645</div><div class="lbl">Munic&iacute;pios SP</div></div>
+      <div class="hero-stat"><div class="num">15</div><div class="lbl">Categorias de Matr&iacute;cula</div></div>
+      <div class="hero-stat"><div class="num">6</div><div class="lbl">Alavancas de Capta&ccedil;&atilde;o</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 1. Timeline -->
+<div class="section" id="timeline">
+  <div class="container">
+    <div class="section-header">
+      <div class="label">Se&ccedil;&atilde;o 1</div>
+      <h2>Timeline Cr&iacute;tica &mdash; Datas-Chave 2026</h2>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-item active">
+        <div class="tl-date">Agora &mdash; Abril 2026</div>
+        <div class="tl-title">Janela de a&ccedil;&atilde;o: 7 semanas at&eacute; o Censo</div>
+        <div class="tl-desc">Tudo que for criado at&eacute; maio conta para a receita 2027</div>
+      </div>
+      <div class="tl-item critical">
+        <div class="tl-date">27 de Maio de 2026</div>
+        <div class="tl-title">Dia Nacional do Censo Escolar</div>
+        <div class="tl-desc">TODAS as matr&iacute;culas DEVEM existir neste dia. &Uacute;ltima quarta-feira de maio.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">Julho 2026</div>
+        <div class="tl-title">Deadline preenchimento Educacenso</div>
+        <div class="tl-desc">Dados de maio s&atilde;o inseridos no sistema do INEP at&eacute; final de julho</div>
+      </div>
+      <div class="tl-item critical">
+        <div class="tl-date">31 de Agosto de 2026</div>
+        <div class="tl-title">Deadline SIMEC &mdash; Condicionalidades VAAR</div>
+        <div class="tl-desc">Para receber VAAR em 2027. Registrar curr&iacute;culo BNCC Computa&ccedil;&atilde;o, gestores por m&eacute;rito, etc.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">Dezembro 2026</div>
+        <div class="tl-title">INEP publica Censo final</div>
+        <div class="tl-desc">Coeficientes de distribui&ccedil;&atilde;o calculados para 2027</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">Janeiro &ndash; Dezembro 2027</div>
+        <div class="tl-title">Receita FUNDEB flui mensalmente</div>
+        <div class="tl-desc">Baseada no Censo 2026. Dep&oacute;sitos decendiais (a cada 10 dias) no Banco do Brasil.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 2. 15 Categorias -->
+<div class="section" id="categorias">
+  <div class="container">
+    <div class="section-header">
+      <div class="label">Se&ccedil;&atilde;o 2</div>
+      <h2>As 15 Categorias de Matr&iacute;cula + Multiplicadores</h2>
+      <p>Fatores de pondera&ccedil;&atilde;o &mdash; Resolu&ccedil;&atilde;o CIF 16/2025. Base: EF Anos Iniciais Parcial = 1,00 = R$ 5.963/aluno</p>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>#</th><th>Categoria</th><th>Fator</th><th>R$/aluno</th><th>A&ccedil;&atilde;o Necess&aacute;ria</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Creche P&uacute;blica Integral</td><td class="val-green">1,55</td><td class="val-green">R$ 9.242</td><td>Abrir turmas 7h+/dia</td></tr>
+        <tr><td>2</td><td>Creche Conveniada Integral</td><td class="val-green">1,45</td><td class="val-green">R$ 8.646</td><td>Formalizar conv&ecirc;nio com institui&ccedil;&otilde;es</td></tr>
+        <tr><td>3</td><td>Creche P&uacute;blica Parcial</td><td>1,25</td><td>R$ 7.453</td><td>Abrir turmas parciais</td></tr>
+        <tr><td>4</td><td>Creche Conveniada Parcial</td><td>1,15</td><td>R$ 6.857</td><td>Formalizar conv&ecirc;nio parcial</td></tr>
+        <tr><td>5</td><td>Pr&eacute;-escola P&uacute;blica Integral</td><td class="val-green">1,50</td><td class="val-green">R$ 8.944</td><td>Estender hor&aacute;rio pr&eacute;-escola</td></tr>
+        <tr><td>6</td><td>Pr&eacute;-escola Conveniada Integral</td><td class="val-cyan">1,40</td><td class="val-cyan">R$ 8.348</td><td>Conv&ecirc;nio pr&eacute;-escola integral</td></tr>
+        <tr><td>7</td><td>Pr&eacute;-escola P&uacute;blica Parcial</td><td>1,15</td><td>R$ 6.857</td><td>(maioria j&aacute; tem)</td></tr>
+        <tr><td>8</td><td>Pr&eacute;-escola Conveniada Parcial</td><td>1,05</td><td>R$ 6.261</td><td>Conv&ecirc;nio pr&eacute;-escola parcial</td></tr>
+        <tr class="highlight-row"><td>9</td><td>EF Anos Iniciais Parcial <span class="badge badge-cyan">BASE</span></td><td>1,00</td><td>R$ 5.963</td><td>Refer&ecirc;ncia</td></tr>
+        <tr><td>10</td><td>EF Anos Finais Parcial</td><td>1,10</td><td>R$ 6.559</td><td>(maioria j&aacute; tem)</td></tr>
+        <tr><td>11</td><td>EF Integral</td><td class="val-green">1,50</td><td class="val-green">R$ 8.944</td><td>Converter p/ 7h+/dia</td></tr>
+        <tr><td>12</td><td>Ensino M&eacute;dio Parcial</td><td>1,25</td><td>R$ 7.453</td><td style="color:var(--text3)">(rede estadual)</td></tr>
+        <tr><td>13</td><td>Ensino M&eacute;dio Integral</td><td>1,52</td><td>R$ 9.064</td><td style="color:var(--text3)">(rede estadual)</td></tr>
+        <tr><td>14</td><td>EJA</td><td>1,00</td><td>R$ 5.963</td><td>Abrir turmas EJA noturno</td></tr>
+        <tr><td>15</td><td>Ed. Profissional T&eacute;cnica</td><td class="val-cyan">1,35</td><td class="val-cyan">R$ 8.050</td><td>Parceria com SENAI/SENAC/IF</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin-top:32px;font-size:1.1rem;color:var(--navy)">Multiplicadores Adicionais</h3>
+    <table>
+      <thead><tr><th>Multiplicador</th><th>Fator</th><th>Incide Sobre</th><th>Exemplo</th></tr></thead>
+      <tbody>
+        <tr class="highlight-row"><td><strong>AEE (dupla matr&iacute;cula)</strong></td><td class="val-green"><strong>+1,40</strong></td><td>Cada aluno Ed. Especial com AEE presencial</td><td>EF parcial + AEE = 1,00 + 1,40 = <strong>2,40</strong></td></tr>
+        <tr><td>Educa&ccedil;&atilde;o do Campo</td><td class="val-cyan">x 1,15</td><td>Todas matr&iacute;culas em escolas rurais</td><td>EF parcial campo = 1,00 x 1,15 = <strong>1,15</strong></td></tr>
+        <tr><td>Ind&iacute;gena / Quilombola</td><td class="val-orange">x 1,40</td><td>Todas matr&iacute;culas em escolas ind&iacute;genas/quilombolas</td><td>Creche integral quilombola = 1,55 x 1,40 = <strong>2,17</strong></td></tr>
+      </tbody>
+    </table>
+
+    <div class="card t3" style="margin-top:24px;border-left:4px solid #7C3AED">
+      <h3>Exemplo M&aacute;ximo de Composi&ccedil;&atilde;o</h3>
+      <p>Aluno em <strong>creche p&uacute;blica integral</strong> + <strong>zona rural</strong> + <strong>AEE</strong>:</p>
+      <p>Base: 1,55 &times; Campo: 1,15 = 1,7825 + AEE: 1,40 &times; 1,15 = 1,61</p>
+      <div class="roi-box"><div><div class="roi-lbl">Valor total por aluno/ano</div></div><div class="roi-val">R$ 20.214</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 3. Quick Wins -->
+<div class="section" id="quickwins" style="background:var(--navy);color:#fff">
+  <div class="container">
+    <div class="section-header">
+      <div class="label" style="color:var(--green)">Prioriza&ccedil;&atilde;o</div>
+      <h2 style="color:#fff">Quick Wins &mdash; Ranking por Velocidade e Retorno</h2>
+    </div>
+    <table style="color:#fff">
+      <thead><tr><th>Prioridade</th><th>A&ccedil;&atilde;o</th><th>Ganho/aluno</th><th>Dificuldade</th><th>Tempo p/ receita</th></tr></thead>
+      <tbody style="color:rgba(255,255,255,0.85)">
+        <tr><td><span class="badge badge-green">1</span></td><td><strong>AEE dupla matr&iacute;cula</strong></td><td style="color:var(--green);font-weight:700">+R$ 8.348</td><td>Baixa</td><td>Censo mai &rarr; receita jan+1</td></tr>
+        <tr><td><span class="badge badge-green">2</span></td><td><strong>Reclassificar Campo/Ind&iacute;gena/Quilombola</strong></td><td style="color:var(--green);font-weight:700">+15% a +40%</td><td>Baixa</td><td>Censo mai &rarr; receita jan+1</td></tr>
+        <tr><td><span class="badge badge-orange">3</span></td><td><strong>Converter parcial &rarr; integral</strong></td><td style="color:var(--cyan);font-weight:700">+R$ 2.982 (EF)</td><td>M&eacute;dia</td><td>Censo mai &rarr; receita jan+1</td></tr>
+        <tr><td><span class="badge badge-orange">4</span></td><td><strong>Abrir creche integral</strong></td><td style="color:var(--cyan);font-weight:700">R$ 9.242/novo</td><td>M&eacute;dia</td><td>Censo mai &rarr; receita jan+1</td></tr>
+        <tr><td><span class="badge badge-orange">5</span></td><td><strong>BNCC Computa&ccedil;&atilde;o (Cond. V)</strong></td><td style="color:var(--cyan);font-weight:700">Desbloqueia VAAR</td><td>M&eacute;dia</td><td>SIMEC ago &rarr; VAAR jan+1</td></tr>
+        <tr><td><span class="badge badge-red">6</span></td><td><strong>5 Condicionalidades VAAR</strong></td><td style="color:var(--orange);font-weight:700">~R$ 710/aluno</td><td>M&eacute;dia-Alta</td><td>SIMEC ago &rarr; VAAR jan+1</td></tr>
+        <tr><td><span class="badge badge-red">7</span></td><td><strong>EC 135 &mdash; 4% novas vagas integrais</strong></td><td>Obrigat&oacute;rio</td><td>Alta</td><td>Planejamento &rarr; 2027</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 4. Alavancas -->
+<div class="section" id="alavancas">
+  <div class="container">
+    <div class="section-header">
+      <div class="label">Se&ccedil;&atilde;o 3</div>
+      <h2>As 6 Alavancas &mdash; O Que Fazer em Cada Uma</h2>
+    </div>
+
+    <div class="card-grid">
+      <!-- T1 -->
+      <div class="card t1">
+        <span class="tag medium">M&eacute;dio prazo</span>
+        <h3>T1 &mdash; Expans&atilde;o VAAF</h3>
+        <p>Munic&iacute;pios que n&atilde;o t&ecirc;m matr&iacute;culas em certas categorias est&atilde;o &ldquo;deixando cadeiras vazias&rdquo;.</p>
+        <h4>Categorias mais comuns faltantes</h4>
+        <ul>
+          <li>Creche conveniada (parcial e integral)</li>
+          <li>Pr&eacute;-escola conveniada</li>
+          <li>EJA (Educa&ccedil;&atilde;o de Jovens e Adultos)</li>
+          <li>Ed. Profissional T&eacute;cnica</li>
+        </ul>
+        <h4>O que fazer na secretaria</h4>
+        <ul>
+          <li>Levantar quais das 15 categorias o munic&iacute;pio N&Atilde;O tem</li>
+          <li>Identificar institui&ccedil;&otilde;es filantr&oacute;picas que j&aacute; atendem crian&ccedil;as sem conv&ecirc;nio</li>
+          <li>Verificar demanda reprimida de EJA</li>
+          <li>Explorar parcerias com Sistema S</li>
+        </ul>
+        <h4>Perguntas para a secretaria</h4>
+        <div class="q-list">
+          <div class="q-item">Quantas institui&ccedil;&otilde;es comunit&aacute;rias atendem crian&ccedil;as sem conv&ecirc;nio?</div>
+          <div class="q-item">Existe lista de espera para creche? Quantas crian&ccedil;as?</div>
+          <div class="q-item">O munic&iacute;pio oferece EJA? Se n&atilde;o, por qu&ecirc;?</div>
+          <div class="q-item">H&aacute; escola t&eacute;cnica / parceria com SENAI/IF?</div>
+        </div>
+      </div>
+
+      <!-- T2 -->
+      <div class="card t2">
+        <span class="tag medium">M&eacute;dio prazo</span>
+        <h3>T2 &mdash; Convers&atilde;o Parcial &rarr; Integral</h3>
+        <p>Cada aluno que migra de parcial para integral (7h+/dia) ganha um salto de fator FUNDEB.</p>
+        <div class="q-list" style="margin-top:12px">
+          <div class="q-item">Creche parcial (1,25) &rarr; Integral (1,55) = <strong class="val-green">+R$ 1.789/ano</strong></div>
+          <div class="q-item">Pr&eacute;-escola parcial (1,15) &rarr; Integral (1,50) = <strong class="val-green">+R$ 2.087/ano</strong></div>
+          <div class="q-item" style="background:rgba(0,229,160,0.06);border-left-color:var(--green-dark)">EF parcial (1,00) &rarr; Integral (1,50) = <strong class="val-green">+R$ 2.982/ano</strong></div>
+        </div>
+        <h4>Perguntas para a secretaria</h4>
+        <div class="q-list">
+          <div class="q-item">Quantas escolas funcionam em turno &uacute;nico com espa&ccedil;o ocioso?</div>
+          <div class="q-item">Qual o custo da alimenta&ccedil;&atilde;o por aluno/dia?</div>
+          <div class="q-item">J&aacute; existe programa de contra-turno?</div>
+          <div class="q-item">A rede de transporte comporta hor&aacute;rio estendido?</div>
+        </div>
+        <div class="roi-box"><div><div class="roi-lbl">EC 135 &mdash; Obrigat&oacute;rio</div></div><div class="roi-val" style="font-size:0.85rem;color:var(--orange)">4% p/ novas vagas integrais</div></div>
+      </div>
+
+      <!-- T3 -->
+      <div class="card t3">
+        <span class="tag quick">Quick Win #1</span>
+        <h3>T3 &mdash; AEE Dupla Matr&iacute;cula</h3>
+        <p>Todo aluno com defici&ecirc;ncia, TEA ou altas habilidades que recebe AEE presencial gera <strong>+R$ 8.348/ano</strong>.</p>
+        <h4>Por que &eacute; o maior quick win</h4>
+        <ul>
+          <li>N&Atilde;O precisa de aluno novo &mdash; s&atilde;o alunos que J&Aacute; est&atilde;o na rede</li>
+          <li>O ganho &eacute; ADITIVO: +1,40 sobre qualquer categoria</li>
+          <li>Decreto 12.686/2025: AEE N&Atilde;O depende mais de laudo m&eacute;dico</li>
+        </ul>
+        <h4>Perguntas para a secretaria</h4>
+        <div class="q-list">
+          <div class="q-item">Quantos alunos t&ecirc;m laudo de defici&ecirc;ncia/TEA/altas habilidades?</div>
+          <div class="q-item">Quantos desses recebem AEE hoje?</div>
+          <div class="q-item">Quantas Salas de Recursos Multifuncionais existem?</div>
+          <div class="q-item">O AEE &eacute; presencial e no contra-turno?</div>
+          <div class="q-item">Existe busca ativa de alunos eleg&iacute;veis?</div>
+        </div>
+        <div class="roi-box">
+          <div><div class="roi-lbl">ROI por professor AEE (20 alunos)</div></div>
+          <div class="roi-val">2-3x</div>
+        </div>
+      </div>
+
+      <!-- T4 -->
+      <div class="card t4">
+        <span class="tag quick">Quick Win #2</span>
+        <h3>T4 &mdash; Reclassifica&ccedil;&atilde;o (Campo/Quilombola)</h3>
+        <p>Escolas rurais: <strong>+15%</strong>. Ind&iacute;genas/quilombolas: <strong>+40%</strong> sobre TODOS os fatores.</p>
+        <h4>Por que &eacute; quick win</h4>
+        <ul>
+          <li>Muitas escolas rurais classificadas incorretamente como urbanas</li>
+          <li>Comunidades quilombolas certificadas sem registro</li>
+          <li>&Eacute; apenas corre&ccedil;&atilde;o cadastral &mdash; n&atilde;o precisa criar nada</li>
+        </ul>
+        <h4>Perguntas para a secretaria</h4>
+        <div class="q-list">
+          <div class="q-item">Quantas escolas est&atilde;o em zona rural?</div>
+          <div class="q-item">Como est&atilde;o classificadas no Educacenso?</div>
+          <div class="q-item">Existem comunidades quilombolas no munic&iacute;pio?</div>
+          <div class="q-item">H&aacute; popula&ccedil;&atilde;o ind&iacute;gena atendida pela rede?</div>
+        </div>
+      </div>
+
+      <!-- T5 -->
+      <div class="card t5">
+        <span class="tag complex">Complexo</span>
+        <h3>T5 &mdash; VAAR (5 Condicionalidades)</h3>
+        <p>Recurso federal extra (~R$ 710/aluno) para munic&iacute;pios que cumprem 5 requisitos.</p>
+        <div class="q-list" style="margin-top:12px">
+          <div class="q-item"><strong>I.</strong> Gestores por m&eacute;rito (sele&ccedil;&atilde;o t&eacute;cnica) &mdash; SIMEC &mdash; 31/ago</div>
+          <div class="q-item"><strong>II.</strong> SAEB &ge; 80% participa&ccedil;&atilde;o &mdash; INEP &mdash; Dia da prova</div>
+          <div class="q-item"><strong>III.</strong> Redu&ccedil;&atilde;o desigualdades &mdash; INEP &mdash; Cont&iacute;nuo</div>
+          <div class="q-item"><strong>IV.</strong> ICMS Educacional &mdash; SIMEC &mdash; <span style="color:var(--green-dark)">SP j&aacute; cumpre</span></div>
+          <div class="q-item" style="background:rgba(0,229,160,0.08);border-left-color:var(--green-dark)"><strong>V. Curr&iacute;culo BNCC + Computa&ccedil;&atilde;o</strong> &mdash; SIMEC &mdash; 31/ago</div>
+        </div>
+        <h4>Quick win: Condicionalidade V (BNCC Computa&ccedil;&atilde;o)</h4>
+        <ul>
+          <li>Aprovar resolu&ccedil;&atilde;o municipal atualizando curr&iacute;culo</li>
+          <li>Registrar no SIMEC</li>
+          <li>i10 fornece curr&iacute;culo pronto + forma&ccedil;&atilde;o docente</li>
+        </ul>
+      </div>
+
+      <!-- T6 -->
+      <div class="card t6">
+        <span class="tag complex">Obrigat&oacute;rio</span>
+        <h3>T6 &mdash; EC 135 (4% Tempo Integral)</h3>
+        <p>A partir de 2026, <strong>4% de todo FUNDEB</strong> recebido DEVE ser usado para criar NOVAS vagas integrais.</p>
+        <h4>C&aacute;lculo</h4>
+        <p>Munic&iacute;pio recebe R$ 50M &rarr; <strong>R$ 2M obrigat&oacute;rios</strong> para novas vagas integrais. &Eacute; constitucional (n&atilde;o opcional).</p>
+        <h4>Perguntas para a secretaria</h4>
+        <div class="q-list">
+          <div class="q-item">J&aacute; tem Plano de Expans&atilde;o de Tempo Integral?</div>
+          <div class="q-item">Qual o % atual de matr&iacute;culas em tempo integral?</div>
+          <div class="q-item">Os 4% j&aacute; est&atilde;o previstos no or&ccedil;amento 2026?</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 5. Discovery -->
+<div class="section" id="discovery">
+  <div class="container">
+    <div class="section-header">
+      <div class="label">Se&ccedil;&atilde;o 4</div>
+      <h2>Discovery na Secretaria &mdash; Roteiro de Visita</h2>
+    </div>
+
+    <h3 style="font-size:1rem;margin-bottom:12px">Fase 1: Levantamento de Dados (Dia 1-2)</h3>
+    <p style="font-size:0.9rem;color:var(--text2);margin-bottom:16px"><strong>Solicitar &agrave; secretaria:</strong></p>
+    <div class="q-list">
+      <div class="q-item">1. Acesso ao Educacenso (ou exporta&ccedil;&atilde;o dos dados do &uacute;ltimo Censo)</div>
+      <div class="q-item">2. Relat&oacute;rio de matr&iacute;culas por escola, etapa, modalidade e turno</div>
+      <div class="q-item">3. Lista de alunos com defici&ecirc;ncia/TEA/altas habilidades</div>
+      <div class="q-item">4. Lista de alunos que recebem AEE</div>
+      <div class="q-item">5. Lista de escolas com classifica&ccedil;&atilde;o (urbana/rural)</div>
+      <div class="q-item">6. Conv&ecirc;nios vigentes com institui&ccedil;&otilde;es de ensino</div>
+      <div class="q-item">7. Relat&oacute;rio SIOPE do &uacute;ltimo exerc&iacute;cio</div>
+      <div class="q-item">8. Atas do CACS-FUNDEB (Conselho)</div>
+      <div class="q-item">9. Curr&iacute;culo municipal vigente</div>
+      <div class="q-item">10. Organograma da secretaria (quem cuida de qu&ecirc;)</div>
+    </div>
+
+    <h3 style="font-size:1rem;margin:28px 0 12px">Sistemas a Verificar</h3>
+    <table>
+      <thead><tr><th>Sistema</th><th>O Que Verificar</th><th>Quem Tem Acesso</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Educacenso</strong></td><td>Matr&iacute;culas declaradas vs reais</td><td>Setor de estat&iacute;stica/censo</td></tr>
+        <tr><td><strong>SIMEC</strong></td><td>Condicionalidades VAAR registradas</td><td>Secret&aacute;rio(a) ou assessor</td></tr>
+        <tr><td><strong>SIOPE</strong></td><td>Presta&ccedil;&atilde;o de contas FUNDEB</td><td>Setor financeiro/cont&aacute;bil</td></tr>
+        <tr><td><strong>PAR</strong></td><td>Plano de a&ccedil;&otilde;es articuladas</td><td>Secret&aacute;rio(a)</td></tr>
+        <tr><td><strong>CACS-FUNDEB</strong></td><td>Conselho ativo e regular</td><td>Presidente do conselho</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-size:1rem;margin:28px 0 12px">Perguntas Operacionais Cr&iacute;ticas</h3>
+    <div class="q-list">
+      <div class="q-item">Qual sistema de gest&atilde;o escolar o munic&iacute;pio usa? (SED, i-Educar, Gier, Totvs, planilha?)</div>
+      <div class="q-item">Como as escolas reportam matr&iacute;culas para a secretaria?</div>
+      <div class="q-item">Quem preenche o Educacenso? &Eacute; centralizado ou cada escola preenche?</div>
+      <div class="q-item">Existe rotina de verifica&ccedil;&atilde;o dos dados antes do envio?</div>
+      <div class="q-item">Quando foi a &uacute;ltima atualiza&ccedil;&atilde;o do curr&iacute;culo municipal?</div>
+      <div class="q-item">O CACS-FUNDEB est&aacute; ativo? Reuni&otilde;es em dia?</div>
+    </div>
+  </div>
+</div>
+
+<!-- 6. Report FUNDEB -->
+<div class="section" id="report">
+  <div class="container">
+    <div class="section-header">
+      <div class="label">Se&ccedil;&atilde;o 5</div>
+      <h2>Como Funciona o Report do Munic&iacute;pio para o FUNDEB</h2>
+    </div>
+
+    <div class="flow">
+      <div class="flow-box">ESCOLA</div><div class="flow-arrow">&rarr;</div>
+      <div class="flow-box">SECRETARIA</div><div class="flow-arrow">&rarr;</div>
+      <div class="flow-box" style="background:var(--cyan)">EDUCACENSO (INEP)</div><div class="flow-arrow">&rarr;</div>
+      <div class="flow-box">FNDE</div><div class="flow-arrow">&rarr;</div>
+      <div class="flow-box" style="background:var(--green-dark)">BANCO DO BRASIL</div><div class="flow-arrow">&rarr;</div>
+      <div class="flow-box" style="background:var(--green)">CONTA FUNDEB</div>
+    </div>
+
+    <div class="card-grid" style="margin-top:24px">
+      <div class="card">
+        <h3>1. Escola &rarr; Secretaria</h3>
+        <ul>
+          <li>Cada escola registra matr&iacute;culas no sistema de gest&atilde;o local</li>
+          <li>Sistemas comuns em SP: SED, i-Educar, Gier, Totvs RM, planilhas</li>
+          <li>Periodicidade: cont&iacute;nuo, mas o &ldquo;snapshot&rdquo; &eacute; em maio</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>2. Secretaria &rarr; Educacenso</h3>
+        <ul>
+          <li>Consolida dados de todas as escolas</li>
+          <li>Preenche Educacenso (sistema web INEP) entre maio e julho</li>
+          <li><strong>N&Atilde;O &eacute; mensal &mdash; &eacute; anual, com corte em maio</strong></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>3. INEP &rarr; FNDE</h3>
+        <ul>
+          <li>INEP processa dados e calcula indicadores</li>
+          <li>Publica resultados preliminares (set-out) e finais (dez)</li>
+          <li>Envia ao FNDE para c&aacute;lculo dos coeficientes</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>4. FNDE &rarr; Banco do Brasil</h3>
+        <ul>
+          <li>Calcula valor por aluno de cada munic&iacute;pio</li>
+          <li>Aplica fatores de pondera&ccedil;&atilde;o</li>
+          <li>Distribui <strong>decendialmente</strong> (a cada 10 dias)</li>
+          <li>Recursos em conta espec&iacute;fica no BB</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;border-left:4px solid var(--red);background:rgba(212,85,58,0.03)">
+      <h3 style="color:var(--red)">Importante: N&atilde;o &eacute; mensal, &eacute; anual</h3>
+      <ul>
+        <li>O Censo &eacute; ANUAL (refer&ecirc;ncia maio)</li>
+        <li>A receita FUNDEB &eacute; MENSAL mas baseada no censo do ano anterior</li>
+        <li>N&atilde;o existe &ldquo;report mensal&rdquo; de matr&iacute;culas para FUNDEB</li>
+        <li>O que existe: Educacenso (anual) + SIOPE (presta&ccedil;&atilde;o de contas anual)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- 7. Modelo -->
+<div class="section" id="modelo" style="background:var(--navy);color:#fff">
+  <div class="container">
+    <div class="section-header">
+      <div class="label" style="color:var(--green)">Se&ccedil;&atilde;o 6</div>
+      <h2 style="color:#fff">Modelo de Receita Sugerido para o i10</h2>
+    </div>
+    <div class="card-grid">
+      <div class="card" style="background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.1);color:#fff">
+        <h3 style="color:var(--cyan)">Fee de Implanta&ccedil;&atilde;o</h3>
+        <p style="color:rgba(255,255,255,0.7)">Discovery + Diagn&oacute;stico + Plano de A&ccedil;&atilde;o</p>
+        <div class="roi-box" style="background:rgba(0,180,216,0.15)"><div class="roi-lbl">Por munic&iacute;pio</div><div class="roi-val" style="color:var(--cyan)">R$ 50K-150K</div></div>
+      </div>
+      <div class="card" style="background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.1);color:#fff">
+        <h3 style="color:var(--green)">Success Fee</h3>
+        <p style="color:rgba(255,255,255,0.7)">10% sobre o ganho incremental de FUNDEB (2027 vs 2026)</p>
+        <div class="roi-box" style="background:rgba(0,229,160,0.15)"><div class="roi-lbl">Exemplo: +R$ 5M ganho</div><div class="roi-val">R$ 500K</div></div>
+      </div>
+      <div class="card" style="background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.1);color:#fff">
+        <h3 style="color:var(--orange)">BNCC Computa&ccedil;&atilde;o (separado)</h3>
+        <p style="color:rgba(255,255,255,0.7)">Curr&iacute;culo + Forma&ccedil;&atilde;o + Registro SIMEC. Quick win que desbloqueia VAAR.</p>
+        <div class="roi-box" style="background:rgba(232,168,56,0.15)"><div class="roi-lbl">Por munic&iacute;pio</div><div class="roi-val" style="color:var(--orange)">R$ 30K-80K</div></div>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:24px;color:rgba(255,255,255,0.5);font-size:0.85rem">Para 20-50 munic&iacute;pios: receita potencial de <strong style="color:var(--green)">R$ 5M-25M</strong> no primeiro ciclo</p>
+  </div>
+</div>
+
+<!-- 8. O que desenvolver -->
+<div class="section" id="desenvolver">
+  <div class="container">
+    <div class="section-header">
+      <div class="label">Se&ccedil;&atilde;o 7</div>
+      <h2>O Que o i10 Precisa Desenvolver</h2>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <h3>Produtos Imediatos</h3>
+        <table style="font-size:0.82rem">
+          <tbody>
+            <tr><td>Relat&oacute;rio Diagn&oacute;stico PDF</td><td><span class="badge badge-ready">Pronto</span></td></tr>
+            <tr><td>Dashboard por munic&iacute;pio</td><td><span class="badge badge-ready">Pronto</span></td></tr>
+            <tr><td><a href="curriculo-bncc-computacao.html" style="color:var(--navy);font-weight:600">Curr&iacute;culo BNCC Computa&ccedil;&atilde;o</a></td><td><span class="badge badge-ready">Pronto</span></td></tr>
+            <tr><td><a href="minuta-resolucao-cme.html" style="color:var(--navy);font-weight:600">Minuta Resolu&ccedil;&atilde;o CME</a></td><td><span class="badge badge-ready">Pronto</span></td></tr>
+            <tr><td><a href="formacao-docente.html" style="color:var(--navy);font-weight:600">Forma&ccedil;&atilde;o Docente</a></td><td><span class="badge badge-ready">Pronto</span></td></tr>
+            <tr><td><a href="guia-simec.html" style="color:var(--navy);font-weight:600">Guia SIMEC passo a passo</a></td><td><span class="badge badge-ready">Pronto</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Plataforma (para escalar)</h3>
+        <table style="font-size:0.82rem">
+          <tbody>
+            <tr><td><a href="comparativo-municipios.html" style="color:var(--navy);font-weight:600">Comparativo entre munic&iacute;pios</a></td><td><span class="badge badge-ready">Pronto</span></td></tr>
+            <tr><td><a href="simulador-impacto.html" style="color:var(--navy);font-weight:600">Simulador de impacto</a></td><td><span class="badge badge-ready">Pronto</span></td></tr>
+            <tr><td><a href="monitoramento-compliance.html" style="color:var(--navy);font-weight:600">Monitoramento de compliance</a></td><td><span class="badge badge-ready">Pronto</span></td></tr>
+          </tbody>
+        </table>
+        <h3 style="margin-top:20px">Capacidade Operacional</h3>
+        <table style="font-size:0.82rem">
+          <tbody>
+            <tr><td>Consultores de campo</td><td><span class="badge badge-dev">Contratar</span></td></tr>
+            <tr><td>Especialista Educacenso/SIMEC</td><td><span class="badge badge-dev">Contratar/Terceirizar</span></td></tr>
+            <tr><td>Advogado educacional</td><td><span class="badge badge-dev">Parceria</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 9. Checklist -->
+<div class="section" id="checklist">
+  <div class="container">
+    <div class="section-header">
+      <div class="label">Se&ccedil;&atilde;o 8</div>
+      <h2>Checklist Pr&eacute;-Censo (27/Mai/2026) &mdash; 7 Semanas</h2>
+    </div>
+
+    <table>
+      <thead><tr><th>Semana</th><th>A&ccedil;&atilde;o</th><th>Respons&aacute;vel</th></tr></thead>
+      <tbody>
+        <tr><td class="val-cyan">Sem 1 (7-11 abr)</td><td>Discovery na secretaria. Levantar dados.</td><td>i10 + Secretaria</td></tr>
+        <tr><td class="val-cyan">Sem 2 (14-18 abr)</td><td>Diagn&oacute;stico. Cruzar dados. Identificar gaps.</td><td>i10</td></tr>
+        <tr><td class="val-cyan">Sem 2</td><td>Apresentar relat&oacute;rio ao prefeito/secret&aacute;rio.</td><td>i10</td></tr>
+        <tr><td class="val-green">Sem 3 (21-25 abr)</td><td>Plano de a&ccedil;&atilde;o aprovado. Iniciar execu&ccedil;&atilde;o.</td><td>i10 + Secretaria</td></tr>
+        <tr><td class="val-green">Sem 3-4 (abr)</td><td>Contratar professores AEE. Montar salas.</td><td>Secretaria + i10</td></tr>
+        <tr><td class="val-green">Sem 3-4 (abr)</td><td>Formalizar conv&ecirc;nios creche/pr&eacute;-escola.</td><td>Secretaria (jur&iacute;dico)</td></tr>
+        <tr><td class="val-orange">Sem 4-5 (mai)</td><td>Corrigir classifica&ccedil;&otilde;es no Educacenso.</td><td>i10 + Setor Censo</td></tr>
+        <tr><td class="val-orange">Sem 5 (5-9 mai)</td><td>Abrir turmas EJA, converter para integral.</td><td>Secretaria</td></tr>
+        <tr><td class="val-orange">Sem 6 (12-23 mai)</td><td>Verifica&ccedil;&atilde;o final &mdash; todas matr&iacute;culas ativas.</td><td>i10</td></tr>
+        <tr style="background:rgba(212,85,58,0.08)"><td class="val-red"><strong>27 MAI</strong></td><td><strong>DIA DO CENSO &mdash; snapshot das matr&iacute;culas</strong></td><td><strong>INEP</strong></td></tr>
+        <tr><td>Jun-Jul</td><td>Preencher Educacenso com dados corretos.</td><td>Secretaria + i10</td></tr>
+        <tr><td>Agosto</td><td>Registrar condicionalidades VAAR no SIMEC.</td><td>i10 + Secretaria</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Footer -->
+<div style="background:var(--navy);color:rgba(255,255,255,0.5);padding:32px 0;text-align:center;font-size:0.8rem">
+  <div class="container">
+    <div style="font-weight:800;color:var(--cyan);margin-bottom:8px">INSTITUTO i10</div>
+    Playbook de Consultoria FUNDEB 2026 &mdash; Documento Interno<br>
+    Orquestrando o Futuro da Educa&ccedil;&atilde;o P&uacute;blica
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SICONFI | Dados Financeiros - Municípios de SP</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F4F7FA; --card: #fff; --border: #DDE3EB; --text: #0A2463;
+  --text2: #5A6B80; --text3: #8896AB; --primary: #0A2463; --primary2: #00B4D8;
+  --green: #00C88A; --green-bg: rgba(0,229,160,0.08); --green2: #00E5A0;
+  --red: #D4553A; --orange: #E8A838; --orange-bg: rgba(232,168,56,0.08);
+  --blue-bg: rgba(0,180,216,0.08); --cyan: #00B4D8;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+/* Hero */
+.hero {
+  background: #0A2463; color: #fff; padding: 50px 0 70px; position: relative; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-conic-gradient(rgba(0,180,216,0.04) 0% 25%, transparent 0% 50%) 0 0 / 40px 40px;
+  pointer-events: none;
+}
+.hero::after {
+  content: ''; position: absolute; top: -30%; right: -15%; width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(0,229,160,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero .brand { font-weight: 800; font-size: 0.85rem; color: var(--cyan); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; position: relative; }
+.hero h1 { font-family: 'Source Serif 4', serif; font-size: 2.4rem; font-weight: 700; margin-bottom: 10px; line-height: 1.2; position: relative; }
+.hero .subtitle { font-size: 1.05rem; opacity: 0.7; max-width: 700px; font-weight: 300; position: relative; margin-bottom: 30px; }
+.hero-stats { display: flex; gap: 40px; flex-wrap: wrap; position: relative; }
+.hero-stat .number { font-size: 2rem; font-weight: 800; color: #00E5A0; }
+.hero-stat .label { font-size: 0.8rem; opacity: 0.6; }
+
+/* Nav tabs */
+.nav-wrap { margin-top: -28px; position: relative; z-index: 10; }
+.nav-bar {
+  background: var(--card); border-radius: 14px; box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  padding: 8px; display: flex; flex-wrap: wrap; gap: 4px; max-width: 1000px; margin: 0 auto;
+}
+.nav-tab {
+  padding: 10px 18px; border-radius: 10px; cursor: pointer; font-size: 0.82rem;
+  font-weight: 600; color: var(--text2); transition: all 0.2s; border: none; background: none;
+  white-space: nowrap;
+}
+.nav-tab:hover { background: var(--blue-bg); color: var(--primary); }
+.nav-tab.active { background: var(--primary); color: #fff; }
+
+/* Filter */
+.filter-bar {
+  display: flex; gap: 12px; align-items: center; margin: 30px 0 20px; flex-wrap: wrap;
+}
+.filter-bar input {
+  flex: 1; min-width: 200px; padding: 12px 18px; border: 2px solid var(--border); border-radius: 10px;
+  font-size: 0.95rem; outline: none; transition: border-color 0.2s;
+}
+.filter-bar input:focus { border-color: var(--primary2); }
+.filter-bar .badge {
+  background: var(--primary); color: #fff; padding: 6px 14px; border-radius: 20px;
+  font-size: 0.78rem; font-weight: 600;
+}
+
+/* Sections */
+.section { padding: 20px 0 40px; }
+.section-title {
+  font-family: 'Source Serif 4', serif; font-size: 1.5rem; font-weight: 700;
+  color: var(--primary); margin-bottom: 6px;
+}
+.section-desc { color: var(--text2); font-size: 0.9rem; margin-bottom: 20px; }
+
+/* Area cards */
+.areas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 20px; }
+
+.area-card {
+  background: var(--card); border-radius: 14px; border: 1px solid var(--border);
+  overflow: hidden; transition: all 0.25s; cursor: pointer;
+}
+.area-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.08); transform: translateY(-2px); }
+.area-card.expanded .area-details { display: block; }
+
+.area-header {
+  padding: 20px 24px; display: flex; align-items: center; gap: 16px;
+}
+.area-icon {
+  width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center;
+  justify-content: center; font-size: 1.4rem; flex-shrink: 0;
+}
+.area-header-text h3 { font-size: 1.05rem; font-weight: 700; }
+.area-header-text .area-count { font-size: 0.8rem; color: var(--text3); }
+.area-chevron {
+  margin-left: auto; color: var(--text3); transition: transform 0.3s; font-size: 1.2rem;
+}
+.area-card.expanded .area-chevron { transform: rotate(180deg); }
+
+.area-tags {
+  padding: 0 24px 16px; display: flex; flex-wrap: wrap; gap: 6px;
+}
+.area-tag {
+  background: var(--bg); padding: 4px 10px; border-radius: 6px;
+  font-size: 0.72rem; color: var(--text2); font-weight: 500;
+}
+
+.area-details {
+  display: none; border-top: 1px solid var(--border); padding: 20px 24px;
+  background: linear-gradient(to bottom, rgba(244,247,250,0.5), var(--card));
+}
+.detail-group { margin-bottom: 16px; }
+.detail-group:last-child { margin-bottom: 0; }
+.detail-group-title {
+  font-size: 0.75rem; font-weight: 700; color: var(--primary2); text-transform: uppercase;
+  letter-spacing: 0.5px; margin-bottom: 8px;
+}
+.detail-list { list-style: none; }
+.detail-list li {
+  font-size: 0.82rem; color: var(--text2); padding: 4px 0; padding-left: 16px;
+  position: relative; line-height: 1.5;
+}
+.detail-list li::before {
+  content: ''; position: absolute; left: 0; top: 11px;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--cyan);
+}
+
+/* Source badge */
+.source-badge {
+  display: inline-flex; align-items: center; gap: 6px; background: var(--blue-bg);
+  padding: 3px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 600;
+  color: var(--primary2); margin-top: 8px;
+}
+
+/* Coverage table */
+.coverage-section { padding: 30px 0 60px; }
+.coverage-table {
+  width: 100%; border-collapse: collapse; background: var(--card);
+  border-radius: 14px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+}
+.coverage-table thead { background: var(--primary); color: #fff; }
+.coverage-table th { padding: 14px 20px; text-align: left; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.coverage-table td { padding: 12px 20px; font-size: 0.85rem; border-bottom: 1px solid var(--border); }
+.coverage-table tr:last-child td { border-bottom: none; }
+.coverage-table tr:hover td { background: var(--blue-bg); }
+.cov-check { color: var(--green); font-weight: 700; }
+.cov-none { color: var(--text3); }
+.cov-partial { color: var(--orange); font-weight: 600; }
+
+/* All tab */
+.all-tab { display: none; }
+.all-tab.active { display: block; }
+
+/* Municipios tab */
+.muni-summary { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.muni-summary-card {
+  background: var(--card); border-radius: 12px; padding: 20px; border: 1px solid var(--border);
+  text-align: center;
+}
+.muni-summary-card .num { font-size: 2rem; font-weight: 800; }
+.muni-summary-card .lbl { font-size: 0.78rem; color: var(--text2); margin-top: 4px; }
+.muni-summary-card.green .num { color: var(--green); }
+.muni-summary-card.orange .num { color: var(--orange); }
+.muni-summary-card.red .num { color: var(--red); }
+.muni-summary-card.blue .num { color: var(--primary2); }
+
+.muni-filter-bar { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+.muni-filter-bar input {
+  flex: 1; min-width: 200px; padding: 12px 18px; border: 2px solid var(--border); border-radius: 10px;
+  font-size: 0.95rem; outline: none;
+}
+.muni-filter-bar input:focus { border-color: var(--primary2); }
+.muni-filter-bar select {
+  padding: 12px 14px; border: 2px solid var(--border); border-radius: 10px;
+  font-size: 0.85rem; outline: none; background: var(--card); color: var(--text);
+}
+
+.muni-table-wrap { overflow-x: auto; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+.muni-table {
+  width: 100%; border-collapse: collapse; background: var(--card); min-width: 800px;
+}
+.muni-table thead { background: var(--primary); color: #fff; position: sticky; top: 0; }
+.muni-table th { padding: 12px 16px; text-align: left; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+.muni-table td { padding: 10px 16px; font-size: 0.82rem; border-bottom: 1px solid var(--border); }
+.muni-table tr:hover td { background: var(--blue-bg); }
+.muni-table .status-ok { color: var(--green); font-weight: 700; }
+.muni-table .status-partial { color: var(--orange); font-weight: 700; }
+.muni-table .status-none { color: var(--red); font-weight: 700; }
+.muni-table .pop-col { text-align: right; font-variant-numeric: tabular-nums; }
+.muni-table .center { text-align: center; }
+.muni-pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; }
+.muni-pagination button {
+  padding: 8px 20px; border: 2px solid var(--border); border-radius: 8px;
+  background: var(--card); cursor: pointer; font-weight: 600; font-size: 0.85rem;
+}
+.muni-pagination button:hover { border-color: var(--primary2); }
+.muni-pagination button:disabled { opacity: 0.3; cursor: default; }
+.muni-pagination .page-info { font-size: 0.82rem; color: var(--text2); }
+
+/* Footer */
+.footer { padding: 30px 0; text-align: center; color: var(--text3); font-size: 0.8rem; border-top: 1px solid var(--border); }
+
+@media (max-width: 600px) {
+  .hero h1 { font-size: 1.6rem; }
+  .hero-stats { gap: 20px; }
+  .areas-grid { grid-template-columns: 1fr; }
+  .nav-bar { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="container">
+    <div class="brand">SICONFI DATA LAKE</div>
+    <h1>Dados Financeiros dos Municipios de SP</h1>
+    <p class="subtitle">Base completa extraida da API publica do Tesouro Nacional (SICONFI) com dados orcamentarios, contabeis e fiscais de 645 municipios paulistas.</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="number">645</div>
+        <div class="label">Municipios de SP</div>
+      </div>
+      <div class="hero-stat">
+        <div class="number">~5.7M</div>
+        <div class="label">Registros extraidos</div>
+      </div>
+      <div class="hero-stat">
+        <div class="number">14</div>
+        <div class="label">Areas tematicas</div>
+      </div>
+      <div class="hero-stat">
+        <div class="number">7</div>
+        <div class="label">Periodos (bimestres)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="nav-wrap">
+  <div class="container">
+    <div class="nav-bar">
+      <button class="nav-tab active" data-tab="areas">Por Area</button>
+      <button class="nav-tab" data-tab="municipios">Municipios</button>
+      <button class="nav-tab" data-tab="coverage">Cobertura</button>
+      <button class="nav-tab" data-tab="sources">Fontes / Arquivos</button>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: POR AREA -->
+<div class="all-tab active" id="tab-areas">
+<div class="container section">
+  <div class="filter-bar">
+    <input type="text" id="areaFilter" placeholder="Filtrar areas... (ex: educacao, saude, transporte)">
+    <span class="badge">14 areas mapeadas</span>
+  </div>
+
+  <div class="areas-grid" id="areasGrid">
+
+    <!-- EDUCACAO -->
+    <div class="area-card" data-area="educacao">
+      <div class="area-header">
+        <div class="area-icon" style="background: #E8F5E9; color: #2E7D32;">&#127891;</div>
+        <div class="area-header-text">
+          <h3>Educacao</h3>
+          <div class="area-count">22 indicadores</div>
+        </div>
+        <div class="area-chevron">&#9660;</div>
+      </div>
+      <div class="area-tags">
+        <span class="area-tag">FUNDEB</span>
+        <span class="area-tag">Ensino Fundamental</span>
+        <span class="area-tag">Ed. Infantil</span>
+        <span class="area-tag">EJA</span>
+        <span class="area-tag">Ed. Especial</span>
+      </div>
+      <div class="area-details">
+        <div class="detail-group">
+          <div class="detail-group-title">Despesas por Subfuncao (RREO Anexo 02)</div>
+          <ul class="detail-list">
+            <li>Educacao (total consolidado)</li>
+            <li>Educacao Basica</li>
+            <li>Educacao Infantil</li>
+            <li>Ensino Fundamental</li>
+            <li>Ensino Medio</li>
+            <li>Ensino Superior</li>
+            <li>Ensino Profissional</li>
+            <li>Educacao Especial</li>
+            <li>Educacao de Jovens e Adultos (EJA)</li>
+          </ul>
+          <div class="source-badge">RREO Anexo 02 - Despesas por Funcao/Subfuncao</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Indicadores Constitucionais (RREO Anexo 14)</div>
+          <ul class="detail-list">
+            <li>Minimo 25% de receitas de impostos em Manutencao e Desenvolvimento do Ensino</li>
+            <li>Minimo 70% do FUNDEB em remuneracao dos profissionais da educacao basica</li>
+            <li>Minimo 15% da complementacao VAAT em despesas de capital</li>
+            <li>Percentual da complementacao VAAT na Educacao Infantil (Indicador IEI)</li>
+          </ul>
+          <div class="source-badge">RREO Anexo 14 - Demonstrativo Simplificado</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Despesas Detalhadas por Natureza (DCA Anexo I-D / I-E)</div>
+          <ul class="detail-list">
+            <li>Funcao 12 - Educacao: despesas empenhadas, liquidadas e pagas</li>
+            <li>Subfuncoes: 361 (Fund.), 365 (Infantil), 362 (Medio), 363 (Profissional), 364 (Superior), 366 (EJA), 367 (Especial)</li>
+            <li>Restos a Pagar processados e nao-processados por subfuncao</li>
+          </ul>
+          <div class="source-badge">DCA 2024 - Anexo I-E / I-G</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Metricas disponiveis por registro</div>
+          <ul class="detail-list">
+            <li>Dotacao Inicial e Atualizada</li>
+            <li>Despesas Empenhadas (no bimestre e acumulado)</li>
+            <li>Despesas Liquidadas (no bimestre e acumulado)</li>
+            <li>Despesas Pagas (acumulado)</li>
+            <li>Saldo orcamentario</li>
+            <li>Previsao Inicial e Atualizada</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SAUDE -->
+    <div class="area-card" data-area="saude">
+      <div class="area-header">
+        <div class="area-icon" style="background: #FFEBEE; color: #C62828;">&#9764;</div>
+        <div class="area-header-text">
+          <h3>Saude</h3>
+          <div class="area-count">15 indicadores</div>
+        </div>
+        <div class="area-chevron">&#9660;</div>
+      </div>
+      <div class="area-tags">
+        <span class="area-tag">Atencao Basica</span>
+        <span class="area-tag">Hospitalar</span>
+        <span class="area-tag">Vigilancia</span>
+        <span class="area-tag">Minimo 15%</span>
+      </div>
+      <div class="area-details">
+        <div class="detail-group">
+          <div class="detail-group-title">Despesas por Subfuncao (RREO Anexo 02)</div>
+          <ul class="detail-list">
+            <li>Saude (total consolidado)</li>
+            <li>Atencao Basica</li>
+            <li>Assistencia Hospitalar e Ambulatorial</li>
+            <li>Suporte Profilatico e Terapeutico</li>
+            <li>Vigilancia Sanitaria</li>
+            <li>Vigilancia Epidemiologica</li>
+            <li>Alimentacao e Nutricao</li>
+          </ul>
+          <div class="source-badge">RREO Anexo 02 - Despesas por Funcao/Subfuncao</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Indicador Constitucional (RREO Anexo 14)</div>
+          <ul class="detail-list">
+            <li>Despesas com Acoes e Servicos Publicos de Saude executadas com recursos de impostos (minimo 15%)</li>
+            <li>Percentual aplicado ate o bimestre vs. minimo a aplicar no exercicio</li>
+          </ul>
+          <div class="source-badge">RREO Anexo 14 - Demonstrativo Simplificado</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Balanco Anual (DCA)</div>
+          <ul class="detail-list">
+            <li>Funcao 10 - Saude: empenhado, liquidado, pago</li>
+            <li>Restos a pagar processados e nao-processados</li>
+          </ul>
+          <div class="source-badge">DCA 2024 - Anexo I-E / I-G</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ASSISTENCIA SOCIAL -->
+    <div class="area-card" data-area="assistencia social">
+      <div class="area-header">
+        <div class="area-icon" style="background: #F3E5F5; color: #6A1B9A;">&#129309;</div>
+        <div class="area-header-text">
+          <h3>Assistencia Social</h3>
+          <div class="area-count">10 indicadores</div>
+        </div>
+        <div class="area-chevron">&#9660;</div>
+      </div>
+      <div class="area-tags">
+        <span class="area-tag">CRAS</span>
+        <span class="area-tag">Crianca</span>
+        <span class="area-tag">Idoso</span>
+        <span class="area-tag">PcD</span>
+      </div>
+      <div class="area-details">
+        <div class="detail-group">
+          <div class="detail-group-title">Despesas por Subfuncao (RREO Anexo 02)</div>
+          <ul class="detail-list">
+            <li>Assistencia Social (total)</li>
+            <li>Assistencia Comunitaria</li>
+            <li>Assistencia a Crianca e ao Adolescente</li>
+            <li>Assistencia ao Idoso</li>
+            <li>Assistencia a Pessoa com Deficiencia</li>
+            <li>Assistencia aos Povos Indigenas</li>
+          </ul>
+          <div class="source-badge">RREO Anexo 02</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Balanco Anual (DCA)</div>
+          <ul class="detail-list">
+            <li>Funcao 08 - Assistencia Social: empenhado, liquidado, pago</li>
+            <li>Restos a pagar por subfuncao</li>
+          </ul>
+          <div class="source-badge">DCA 2024 - Anexo I-E / I-G</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INFRAESTRUTURA / URBANISMO -->
+    <div class="area-card" data-area="infraestrutura urbanismo saneamento habitacao transporte">
+      <div class="area-header">
+        <div class="area-icon" style="background: #E3F2FD; color: #1565C0;">&#127959;</div>
+        <div class="area-header-text">
+          <h3>Infraestrutura e Urbanismo</h3>
+          <div class="area-count">24 indicadores</div>
+        </div>
+        <div class="area-chevron">&#9660;</div>
+      </div>
+      <div class="area-tags">
+        <span class="area-tag">Urbanismo</span>
+        <span class="area-tag">Habitacao</span>
+        <span class="area-tag">Saneamento</span>
+        <span class="area-tag">Transporte</span>
+        <span class="area-tag">Energia</span>
+      </div>
+      <div class="area-details">
+        <div class="detail-group">
+          <div class="detail-group-title">Urbanismo (RREO Anexo 02)</div>
+          <ul class="detail-list">
+            <li>Urbanismo (total)</li>
+            <li>Infra-Estrutura Urbana</li>
+            <li>Servicos Urbanos</li>
+          </ul>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Habitacao (RREO Anexo 02)</div>
+          <ul class="detail-list">
+            <li>Habitacao (total)</li>
+            <li>Habitacao Urbana</li>
+            <li>Habitacao Rural</li>
+          </ul>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Saneamento (RREO Anexo 02)</div>
+          <ul class="detail-list">
+            <li>Saneamento (total)</li>
+            <li>Saneamento Basico Urbano</li>
+            <li>Saneamento Basico Rural</li>
+          </ul>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Transporte (RREO Anexo 02)</div>
+          <ul class="detail-list">
+            <li>Transporte (total)</li>
+            <li>Transporte Rodoviario</li>
+            <li>Transporte Aquaviario</li>
+            <li>Transporte Aereo</li>
+            <li>Transportes Coletivos Urbanos</li>
+            <li>Transportes Especiais</li>
+          </ul>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Energia (RREO Anexo 02)</div>
+          <ul class="detail-list">
+            <li>Energia (total)</li>
+            <li>Energia Eletrica</li>
+            <li>Conservacao de Energia</li>
+          </ul>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Funcoes no DCA</div>
+          <ul class="detail-list">
+            <li>Funcao 15 - Urbanismo</li>
+            <li>Funcao 16 - Habitacao</li>
+            <li>Funcao 17 - Saneamento</li>
+            <li>Funcao 25 - Energia</li>
+            <li>Funcao 26 - Transporte</li>
+          </ul>
+          <div class="source-badge">DCA 2024 - Anexo I-E / I-G</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEGURANCA PUBLICA -->
+    <div class="area-card" data-area="seguranca publica policiamento defesa civil">
+      <div class="area-header">
+        <div class="area-icon" style="background: #FFF3E0; color: #E65100;">&#128722;</div>
+        <div class="area-header-text">
+          <h3>Seguranca Publica</h3>
+          <div class="area-count">6 indicadores</div>
+        </div>
+        <div class="area-chevron">&#9660;</div>
+      </div>
+      <div class="area-tags">
+        <span class="area-tag">Policiamento</span>
+        <span class="area-tag">Defesa Civil</span>
+      </div>
+      <div class="area-details">
+        <div class="detail-group">
+          <div class="detail-group-title">Despesas por Subfuncao (RREO Anexo 02)</div>
+          <ul class="detail-list">
+            <li>Seguranca Publica (total)</li>
+            <li>Policiamento</li>
+            <li>Defesa Civil</li>
+            <li>Informacao e Inteligencia</li>
+          </ul>
+          <div class="source-badge">RREO Anexo 02</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Balanco Anual (DCA)</div>
+          <ul class="detail-list">
+            <li>Funcao 06 - Seguranca Publica: empenhado, liquidado, pago</li>
+          </ul>
+          <div class="source-badge">DCA 2024 - Anexo I-E / I-G</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CULTURA, ESPORTE E LAZER -->
+    <div class="area-card" data-area="cultura esporte lazer turismo desporto">
+      <div class="area-header">
+        <div class="area-icon" style="background: #FCE4EC; color: #AD1457;">&#127917;</div>
+        <div class="area-header-text">
+          <h3>Cultura, Esporte e Lazer</h3>
+          <div class="area-count">12 indicadores</div>
+        </div>
+        <div class="area-chevron">&#9660;</div>
+      </div>
+      <div class="area-tags">
+        <span class="area-tag">Cultura</span>
+        <span class="area-tag">Desporto</span>
+        <span class="area-tag">Turismo</span>
+        <span class="area-tag">Patrimonio</span>
+      </div>
+      <div class="area-details">
+        <div class="detail-group">
+          <div class="detail-group-title">Despesas por Subfuncao (RREO Anexo 02)</div>
+          <ul class="detail-list">
+            <li>Cultura (total)</li>
+            <li>Difusao Cultural</li>
+            <li>Patrimonio Historico Artistico e Arqueologico</li>
+            <li>Desporto e Lazer (total)</li>
+            <li>Desporto Comunitario</li>
+            <li>Desporto de Rendimento</li>
+            <li>Lazer</li>
+            <li>Turismo</li>
+          </ul>
+          <div class="source-badge">RREO Anexo 02</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Funcoes no DCA</div>
+          <ul class="detail-list">
+            <li>Funcao 13 - Cultura</li>
+            <li>Funcao 23 - Turismo</li>
+            <li>Funcao 27 - Desporto e Lazer</li>
+          </ul>
+          <div class="source-badge">DCA 2024 - Anexo I-E / I-G</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMINISTRACAO -->
+    <div class="area-card" data-area="administracao gestao planejamento controle">
+      <div class="area-header">
+        <div class="area-icon" style="background: #ECEFF1; color: #37474F;">&#9881;</div>
+        <div class="area-header-text">
+          <h3>Administracao e Gestao</h3>
+          <div class="area-count">14 indicadores</div>
+        </div>
+        <div class="area-chevron">&#9660;</div>
+      </div>
+      <div class="area-tags">
+        <span class="area-tag">Financeiro</span>
+        <span class="area-tag">Planejamento</span>
+        <span class="area-tag">TI</span>
+        <span class="area-tag">Controle</span>
+      </div>
+      <div class="area-details">
+        <div class="detail-group">
+          <div class="detail-group-title">Despesas por Subfuncao (RREO Anexo 02)</div>
+          <ul class="detail-list">
+            <li>Administracao (total)</li>
+            <li>Administracao Financeira</li>
+            <li>Administracao de Receitas</li>
+            <li>Administracao de Concessoes</li>
+            <li>Planejamento e Orcamento</li>
+            <li>Controle Interno</li>
+            <li>Normatizacao e Fiscalizacao</li>
+            <li>Tecnologia da Informacao</li>
+            <li>Comunicacao Social</li>
+            <li>Ordenamento Territorial</li>
+            <li>Formacao de Recursos Humanos</li>
+          </ul>
+          <div class="source-badge">RREO Anexo 02</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREVIDENCIA SOCIAL -->
+    <div class="area-card" data-area="previdencia rpps aposentadoria pensao">
+      <div class="area-header">
+        <div class="area-icon" style="background: #E0F7FA; color: #00695C;">&#128176;</div>
+        <div class="area-header-text">
+          <h3>Previdencia Social</h3>
+          <div class="area-count">18 indicadores</div>
+        </div>
+        <div class="area-chevron">&#9660;</div>
+      </div>
+      <div class="area-tags">
+        <span class="area-tag">RPPS</span>
+        <span class="area-tag">Aposentadorias</span>
+        <span class="area-tag">Pensoes</span>
+        <span class="area-tag">Atuarial</span>
+      </div>
+      <div class="area-details">
+        <div class="detail-group">
+          <div class="detail-group-title">Despesas por Subfuncao (RREO Anexo 02)</div>
+          <ul class="detail-list">
+            <li>Previdencia Social (total)</li>
+            <li>Previdencia Basica</li>
+            <li>Previdencia Complementar</li>
+            <li>Previdencia Especial</li>
+            <li>Previdencia do Regime Estatutario</li>
+          </ul>
+          <div class="source-badge">RREO Anexo 02</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Receitas e Despesas Previdenciarias (RREO Anexo 04)</div>
+          <ul class="detail-list">
+            <li>Contribuicoes dos Servidores</li>
+            <li>Compensacao Financeira entre Regimes</li>
+            <li>Aposentadorias / Pensoes / Beneficios</li>
+            <li>Pessoal e Encargos Sociais</li>
+            <li>Ativo / Passivo do Fundo (Caixa, Investimentos, Bens)</li>
+            <li>Plano de Amortizacao (aportes periodicos)</li>
+          </ul>
+          <div class="source-badge">RREO Anexo 04 - Previdenciario</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Projecao Atuarial (RREO Anexo 14)</div>
+          <ul class="detail-list">
+            <li>Fundo em Capitalizacao (Plano Previdenciario)</li>
+            <li>Fundo em Reparticao (Plano Financeiro)</li>
+            <li>Projecoes 10, 20 e 35 exercicios</li>
+          </ul>
+          <div class="source-badge">RREO Anexo 14</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECEITAS PUBLICAS -->
+    <div class="area-card" data-area="receita imposto tributo icms fpm ipva iss iptu">
+      <div class="area-header">
+        <div class="area-icon" style="background: #E8F5E9; color: #1B5E20;">&#128181;</div>
+        <div class="area-header-text">
+          <h3>Receitas Publicas</h3>
+          <div class="area-count">35+ indicadores</div>
+        </div>
+        <div class="area-chevron">&#9660;</div>
+      </div>
+      <div class="area-tags">
+        <span class="area-tag">IPTU</span>
+        <span class="area-tag">ISS</span>
+        <span class="area-tag">ICMS</span>
+        <span class="area-tag">FPM</span>
+        <span class="area-tag">IPVA</span>
+        <span class="area-tag">ITBI</span>
+      </div>
+      <div class="area-details">
+        <div class="detail-group">
+          <div class="detail-group-title">Balanco Orcamentario (RREO Anexo 01)</div>
+          <ul class="detail-list">
+            <li>IPTU, ISS, ITBI, IRRF (impostos municipais)</li>
+            <li>Cota-Parte FPM, ICMS, IPVA, ITR, IPI (transferencias)</li>
+            <li>Contribuicoes (melhoria, iluminacao, sociais, economicas)</li>
+            <li>Receitas patrimoniais, servicos, agropecuaria, industrial</li>
+            <li>Alienacao de bens, amortizacao de emprestimos</li>
+            <li>Transferencias correntes e de capital</li>
+            <li>Previsao inicial vs. atualizada vs. realizada</li>
+          </ul>
+          <div class="source-badge">RREO Anexo 01 - Balanco Orcamentario</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Receita Corrente Liquida (RREO Anexo 03)</div>
+          <ul class="detail-list">
+            <li>RCL - 12 meses rolantes (cada componente)</li>
+            <li>Deducao para formacao do FUNDEB</li>
+            <li>RCL ajustada para calculo de limites de pessoal</li>
+            <li>RCL ajustada para calculo de limites de endividamento</li>
+          </ul>
+          <div class="source-badge">RREO Anexo 03 - Receita Corrente Liquida</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Receitas Detalhadas (DCA Anexo I-C)</div>
+          <ul class="detail-list">
+            <li>515 contas de receita com classificacao contabil completa</li>
+            <li>Receitas brutas realizadas</li>
+            <li>Deducoes FUNDEB</li>
+            <li>Deducoes de transferencias constitucionais</li>
+            <li>Outras deducoes da receita</li>
+          </ul>
+          <div class="source-badge">DCA 2024 - Anexo I-C</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIVIDA E FINANCAS -->
+    <div class="area-card" data-area="divida financas resultado primario patrimonio balanco">
+      <div class="area-header">
+        <div class="area-icon" style="background: #FFF8E1; color: #F57F17;">&#128200;</div>
+        <div class="area-header-text">
+          <h3>Divida e Financas Publicas</h3>
+          <div class="area-count">30+ indicadores</div>
+        </div>
+        <div class="area-chevron">&#9660;</div>
+      </div>
+      <div class="area-tags">
+        <span class="area-tag">Resultado Primario</span>
+        <span class="area-tag">Balanco</span>
+        <span class="area-tag">PPP</span>
+        <span class="area-tag">Restos a Pagar</span>
+      </div>
+      <div class="area-details">
+        <div class="detail-group">
+          <div class="detail-group-title">Resultado Primario (RREO Anexo 06)</div>
+          <ul class="detail-list">
+            <li>Receita e Despesa primaria total</li>
+            <li>Meta fiscal da LDO vs. resultado apurado</li>
+            <li>Disponibilidade de caixa bruta</li>
+            <li>Depositos restituiveis e valores vinculados</li>
+            <li>90 contas de detalhamento</li>
+          </ul>
+          <div class="source-badge">RREO Anexo 06 - Resultado Primario</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Restos a Pagar (RREO Anexo 07)</div>
+          <ul class="detail-list">
+            <li>RP processados e nao-processados por poder</li>
+            <li>Inscritos, pagos, cancelados, saldo</li>
+            <li>Poder Executivo, Legislativo, Camara Municipal</li>
+          </ul>
+          <div class="source-badge">RREO Anexo 07 - Restos a Pagar</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Parcerias Publico-Privadas (RREO Anexo 13)</div>
+          <ul class="detail-list">
+            <li>Ativos constituidos pela SPE</li>
+            <li>Obrigacoes contratuais</li>
+            <li>Provisoes e passivos contingentes</li>
+            <li>Projecao 9 exercicios futuros</li>
+          </ul>
+          <div class="source-badge">RREO Anexo 13 - PPPs</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Balanco Patrimonial (DCA Anexo I-AB)</div>
+          <ul class="detail-list">
+            <li>Ativo circulante e nao-circulante (586 contas)</li>
+            <li>Caixa e equivalentes, creditos tributarios, estoques</li>
+            <li>Passivo, divida consolidada, patrimonio liquido</li>
+            <li>Imobilizado, intangivel, investimentos</li>
+          </ul>
+          <div class="source-badge">DCA 2024 - Anexo I-AB</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PESSOAL -->
+    <div class="area-card" data-area="pessoal servidor remuneracao encargos folha">
+      <div class="area-header">
+        <div class="area-icon" style="background: #EDE7F6; color: #4527A0;">&#128101;</div>
+        <div class="area-header-text">
+          <h3>Pessoal e Encargos</h3>
+          <div class="area-count">20+ indicadores</div>
+        </div>
+        <div class="area-chevron">&#9660;</div>
+      </div>
+      <div class="area-tags">
+        <span class="area-tag">Folha</span>
+        <span class="area-tag">INSS</span>
+        <span class="area-tag">FGTS</span>
+        <span class="area-tag">Limite LRF</span>
+      </div>
+      <div class="area-details">
+        <div class="detail-group">
+          <div class="detail-group-title">Despesas com Pessoal (DCA Anexo I-D)</div>
+          <ul class="detail-list">
+            <li>Pessoal e Encargos Sociais (3.1.xx)</li>
+            <li>Vencimentos e Vantagens Fixas - Pessoal Civil</li>
+            <li>Contratacao por Tempo Determinado</li>
+            <li>Obrigacoes Patronais: FGTS, INSS, RPPS</li>
+            <li>Aposentadorias do RPPS</li>
+            <li>Pensoes do RPPS</li>
+            <li>Sentencas Judiciais trabalhistas</li>
+          </ul>
+          <div class="source-badge">DCA 2024 - Anexo I-D</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Variacoes Patrimoniais (DCA Anexo I-HI)</div>
+          <ul class="detail-list">
+            <li>Remuneracao a Pessoal Ativo (RPPS e RGPS)</li>
+            <li>Encargos Patronais detalhados</li>
+            <li>Beneficios previdenciarios e assistenciais</li>
+          </ul>
+          <div class="source-badge">DCA 2024 - Anexo I-HI</div>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Limites LRF (RREO Anexo 14)</div>
+          <ul class="detail-list">
+            <li>Despesa com pessoal - Poder Executivo</li>
+            <li>Despesa com pessoal - Poder Legislativo</li>
+            <li>% sobre Receita Corrente Liquida</li>
+          </ul>
+          <div class="source-badge">RREO Anexo 14</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRABALHO -->
+    <div class="area-card" data-area="trabalho emprego empregabilidade">
+      <div class="area-header">
+        <div class="area-icon" style="background: #FFF3E0; color: #BF360C;">&#128188;</div>
+        <div class="area-header-text">
+          <h3>Trabalho e Emprego</h3>
+          <div class="area-count">5 indicadores</div>
+        </div>
+        <div class="area-chevron">&#9660;</div>
+      </div>
+      <div class="area-tags">
+        <span class="area-tag">Protecao</span>
+        <span class="area-tag">Fomento</span>
+        <span class="area-tag">Empregabilidade</span>
+      </div>
+      <div class="area-details">
+        <div class="detail-group">
+          <div class="detail-group-title">Despesas por Subfuncao (RREO Anexo 02)</div>
+          <ul class="detail-list">
+            <li>Trabalho (total)</li>
+            <li>Protecao e Beneficios ao Trabalhador</li>
+            <li>Fomento ao Trabalho</li>
+            <li>Relacoes de Trabalho</li>
+            <li>Empregabilidade</li>
+          </ul>
+          <div class="source-badge">RREO Anexo 02</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AGRICULTURA -->
+    <div class="area-card" data-area="agricultura agropecuaria rural">
+      <div class="area-header">
+        <div class="area-icon" style="background: #F1F8E9; color: #33691E;">&#127806;</div>
+        <div class="area-header-text">
+          <h3>Agricultura e Desenvolvimento Rural</h3>
+          <div class="area-count">6 indicadores</div>
+        </div>
+        <div class="area-chevron">&#9660;</div>
+      </div>
+      <div class="area-tags">
+        <span class="area-tag">Agropecuaria</span>
+        <span class="area-tag">Extensao Rural</span>
+        <span class="area-tag">Defesa</span>
+      </div>
+      <div class="area-details">
+        <div class="detail-group">
+          <div class="detail-group-title">Despesas por Subfuncao (RREO Anexo 02)</div>
+          <ul class="detail-list">
+            <li>Agricultura (total)</li>
+            <li>Promocao da Producao Agropecuaria</li>
+            <li>Extensao Rural</li>
+            <li>Defesa Agropecuaria</li>
+            <li>Reforma Agraria</li>
+            <li>Organizacao Agraria</li>
+          </ul>
+          <div class="source-badge">RREO Anexo 02</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MEIO AMBIENTE -->
+    <div class="area-card" data-area="meio ambiente gestao ambiental recursos hidricos">
+      <div class="area-header">
+        <div class="area-icon" style="background: #E0F2F1; color: #004D40;">&#127795;</div>
+        <div class="area-header-text">
+          <h3>Meio Ambiente</h3>
+          <div class="area-count">5 indicadores</div>
+        </div>
+        <div class="area-chevron">&#9660;</div>
+      </div>
+      <div class="area-tags">
+        <span class="area-tag">Preservacao</span>
+        <span class="area-tag">Controle</span>
+        <span class="area-tag">Hidricos</span>
+      </div>
+      <div class="area-details">
+        <div class="detail-group">
+          <div class="detail-group-title">Despesas por Subfuncao (RREO Anexo 02)</div>
+          <ul class="detail-list">
+            <li>Gestao Ambiental (total)</li>
+            <li>Preservacao e Conservacao Ambiental</li>
+            <li>Controle Ambiental</li>
+            <li>Recuperacao de Areas Degradadas</li>
+            <li>Recursos Hidricos</li>
+          </ul>
+          <div class="source-badge">RREO Anexo 02</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- TAB: MUNICIPIOS -->
+<div class="all-tab" id="tab-municipios">
+<div class="container section">
+  <h2 class="section-title">Cobertura por Municipio</h2>
+  <p class="section-desc">Status de dados disponiveis para cada um dos 645 municipios paulistas.</p>
+
+  <div class="muni-summary">
+    <div class="muni-summary-card green">
+      <div class="num">531</div>
+      <div class="lbl">RREO 2025 completo (6/6 bimestres)</div>
+    </div>
+    <div class="muni-summary-card orange">
+      <div class="num">24</div>
+      <div class="lbl">RREO 2025 parcial (1-5 bimestres)</div>
+    </div>
+    <div class="muni-summary-card red">
+      <div class="num">114</div>
+      <div class="lbl">Sem RREO 2025 (nao publicaram)</div>
+    </div>
+    <div class="muni-summary-card blue">
+      <div class="num">355</div>
+      <div class="lbl">RREO 2026 1o Bim disponivel</div>
+    </div>
+  </div>
+
+  <div class="muni-filter-bar">
+    <input type="text" id="muniFilter" placeholder="Buscar municipio...">
+    <select id="muniStatusFilter">
+      <option value="all">Todos (645)</option>
+      <option value="complete">RREO 2025 completo (531)</option>
+      <option value="partial">RREO 2025 parcial (24)</option>
+      <option value="none">Sem RREO 2025 (114)</option>
+      <option value="has2026">Tem RREO 2026 (355)</option>
+      <option value="no2026">Sem RREO 2026 (290)</option>
+    </select>
+  </div>
+
+  <div class="muni-table-wrap">
+    <table class="muni-table" id="muniTable">
+      <thead>
+        <tr>
+          <th>Municipio</th>
+          <th class="pop-col">Populacao</th>
+          <th class="center">RREO 2025</th>
+          <th class="center">2026 Bim 1</th>
+          <th class="center">DCA 2024</th>
+          <th class="center">Status</th>
+        </tr>
+      </thead>
+      <tbody id="muniBody"></tbody>
+    </table>
+  </div>
+  <div class="muni-pagination">
+    <button id="prevPage" disabled>Anterior</button>
+    <span class="page-info" id="pageInfo"></span>
+    <button id="nextPage">Proximo</button>
+  </div>
+</div>
+</div>
+
+<!-- TAB: COBERTURA -->
+<div class="all-tab" id="tab-coverage">
+<div class="container coverage-section">
+  <h2 class="section-title">Cobertura Temporal dos Dados</h2>
+  <p class="section-desc">Periodos e fontes disponiveis para cada tipo de relatorio.</p>
+  <table class="coverage-table">
+    <thead>
+      <tr>
+        <th>Arquivo</th>
+        <th>Periodo</th>
+        <th>Registros</th>
+        <th>Municipios c/ dados</th>
+        <th>Tamanho</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>RREO 2025 - 1o Bimestre</strong></td><td>Jan-Fev 2025</td><td class="cov-check">~825k</td><td>531</td><td>374 MB</td></tr>
+      <tr><td><strong>RREO 2025 - 2o Bimestre</strong></td><td>Mar-Abr 2025</td><td class="cov-check">~833k</td><td>531</td><td>378 MB</td></tr>
+      <tr><td><strong>RREO 2025 - 3o Bimestre</strong></td><td>Mai-Jun 2025</td><td class="cov-check">~838k</td><td>531</td><td>380 MB</td></tr>
+      <tr><td><strong>RREO 2025 - 4o Bimestre</strong></td><td>Jul-Ago 2025</td><td class="cov-check">~838k</td><td>531</td><td>381 MB</td></tr>
+      <tr><td><strong>RREO 2025 - 5o Bimestre</strong></td><td>Set-Out 2025</td><td class="cov-check">~838k</td><td>531</td><td>381 MB</td></tr>
+      <tr><td><strong>RREO 2025 - 6o Bimestre</strong></td><td>Nov-Dez 2025</td><td class="cov-check">~835k</td><td>507</td><td>380 MB</td></tr>
+      <tr><td><strong>RREO 2026 - 1o Bimestre</strong></td><td>Jan-Fev 2026</td><td class="cov-check">~578k</td><td>355</td><td>262 MB</td></tr>
+      <tr><td><strong>DCA 2024</strong></td><td>Anual 2024</td><td class="cov-check">~600k</td><td>~600</td><td>266 MB</td></tr>
+      <tr style="background: var(--bg); font-weight: 700;"><td>TOTAL</td><td>8 periodos</td><td class="cov-check">~5.7M</td><td>645</td><td>~4 GB</td></tr>
+    </tbody>
+  </table>
+
+  <br>
+  <h2 class="section-title" style="margin-top: 20px;">Anexos Extraidos</h2>
+  <p class="section-desc">Detalhamento dos relatorios disponiveis em cada fonte.</p>
+  <table class="coverage-table">
+    <thead>
+      <tr>
+        <th>Anexo</th>
+        <th>Conteudo</th>
+        <th>Periodicidade</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>RREO Anexo 01</strong></td><td>Balanco Orcamentario (receitas + despesas globais)</td><td>Bimestral</td></tr>
+      <tr><td><strong>RREO Anexo 02</strong></td><td>Despesas por Funcao e Subfuncao (179 categorias)</td><td>Bimestral</td></tr>
+      <tr><td><strong>RREO Anexo 03</strong></td><td>Receita Corrente Liquida (12 meses rolantes)</td><td>Bimestral</td></tr>
+      <tr><td><strong>RREO Anexo 04</strong></td><td>Receitas e Despesas Previdenciarias (RPPS)</td><td>Bimestral</td></tr>
+      <tr><td><strong>RREO Anexo 06</strong></td><td>Resultado Primario e Meta Fiscal</td><td>Bimestral</td></tr>
+      <tr><td><strong>RREO Anexo 07</strong></td><td>Restos a Pagar por Poder e Orgao</td><td>Bimestral</td></tr>
+      <tr><td><strong>RREO Anexo 13</strong></td><td>Parcerias Publico-Privadas</td><td>Bimestral</td></tr>
+      <tr><td><strong>RREO Anexo 14</strong></td><td>Demonstrativo Simplificado (limites constitucionais)</td><td>Bimestral</td></tr>
+      <tr><td><strong>DCA Anexo I-AB</strong></td><td>Balanco Patrimonial (586 contas contabeis)</td><td>Anual</td></tr>
+      <tr><td><strong>DCA Anexo I-C</strong></td><td>Receitas por Natureza (515 contas)</td><td>Anual</td></tr>
+      <tr><td><strong>DCA Anexo I-D</strong></td><td>Despesas por Natureza (194 contas)</td><td>Anual</td></tr>
+      <tr><td><strong>DCA Anexo I-E</strong></td><td>Despesas por Funcao (175 funcoes/subfuncoes)</td><td>Anual</td></tr>
+      <tr><td><strong>DCA Anexo I-F</strong></td><td>Restos a Pagar por Natureza (164 contas)</td><td>Anual</td></tr>
+      <tr><td><strong>DCA Anexo I-G</strong></td><td>Restos a Pagar por Funcao (171 contas)</td><td>Anual</td></tr>
+      <tr><td><strong>DCA Anexo I-HI</strong></td><td>Variacoes Patrimoniais (779 contas)</td><td>Anual</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- TAB: FONTES -->
+<div class="all-tab" id="tab-sources">
+<div class="container section">
+  <h2 class="section-title">Arquivos e Fontes</h2>
+  <p class="section-desc">Dados extraidos via API publica do Tesouro Nacional.</p>
+
+  <div class="areas-grid">
+    <div class="area-card expanded">
+      <div class="area-header">
+        <div class="area-icon" style="background: #E3F2FD; color: #1565C0;">&#128193;</div>
+        <div class="area-header-text">
+          <h3>Diretorio: siconfi_data/</h3>
+          <div class="area-count">18 arquivos (~4 GB)</div>
+        </div>
+      </div>
+      <div class="area-details" style="display: block;">
+        <div class="detail-group">
+          <div class="detail-group-title">Arquivos JSON (para programacao)</div>
+          <ul class="detail-list">
+            <li>rreo_2025_bim1.json ... rreo_2025_bim6.json</li>
+            <li>rreo_2026_bim1.json</li>
+            <li>dca_2024.json</li>
+            <li>municipios_sp.json (645 municipios com cod_ibge, populacao, cnpj)</li>
+            <li>metadata_extracao.json</li>
+          </ul>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Arquivos CSV (para Excel / BI)</div>
+          <ul class="detail-list">
+            <li>rreo_2025_bim1.csv ... rreo_2025_bim6.csv</li>
+            <li>rreo_2026_bim1.csv</li>
+            <li>dca_2024.csv</li>
+            <li>municipios_sp.csv</li>
+          </ul>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Estrutura de cada registro</div>
+          <ul class="detail-list">
+            <li><strong>exercicio</strong> - Ano fiscal</li>
+            <li><strong>cod_ibge</strong> - Codigo IBGE do municipio</li>
+            <li><strong>instituicao</strong> - Nome (ex: "Prefeitura Municipal de Campinas - SP")</li>
+            <li><strong>populacao</strong> - Populacao estimada</li>
+            <li><strong>anexo</strong> - Qual anexo (ex: "RREO-Anexo 02")</li>
+            <li><strong>conta</strong> - Nome da conta (ex: "Educacao", "IPTU")</li>
+            <li><strong>cod_conta</strong> - Codigo contabil da conta</li>
+            <li><strong>coluna</strong> - Metrica (ex: "DESPESAS EMPENHADAS ATE O BIMESTRE")</li>
+            <li><strong>valor</strong> - Valor numerico em R$</li>
+            <li><strong>periodo</strong> - Bimestre (1 a 6)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="area-card expanded">
+      <div class="area-header">
+        <div class="area-icon" style="background: #FFF8E1; color: #F57F17;">&#127760;</div>
+        <div class="area-header-text">
+          <h3>Fonte: API SICONFI</h3>
+          <div class="area-count">Tesouro Nacional</div>
+        </div>
+      </div>
+      <div class="area-details" style="display: block;">
+        <div class="detail-group">
+          <div class="detail-group-title">API utilizada</div>
+          <ul class="detail-list">
+            <li>Base: https://apidatalake.tesouro.gov.br/ords/siconfi/tt</li>
+            <li>Endpoints: /entes, /rreo, /dca</li>
+            <li>Documentacao: apidatalake.tesouro.gov.br/docs/siconfi/</li>
+          </ul>
+        </div>
+        <div class="detail-group">
+          <div class="detail-group-title">Dados nao disponiveis (nao publicados)</div>
+          <ul class="detail-list">
+            <li>DCA 2025 - ainda nao publicado pelos municipios</li>
+            <li>RGF (Relatorio de Gestao Fiscal) - sem dados retornados para SP</li>
+            <li>RREO 2026 Bim 2+ - ainda nao publicados</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="footer">
+  <div class="container">
+    Dados extraidos em 08/04/2026 via API SICONFI (Tesouro Nacional) &middot; 645 municipios de Sao Paulo
+  </div>
+</div>
+
+<script>
+// Tab navigation
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.all-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+  });
+});
+
+// Card expand/collapse
+document.querySelectorAll('.area-card').forEach(card => {
+  card.querySelector('.area-header').addEventListener('click', () => {
+    card.classList.toggle('expanded');
+  });
+});
+
+// Filter
+document.getElementById('areaFilter').addEventListener('input', function() {
+  const q = this.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  document.querySelectorAll('#areasGrid .area-card').forEach(card => {
+    const text = (card.dataset.area + ' ' + card.textContent).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    card.style.display = text.includes(q) ? '' : 'none';
+  });
+});
+
+// Municipality data
+const MUNIS = [{"cod_ibge":3500105,"nome":"Adamantina","pop":35673,"rreo25":0,"rreo26":false,"dca24":true},{"cod_ibge":3500204,"nome":"Adolfo","pop":4505,"rreo25":0,"rreo26":false,"dca24":true},{"cod_ibge":3500303,"nome":"Aguaí","pop":32886,"rreo25":6,"rreo26":false,"dca24":true},{"cod_ibge":3500402,"nome":"Águas da Prata","pop":8101,"rreo25":6,"rreo26":true,"dca24":true},{"cod_ibge":3500501,"nome":"Águas de Lindóia","pop":17854,"rreo25":6,"rreo26":true,"dca24":true},{"cod_ibge":3500550,"nome":"Águas de Santa Bárbara","pop":6086,"rreo25":6,"rreo26":true,"dca24":true},{"cod_ibge":3500600,"nome":"Águas de São Pedro","pop":2928,"rreo25":0,"rreo26":false,"dca24":true}];
+
+// Load full data
+let muniData = MUNIS;
+fetch('siconfi_data/coverage.json').then(r=>r.json()).then(d=>{muniData=d;renderMunis();}).catch(()=>{renderMunis();});
+
+const PAGE_SIZE = 50;
+let muniPage = 0;
+let filteredMunis = [];
+
+function filterMunis() {
+  const q = (document.getElementById('muniFilter').value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const status = document.getElementById('muniStatusFilter').value;
+  filteredMunis = muniData.filter(m => {
+    const nameMatch = !q || m.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').includes(q);
+    if (!nameMatch) return false;
+    if (status === 'complete') return m.rreo25 === 6;
+    if (status === 'partial') return m.rreo25 > 0 && m.rreo25 < 6;
+    if (status === 'none') return m.rreo25 === 0;
+    if (status === 'has2026') return m.rreo26;
+    if (status === 'no2026') return !m.rreo26;
+    return true;
+  });
+  muniPage = 0;
+}
+
+function renderMunis() {
+  filterMunis();
+  const tbody = document.getElementById('muniBody');
+  const start = muniPage * PAGE_SIZE;
+  const page = filteredMunis.slice(start, start + PAGE_SIZE);
+  const totalPages = Math.ceil(filteredMunis.length / PAGE_SIZE);
+
+  tbody.innerHTML = page.map(m => {
+    const rreoLabel = m.rreo25 === 6 ? '<span class="status-ok">6/6</span>'
+      : m.rreo25 === 0 ? '<span class="status-none">0/6</span>'
+      : '<span class="status-partial">' + m.rreo25 + '/6</span>';
+    const r26 = m.rreo26 ? '<span class="status-ok">Sim</span>' : '<span class="status-none">Nao</span>';
+    const dca = m.dca24 ? '<span class="status-ok">Sim</span>' : '<span class="status-none">Nao</span>';
+    const overall = m.rreo25 === 6 && m.rreo26 && m.dca24 ? '<span class="status-ok">Completo</span>'
+      : m.rreo25 === 0 && !m.rreo26 ? '<span class="status-none">Sem RREO</span>'
+      : '<span class="status-partial">Parcial</span>';
+    return '<tr><td><strong>' + m.nome + '</strong></td><td class="pop-col">' + (m.pop||0).toLocaleString('pt-BR') + '</td><td class="center">' + rreoLabel + '</td><td class="center">' + r26 + '</td><td class="center">' + dca + '</td><td class="center">' + overall + '</td></tr>';
+  }).join('');
+
+  document.getElementById('pageInfo').textContent = filteredMunis.length === 0
+    ? 'Nenhum resultado'
+    : 'Pag ' + (muniPage+1) + ' de ' + totalPages + ' (' + filteredMunis.length + ' municipios)';
+  document.getElementById('prevPage').disabled = muniPage === 0;
+  document.getElementById('nextPage').disabled = start + PAGE_SIZE >= filteredMunis.length;
+}
+
+document.getElementById('muniFilter').addEventListener('input', renderMunis);
+document.getElementById('muniStatusFilter').addEventListener('change', renderMunis);
+document.getElementById('prevPage').addEventListener('click', () => { muniPage--; renderMunis(); });
+document.getElementById('nextPage').addEventListener('click', () => { muniPage++; renderMunis(); });
+renderMunis();
+</script>
+</body>
+</html>
