@@ -70,6 +70,16 @@ export function ConsultoriaProvider({ children }: { children: ReactNode }) {
     refreshSessions().finally(() => setLoading(false));
   }, [refreshSessions]);
 
+  // Auto-select the most recent active session if none is selected
+  useEffect(() => {
+    if (!loading && sessions.length > 0 && !activeSession) {
+      const active = sessions.find((s) => s.status === "active");
+      if (active) {
+        setActiveSessionId(active.id);
+      }
+    }
+  }, [loading, sessions, activeSession]);
+
   // Persist active session to localStorage
   useEffect(() => {
     if (activeSessionId) {
