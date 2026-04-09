@@ -50,14 +50,16 @@ export function ConsultoriaProvider({ children }: { children: ReactNode }) {
   const municipality = activeSession?.municipality ?? null;
 
   // Load sessions from API
-  const refreshSessions = useCallback(async () => {
+  const refreshSessions = useCallback(async (): Promise<Session[]> => {
     try {
       const res = await fetch("/api/consultorias");
-      if (!res.ok) return;
+      if (!res.ok) return [];
       const data = await res.json();
-      setSessions(data.sessions || []);
+      const list = data.sessions || [];
+      setSessions(list);
+      return list;
     } catch {
-      // ignore
+      return [];
     }
   }, []);
 
@@ -70,15 +72,15 @@ export function ConsultoriaProvider({ children }: { children: ReactNode }) {
     refreshSessions().finally(() => setLoading(false));
   }, [refreshSessions]);
 
-  // Auto-select the most recent active session if none is selected
+  // Auto-select: if stored id doesn't match any session, pick the most recent active one
   useEffect(() => {
-    if (!loading && sessions.length > 0 && !activeSession) {
-      const active = sessions.find((s) => s.status === "active");
-      if (active) {
-        setActiveSessionId(active.id);
-      }
+    if (loading || sessions.length === 0) return;
+    const current = sessions.find((s) => s.id === activeSessionId);
+    if (!current || current.status !== "active") {
+      const mostRecent = sessions.find((s) => s.status === "active");
+      setActiveSessionId(mostRecent?.id ?? null);
     }
-  }, [loading, sessions, activeSession]);
+  }, [loading, sessions, activeSessionId]);
 
   // Persist active session to localStorage
   useEffect(() => {
@@ -98,10 +100,12 @@ export function ConsultoriaProvider({ children }: { children: ReactNode }) {
       });
       if (!res.ok) return null;
       const data = await res.json();
-      const session = data.session as Session;
-      await refreshSessions();
-      setActiveSessionId(session.id);
-      return session;
+      const newId = (data.session as Session).id;
+      // Refresh sessions first, then set active so the session data is available
+      const updated = await refreshSessions();
+      const full = updated.find((s) => s.id === newId) ?? null;
+      setActiveSessionId(newId);
+      return full;
     } catch {
       return null;
     }
