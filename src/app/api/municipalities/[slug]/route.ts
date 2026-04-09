@@ -201,6 +201,7 @@ export async function GET(
       // Schools
       schools: {
         total: parseInt(schoolsSummary[0]?.total as string) || m.total_escolas || 0,
+        municipais: m.escolas_municipais || null,
         urbanas: parseInt(schoolsSummary[0]?.urbanas as string) || 0,
         rurais: parseInt(schoolsSummary[0]?.rurais as string) || m.escolas_rurais || 0,
         totalMatriculas: parseInt(schoolsSummary[0]?.total_matriculas as string) || 0,

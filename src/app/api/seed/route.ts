@@ -230,7 +230,7 @@ CREATE TABLE IF NOT EXISTS fundeb.municipalities (
   saeb_port_9 REAL,
   saeb_mat_9 REAL,
   total_escolas INTEGER,
-  escolas_urbanas INTEGER,
+  escolas_municipais INTEGER,
   escolas_rurais INTEGER,
   total_docentes INTEGER,
   total_turmas INTEGER,
@@ -384,6 +384,7 @@ CREATE INDEX IF NOT EXISTS idx_consultorias_muni ON fundeb.consultorias(municipa
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const force = searchParams.get('force') === 'true';
+  const migrate = searchParams.get('migrate');
 
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
@@ -394,6 +395,26 @@ export async function GET(request: NextRequest) {
 
       try {
         const sql = neon(DATABASE_URL);
+
+        // Migration mode: update specific columns without full reseed
+        if (migrate === 'schools') {
+          send('Running schools migration: adding escolas_municipais column...');
+          try { await sql.query(`ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS escolas_municipais INTEGER`); } catch { /* exists */ }
+
+          send('Loading CSV data...');
+          const munis = await loadMunicipalityData();
+          let updated = 0;
+          for (const m of munis) {
+            if (m.escolas_municipais != null) {
+              await sql`UPDATE fundeb.municipalities SET escolas_municipais = ${m.escolas_municipais} WHERE nome = ${m.nome}`;
+              updated++;
+            }
+          }
+          send(`Updated escolas_municipais for ${updated} municipalities.`);
+          send('DONE');
+          controller.close();
+          return;
+        }
 
         // Step 1: Create schema
         send('Creating fundeb schema...');
@@ -477,7 +498,7 @@ export async function GET(request: NextRequest) {
                   icms, ipva, ipi_exp, total_estado, fpm, itr, total_uniao,
                   dest_remuneracao, dest_infantil, dest_capital, nse, coeficiente,
                   saeb_port_5, saeb_mat_5, saeb_port_9, saeb_mat_9,
-                  total_escolas, escolas_rurais, total_docentes,
+                  total_escolas, escolas_municipais, escolas_rurais, total_docentes,
                   pct_internet, pct_biblioteca,
                   ei_mat, ei_val, ef_mat, ef_val, dm_mat, dm_val,
                   hist_2022, hist_2023, hist_2024, hist_2025, hist_2026,
@@ -489,7 +510,7 @@ export async function GET(request: NextRequest) {
                   ${m.icms}, ${m.ipva}, ${m.ipi_exp}, ${m.total_estado}, ${m.fpm}, ${m.itr}, ${m.total_uniao},
                   ${m.dest_remuneracao}, ${m.dest_infantil}, ${m.dest_capital}, ${m.nse}, ${m.coeficiente},
                   ${m.saeb_port_5}, ${m.saeb_mat_5}, ${m.saeb_port_9}, ${m.saeb_mat_9},
-                  ${m.total_escolas}, ${m.escolas_rurais}, ${m.total_docentes},
+                  ${m.total_escolas}, ${m.escolas_municipais}, ${m.escolas_rurais}, ${m.total_docentes},
                   ${m.pct_internet}, ${m.pct_biblioteca},
                   ${m.ei_mat}, ${m.ei_val}, ${m.ef_mat}, ${m.ef_val}, ${m.dm_mat}, ${m.dm_val},
                   ${m.hist_2022}, ${m.hist_2023}, ${m.hist_2024}, ${m.hist_2025}, ${m.hist_2026},

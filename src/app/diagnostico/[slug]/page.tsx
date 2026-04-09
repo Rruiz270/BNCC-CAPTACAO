@@ -60,6 +60,7 @@ interface MunicipalityDetail {
   };
   schools: {
     total: number;
+    municipais: number | null;
     urbanas: number;
     rurais: number;
     totalDocentes: number;
@@ -501,8 +502,8 @@ export default function MunicipalityDetailPage({
                 <div className="space-y-2.5">
                   {[
                     {
-                      label: "Total de Escolas",
-                      value: muni.schools.total,
+                      label: "Escolas Municipais",
+                      value: muni.schools.municipais ?? muni.schools.total,
                     },
                     {
                       label: "Escolas Rurais",

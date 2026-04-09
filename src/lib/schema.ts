@@ -42,7 +42,7 @@ export const municipalities = fundebSchema.table('municipalities', {
   saebMat9: real('saeb_mat_9'),
   // Schools
   totalEscolas: integer('total_escolas'),
-  escolasUrbanas: integer('escolas_urbanas'),
+  escolasMunicipais: integer('escolas_municipais'),
   escolasRurais: integer('escolas_rurais'),
   totalDocentes: integer('total_docentes'),
   totalTurmas: integer('total_turmas'),

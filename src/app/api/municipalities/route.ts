@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
         ei_mat, ef_mat, dm_mat,
         hist_2022, hist_2023, hist_2024, hist_2025, hist_2026,
         pot_total, pct_pot_total, n_faltantes,
-        total_escolas, escolas_rurais, total_docentes,
+        total_escolas, escolas_municipais, escolas_rurais, total_docentes,
         pct_internet, pct_biblioteca,
         saeb_port_5, saeb_mat_5, saeb_port_9, saeb_mat_9
       FROM fundeb.municipalities
@@ -114,6 +114,7 @@ export async function GET(request: NextRequest) {
       pctPotTotal: row.pct_pot_total,
       nFaltantes: row.n_faltantes,
       totalEscolas: row.total_escolas,
+      escolasMunicipais: row.escolas_municipais,
       escolasRurais: row.escolas_rurais,
       totalDocentes: row.total_docentes,
       pctInternet: row.pct_internet,
