@@ -6,10 +6,24 @@ export const dynamic = 'force-dynamic';
 const DATABASE_URL = process.env.DATABASE_URL ||
   "postgresql://neondb_owner:npg_Zu1zG2LPUovb@ep-snowy-shadow-a4hoyxtl-pooler.us-east-1.aws.neon.tech/bncc_webinar?sslmode=require";
 
+// Ensure action_plans has required columns
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function ensureColumns(sql: any) {
+  try {
+    await sql`ALTER TABLE fundeb.action_plans ADD COLUMN IF NOT EXISTS phase TEXT DEFAULT 'curto'`;
+    await sql`ALTER TABLE fundeb.action_plans ADD COLUMN IF NOT EXISTS task_key TEXT`;
+    await sql`ALTER TABLE fundeb.action_plans ADD COLUMN IF NOT EXISTS descricao TEXT`;
+    await sql`ALTER TABLE fundeb.action_plans ADD COLUMN IF NOT EXISTS notes TEXT`;
+  } catch {
+    // columns may already exist
+  }
+}
+
 // GET /api/action-plans?municipalityId=123&phase=curto
 export async function GET(request: NextRequest) {
   try {
     const sql = neon(DATABASE_URL);
+    await ensureColumns(sql);
     const municipalityId = request.nextUrl.searchParams.get('municipalityId');
     const phase = request.nextUrl.searchParams.get('phase');
 

@@ -18,10 +18,28 @@ const WEEK_TASKS: Record<number, string[]> = {
   7: ['Verificacao final do Censo', 'Confirmar envio'],
 };
 
+// Ensure consultorias table exists
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function ensureTable(sql: any) {
+  await sql`
+    CREATE TABLE IF NOT EXISTS fundeb.consultorias (
+      id SERIAL PRIMARY KEY,
+      municipality_id INTEGER REFERENCES fundeb.municipalities(id),
+      status TEXT DEFAULT 'active',
+      start_date TIMESTAMP DEFAULT NOW(),
+      end_date TIMESTAMP,
+      notes TEXT,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    )
+  `;
+}
+
 // GET /api/consultorias - list sessions with municipality data
 export async function GET() {
   try {
     const sql = neon(DATABASE_URL);
+    await ensureTable(sql);
 
     const rows = await sql`
       SELECT c.id, c.municipality_id, c.status, c.start_date, c.end_date, c.notes, c.created_at,
@@ -86,6 +104,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const sql = neon(DATABASE_URL);
+    await ensureTable(sql);
     const body = await request.json();
     const { municipalityId } = body;
 
