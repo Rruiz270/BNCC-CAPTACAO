@@ -6,6 +6,8 @@ import { useState, useEffect } from "react";
 import { useConsultoria } from "@/lib/consultoria-context";
 
 const NAV_ITEMS = [
+  { href: "/wizard", label: "Wizard de Consultoria" },
+  { type: "divider", label: "Visoes" },
   { href: "/dashboard", label: "Dashboard" },
   { href: "/diagnostico", label: "Diagnostico" },
   { href: "/simulador", label: "Simulador" },

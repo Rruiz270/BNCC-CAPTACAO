@@ -4,8 +4,7 @@ import { type NextRequest } from 'next/server';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-const DATABASE_URL = process.env.DATABASE_URL ||
-  "postgresql://neondb_owner:npg_Zu1zG2LPUovb@ep-snowy-shadow-a4hoyxtl-pooler.us-east-1.aws.neon.tech/bncc_webinar?sslmode=require";
+const DATABASE_URL = process.env.DATABASE_URL!;
 
 // ── 645 SP municipalities seed data (from data.json + CSV) ──────────────
 // We embed the full dataset inline so the seed route is self-contained and
@@ -81,7 +80,7 @@ async function loadMunicipalityData(): Promise<MuniSeed[]> {
     const csvPath = path.resolve('/Users/Raphael/Educacao/scraping-dados-sp/data/analise_fundeb_cruzada_sp_2026.csv');
 
     let dataJson: { municipios: Array<Record<string, unknown>> } | null = null;
-    let csvMap: Map<string, Record<string, string>> = new Map();
+    const csvMap: Map<string, Record<string, string>> = new Map();
 
     // Load data.json
     if (fs.existsSync(dataJsonPath)) {
@@ -192,8 +191,6 @@ function parseCSVLine(line: string): string[] {
 }
 
 // ── Schema creation SQL ─────────────────────────────────────────────────
-
-const CREATE_SCHEMA_SQL = `CREATE SCHEMA IF NOT EXISTS fundeb;`;
 
 const CREATE_TABLES_SQL = `
 -- municipalities - 645 SP cities

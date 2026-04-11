@@ -3,8 +3,7 @@ import { type NextRequest } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
-const DATABASE_URL = process.env.DATABASE_URL ||
-  "postgresql://neondb_owner:npg_Zu1zG2LPUovb@ep-snowy-shadow-a4hoyxtl-pooler.us-east-1.aws.neon.tech/bncc_webinar?sslmode=require";
+const DATABASE_URL = process.env.DATABASE_URL!;
 
 // GET /api/compliance/[slug]?municipalityId=123 — items for a specific section
 export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
@@ -49,7 +48,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
 // PATCH /api/compliance/[slug] — update a single item
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
-  const { slug: _slug } = await params;
+  await params;
   try {
     const sql = neon(DATABASE_URL);
     const body = await request.json();

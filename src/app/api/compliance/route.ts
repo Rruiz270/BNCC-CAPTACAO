@@ -3,8 +3,7 @@ import { type NextRequest } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
-const DATABASE_URL = process.env.DATABASE_URL ||
-  "postgresql://neondb_owner:npg_Zu1zG2LPUovb@ep-snowy-shadow-a4hoyxtl-pooler.us-east-1.aws.neon.tech/bncc_webinar?sslmode=require";
+const DATABASE_URL = process.env.DATABASE_URL!;
 
 // GET /api/compliance?municipalityId=123
 export async function GET(request: NextRequest) {
@@ -67,11 +66,16 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/compliance - bulk upsert
+// body: { municipalityId, items: [{ itemKey, status, notes?, evidenceUrl? }], consultoriaId? }
 export async function POST(request: NextRequest) {
   try {
     const sql = neon(DATABASE_URL);
     const body = await request.json();
-    const { municipalityId, items } = body;
+    const { municipalityId, items, consultoriaId } = body as {
+      municipalityId: number;
+      items: Array<{ itemKey: string; status: string; notes?: string; evidenceUrl?: string }>;
+      consultoriaId?: number;
+    };
 
     if (!municipalityId || !items) {
       return Response.json({ error: 'municipalityId and items required' }, { status: 400 });
@@ -85,7 +89,50 @@ export async function POST(request: NextRequest) {
       `;
     }
 
-    return Response.json({ ok: true, updated: items.length });
+    // Chama a SP de consolidacao se temos o consultoriaId
+    let spResult: { ok: boolean; error?: string } = { ok: false };
+    if (consultoriaId) {
+      try {
+        await sql`CALL fundeb.sp_atualizar_compliance(${consultoriaId})`;
+        spResult = { ok: true };
+      } catch (e) {
+        spResult = { ok: false, error: e instanceof Error ? e.message : String(e) };
+      }
+    }
+
+    // Audit (best-effort)
+    try {
+      await sql`
+        INSERT INTO audit.event_log
+          (actor_id, actor_role, action, entity_type, entity_id, consultoria_id, after_state)
+        VALUES
+          ('consultor', 'consultor', 'compliance.items.updated',
+           'compliance_items', ${municipalityId},
+           ${consultoriaId ?? null},
+           ${JSON.stringify({ updatedCount: items.length, items: items.map((i) => ({ key: i.itemKey, status: i.status })) })}::jsonb)
+      `;
+    } catch {
+      // ignore
+    }
+
+    // Recarrega stats para devolver % atualizado
+    const stats = await sql`
+      SELECT
+        COUNT(*) AS total,
+        SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) AS done
+      FROM fundeb.compliance_items
+      WHERE municipality_id = ${municipalityId}
+    `;
+    const total = parseInt(stats[0]?.total as string) || 0;
+    const done = parseInt(stats[0]?.done as string) || 0;
+    const progress = total > 0 ? Math.round((done / total) * 100) : 0;
+
+    return Response.json({
+      ok: true,
+      updated: items.length,
+      stats: { total, done, progress },
+      spResult,
+    });
   } catch (e: unknown) {
     const errMsg = e instanceof Error ? e.message : String(e);
     return Response.json({ error: errMsg }, { status: 500 });

@@ -4,8 +4,7 @@ import { COMPLIANCE_SECTIONS, ACTION_PLAN_WEEKS, MEDIUM_TERM_TASKS, LONG_TERM_TA
 
 export const dynamic = 'force-dynamic';
 
-const DATABASE_URL = process.env.DATABASE_URL ||
-  "postgresql://neondb_owner:npg_Zu1zG2LPUovb@ep-snowy-shadow-a4hoyxtl-pooler.us-east-1.aws.neon.tech/bncc_webinar?sslmode=require";
+const DATABASE_URL = process.env.DATABASE_URL!;
 
 // WEEK_TASKS for seeding action plans (curto prazo)
 const WEEK_TASKS: Record<number, string[]> = {

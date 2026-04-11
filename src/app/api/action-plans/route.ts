@@ -3,8 +3,7 @@ import { type NextRequest } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
-const DATABASE_URL = process.env.DATABASE_URL ||
-  "postgresql://neondb_owner:npg_Zu1zG2LPUovb@ep-snowy-shadow-a4hoyxtl-pooler.us-east-1.aws.neon.tech/bncc_webinar?sslmode=require";
+const DATABASE_URL = process.env.DATABASE_URL!;
 
 // Ensure action_plans has required columns
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -101,11 +100,16 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/action-plans — bulk upsert
+// body: { municipalityId, tasks: [{ id, status, notes?, responsavel? }], consultoriaId? }
 export async function POST(request: NextRequest) {
   try {
     const sql = neon(DATABASE_URL);
     const body = await request.json();
-    const { municipalityId, tasks } = body;
+    const { municipalityId, tasks, consultoriaId } = body as {
+      municipalityId: number;
+      tasks: Array<{ id: number; status: string; notes?: string; responsavel?: string }>;
+      consultoriaId?: number;
+    };
 
     if (!municipalityId || !tasks) {
       return Response.json({ error: 'municipalityId and tasks required' }, { status: 400 });
@@ -123,7 +127,36 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return Response.json({ ok: true, updated: tasks.length });
+    // Chama SP de consolidacao se temos consultoriaId
+    let consolidado: unknown = null;
+    if (consultoriaId) {
+      try {
+        const rows = await sql`CALL fundeb.sp_consolidar_plano_acao(${consultoriaId}, NULL::jsonb)`;
+        // CALL com INOUT devolve o parametro ao final
+        if (Array.isArray(rows) && rows.length > 0) {
+          consolidado = (rows[0] as Record<string, unknown>).p_resultado ?? null;
+        }
+      } catch {
+        // ignore — pode falhar se SP nao existir ainda
+      }
+    }
+
+    // Audit (best-effort)
+    try {
+      await sql`
+        INSERT INTO audit.event_log
+          (actor_id, actor_role, action, entity_type, entity_id, consultoria_id, after_state)
+        VALUES
+          ('consultor', 'consultor', 'action_plan.tasks.updated',
+           'action_plans', ${municipalityId},
+           ${consultoriaId ?? null},
+           ${JSON.stringify({ updatedCount: tasks.length, tasks: tasks.map((t) => ({ id: t.id, status: t.status })) })}::jsonb)
+      `;
+    } catch {
+      // ignore
+    }
+
+    return Response.json({ ok: true, updated: tasks.length, consolidado });
   } catch (e: unknown) {
     const errMsg = e instanceof Error ? e.message : String(e);
     return Response.json({ error: errMsg }, { status: 500 });
