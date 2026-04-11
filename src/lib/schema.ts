@@ -1,6 +1,8 @@
-import { pgSchema, serial, text, integer, real, boolean, jsonb, timestamp, varchar } from 'drizzle-orm/pg-core';
+import { pgSchema, serial, bigserial, text, integer, bigint, real, boolean, jsonb, timestamp, varchar } from 'drizzle-orm/pg-core';
 
 export const fundebSchema = pgSchema('fundeb');
+export const rawSchema = pgSchema('raw');
+export const auditSchema = pgSchema('audit');
 
 // municipalities - 645 SP cities
 export const municipalities = fundebSchema.table('municipalities', {
@@ -169,4 +171,143 @@ export const documents = fundebSchema.table('documents', {
   versao: integer('versao').default(1),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// =====================================================
+// WIZARD BLUEPRINT — novas tabelas
+// =====================================================
+
+// fundeb.wizard_progress — estado do wizard por sessao
+export const wizardProgress = fundebSchema.table('wizard_progress', {
+  id: serial('id').primaryKey(),
+  consultoriaId: integer('consultoria_id')
+    .notNull()
+    .references(() => consultorias.id, { onDelete: 'cascade' }),
+  step: integer('step').notNull(), // 0..9
+  status: text('status').notNull().default('available'), // locked|available|in_progress|completed|blocked
+  payload: jsonb('payload').default({}),
+  blockReason: text('block_reason'),
+  startedAt: timestamp('started_at'),
+  completedAt: timestamp('completed_at'),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// fundeb.scenarios — simulacoes nomeadas (UC-P2.03)
+export const scenarios = fundebSchema.table('scenarios', {
+  id: serial('id').primaryKey(),
+  consultoriaId: integer('consultoria_id')
+    .notNull()
+    .references(() => consultorias.id, { onDelete: 'cascade' }),
+  nome: text('nome').notNull(),
+  isTarget: boolean('is_target').default(false),
+  parametros: jsonb('parametros').notNull(),
+  resultado: jsonb('resultado'),
+  createdBy: text('created_by'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// fundeb.approvals — trilha de aprovacao (UC-GE.03, UC-AU.02)
+export const approvals = fundebSchema.table('approvals', {
+  id: serial('id').primaryKey(),
+  documentId: integer('document_id')
+    .notNull()
+    .references(() => documents.id, { onDelete: 'cascade' }),
+  requestedBy: text('requested_by').notNull(),
+  requestedAt: timestamp('requested_at').defaultNow(),
+  decidedBy: text('decided_by'),
+  decidedAt: timestamp('decided_at'),
+  decision: text('decision'), // pending|approved|rejected
+  comment: text('comment'),
+  documentVersion: integer('document_version').notNull(),
+});
+
+// fundeb.evidences — evidencias anexadas (UC-P1.04, UC-AU.04)
+export const evidences = fundebSchema.table('evidences', {
+  id: serial('id').primaryKey(),
+  consultoriaId: integer('consultoria_id')
+    .notNull()
+    .references(() => consultorias.id, { onDelete: 'cascade' }),
+  entityType: text('entity_type').notNull(), // 'compliance_item' | 'action_plan' | 'document'
+  entityId: integer('entity_id').notNull(),
+  url: text('url'),
+  storageKey: text('storage_key'),
+  filename: text('filename'),
+  mimeType: text('mime_type'),
+  contentHash: text('content_hash'),
+  sizeBytes: bigint('size_bytes', { mode: 'number' }),
+  uploadedBy: text('uploaded_by'),
+  uploadedAt: timestamp('uploaded_at').defaultNow(),
+  notes: text('notes'),
+});
+
+// raw.imports — arquivos brutos (UC-P1.01, UC-AU.08)
+export const rawImports = rawSchema.table('imports', {
+  id: bigserial('id', { mode: 'number' }).primaryKey(),
+  source: text('source').notNull(), // censo_escolar|siope|fnde|ibge|local
+  filename: text('filename'),
+  contentHash: text('content_hash').notNull(),
+  mimeType: text('mime_type'),
+  sizeBytes: bigint('size_bytes', { mode: 'number' }),
+  uploadedBy: text('uploaded_by'),
+  consultoriaId: integer('consultoria_id'),
+  municipalityId: integer('municipality_id'),
+  status: text('status').notNull().default('received'), // received|extracting|treating|cataloging|done|failed
+  rowsTotal: integer('rows_total').default(0),
+  rowsOk: integer('rows_ok').default(0),
+  rowsRejected: integer('rows_rejected').default(0),
+  errors: jsonb('errors').default([]),
+  metadata: jsonb('metadata').default({}),
+  startedAt: timestamp('started_at').defaultNow(),
+  finishedAt: timestamp('finished_at'),
+});
+
+// raw.import_rows — linhas brutas
+export const rawImportRows = rawSchema.table('import_rows', {
+  id: bigserial('id', { mode: 'number' }).primaryKey(),
+  importId: bigint('import_id', { mode: 'number' }).notNull(),
+  rowIndex: integer('row_index').notNull(),
+  payload: jsonb('payload').notNull(),
+  isValid: boolean('is_valid'),
+  errors: jsonb('errors').default([]),
+  treatedAt: timestamp('treated_at'),
+  catalogedAt: timestamp('cataloged_at'),
+});
+
+// raw.lineage — rastreabilidade dado bruto -> estrutural (UC-AU.08)
+export const rawLineage = rawSchema.table('lineage', {
+  id: bigserial('id', { mode: 'number' }).primaryKey(),
+  targetSchema: text('target_schema').notNull(),
+  targetTable: text('target_table').notNull(),
+  targetId: bigint('target_id', { mode: 'number' }).notNull(),
+  rawRowId: bigint('raw_row_id', { mode: 'number' }),
+  importId: bigint('import_id', { mode: 'number' }),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// audit.event_log — log imutavel (UC-AU.01)
+export const auditEventLog = auditSchema.table('event_log', {
+  id: bigserial('id', { mode: 'number' }).primaryKey(),
+  ts: timestamp('ts').notNull().defaultNow(),
+  actorId: text('actor_id').notNull(),
+  actorRole: text('actor_role'),
+  action: text('action').notNull(),
+  entityType: text('entity_type').notNull(),
+  entityId: bigint('entity_id', { mode: 'number' }),
+  consultoriaId: integer('consultoria_id'),
+  beforeState: jsonb('before_state'),
+  afterState: jsonb('after_state'),
+  context: jsonb('context').default({}),
+  requestId: text('request_id'),
+});
+
+// audit.snapshots — snapshot imutavel (UC-AU.05, UC-AU.07)
+export const auditSnapshots = auditSchema.table('snapshots', {
+  id: bigserial('id', { mode: 'number' }).primaryKey(),
+  consultoriaId: integer('consultoria_id').notNull(),
+  payload: jsonb('payload').notNull(),
+  hash: text('hash').notNull(),
+  signedAt: timestamp('signed_at').notNull().defaultNow(),
+  signedBy: text('signed_by').notNull(),
+  reason: text('reason'),
 });
