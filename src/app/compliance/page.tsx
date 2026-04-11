@@ -22,6 +22,7 @@ export default function CompliancePage() {
 
   useEffect(() => {
     if (!municipalityId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reset progress when session cleared
       setSectionProgress({});
       return;
     }

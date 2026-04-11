@@ -55,6 +55,31 @@ function shortLabel(label: string): string {
     .trim();
 }
 
+function CustomTooltip({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: Array<{ value: number; dataKey: string }>;
+  label?: string;
+}) {
+  if (!active || !payload) return null;
+  return (
+    <div className="bg-white border border-[var(--border)] rounded-lg shadow-lg p-3 text-xs">
+      <div className="font-semibold text-[var(--text)] mb-1">{label}</div>
+      {payload.map((p) => (
+        <div key={p.dataKey} className="flex justify-between gap-4">
+          <span className="text-[var(--text3)]">
+            {p.dataKey === "atual" ? "Atual" : "Simulado"}
+          </span>
+          <span className="font-semibold">{formatCurrency(p.value)}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function SimuladorPage() {
   const { activeSession, municipality: sessionMuni } = useConsultoria();
   const [selectedId, setSelectedId] = useState<number | undefined>();
@@ -68,12 +93,14 @@ export default function SimuladorPage() {
   // Sync session municipality to selectedId
   useEffect(() => {
     if (activeSession?.municipalityId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- sync external consultoria context to local selector
       setSelectedId(activeSession.municipalityId);
     }
   }, [activeSession?.municipalityId]);
 
   useEffect(() => {
     if (!effectiveId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reset detail when municipality cleared
       setDetail(null);
       setSimulated({});
       return;
@@ -146,31 +173,6 @@ export default function SimuladorPage() {
   const handleReset = useCallback(() => {
     setSimulated({ ...currentCounts });
   }, [currentCounts]);
-
-  const CustomTooltip = ({
-    active,
-    payload,
-    label,
-  }: {
-    active?: boolean;
-    payload?: Array<{ value: number; dataKey: string }>;
-    label?: string;
-  }) => {
-    if (!active || !payload) return null;
-    return (
-      <div className="bg-white border border-[var(--border)] rounded-lg shadow-lg p-3 text-xs">
-        <div className="font-semibold text-[var(--text)] mb-1">{label}</div>
-        {payload.map((p) => (
-          <div key={p.dataKey} className="flex justify-between gap-4">
-            <span className="text-[var(--text3)]">
-              {p.dataKey === "atual" ? "Atual" : "Simulado"}
-            </span>
-            <span className="font-semibold">{formatCurrency(p.value)}</span>
-          </div>
-        ))}
-      </div>
-    );
-  };
 
   return (
     <div className="min-h-screen">

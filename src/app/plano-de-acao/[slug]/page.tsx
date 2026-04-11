@@ -49,9 +49,10 @@ export default function PlanoDeAcaoSemanaPage({ params }: { params: Promise<{ sl
   const [saving, setSaving] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Load from DB or use fallback
+  // Load from DB or use fallback (fetch-on-key-change with fallback init)
   useEffect(() => {
     if (!municipalityId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reset DB tasks when no session
       setDbTasks([]);
       // Init local states for fallback tasks
       const fallback = WEEK_TASKS[weekNumber] || [];

@@ -1,6 +1,15 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 
 interface Municipality {
   id: number;
@@ -40,16 +49,77 @@ interface ConsultoriaContextType {
 const ConsultoriaContext = createContext<ConsultoriaContextType | null>(null);
 
 const STORAGE_KEY = "bncc-active-session-id";
+const CUSTOM_EVENT = "bncc-active-session-change";
+
+// --- localStorage as an external store (React 19 pattern) ---
+
+function readActiveSessionId(): number | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    if (!stored) return null;
+    const parsed = parseInt(stored, 10);
+    return Number.isNaN(parsed) ? null : parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeActiveSessionId(id: number | null) {
+  if (typeof window === "undefined") return;
+  try {
+    if (id != null) {
+      window.localStorage.setItem(STORAGE_KEY, String(id));
+    } else {
+      window.localStorage.removeItem(STORAGE_KEY);
+    }
+    // Notify same-tab subscribers (storage event only fires cross-tab)
+    window.dispatchEvent(new Event(CUSTOM_EVENT));
+  } catch {
+    // ignore
+  }
+}
+
+function subscribeActiveSessionId(callback: () => void) {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener("storage", callback);
+  window.addEventListener(CUSTOM_EVENT, callback);
+  return () => {
+    window.removeEventListener("storage", callback);
+    window.removeEventListener(CUSTOM_EVENT, callback);
+  };
+}
+
+function getServerSnapshot(): number | null {
+  return null;
+}
 
 export function ConsultoriaProvider({ children }: { children: ReactNode }) {
   const [sessions, setSessions] = useState<Session[]>([]);
-  const [activeSessionId, setActiveSessionId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const activeSession = sessions.find((s) => s.id === activeSessionId) ?? null;
+  // localStorage-backed, SSR-safe, no setState-in-effect
+  const activeSessionId = useSyncExternalStore(
+    subscribeActiveSessionId,
+    readActiveSessionId,
+    getServerSnapshot,
+  );
+
+  const setActiveSessionId = useCallback((id: number | null) => {
+    writeActiveSessionId(id);
+  }, []);
+
+  // Derived: use stored id if valid+active, else fall back to most recent active
+  const activeSession = useMemo<Session | null>(() => {
+    if (activeSessionId != null) {
+      const chosen = sessions.find((s) => s.id === activeSessionId);
+      if (chosen && chosen.status === "active") return chosen;
+    }
+    return sessions.find((s) => s.status === "active") ?? null;
+  }, [sessions, activeSessionId]);
+
   const municipality = activeSession?.municipality ?? null;
 
-  // Load sessions from API
   const refreshSessions = useCallback(async (): Promise<Session[]> => {
     try {
       const res = await fetch("/api/consultorias");
@@ -63,73 +133,59 @@ export function ConsultoriaProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // On mount: restore active session from localStorage and load sessions
+  // Mount: load sessions from API.
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      setActiveSessionId(parseInt(stored, 10));
-    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- legit "fetch on mount"; setLoading(false) only runs inside the async .finally callback
     refreshSessions().finally(() => setLoading(false));
   }, [refreshSessions]);
 
-  // Auto-select: if stored id doesn't match any session, pick the most recent active one
-  useEffect(() => {
-    if (loading || sessions.length === 0) return;
-    const current = sessions.find((s) => s.id === activeSessionId);
-    if (!current || current.status !== "active") {
-      const mostRecent = sessions.find((s) => s.status === "active");
-      setActiveSessionId(mostRecent?.id ?? null);
-    }
-  }, [loading, sessions, activeSessionId]);
-
-  // Persist active session to localStorage
-  useEffect(() => {
-    if (activeSessionId) {
-      localStorage.setItem(STORAGE_KEY, String(activeSessionId));
-    } else {
-      localStorage.removeItem(STORAGE_KEY);
-    }
-  }, [activeSessionId]);
-
-  const startSession = useCallback(async (municipalityId: number): Promise<Session | null> => {
-    try {
-      const res = await fetch("/api/consultorias", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ municipalityId }),
-      });
-      if (!res.ok) return null;
-      const data = await res.json();
-      const newId = (data.session as Session).id;
-      // Refresh sessions first, then set active so the session data is available
-      const updated = await refreshSessions();
-      const full = updated.find((s) => s.id === newId) ?? null;
-      setActiveSessionId(newId);
-      return full;
-    } catch {
-      return null;
-    }
-  }, [refreshSessions]);
-
-  const switchSession = useCallback((sessionId: number) => {
-    setActiveSessionId(sessionId);
-  }, []);
-
-  const endSession = useCallback(async (sessionId: number) => {
-    try {
-      await fetch(`/api/consultorias/${sessionId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "completed" }),
-      });
-      await refreshSessions();
-      if (activeSessionId === sessionId) {
-        setActiveSessionId(null);
+  const startSession = useCallback(
+    async (municipalityId: number): Promise<Session | null> => {
+      try {
+        const res = await fetch("/api/consultorias", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ municipalityId }),
+        });
+        if (!res.ok) return null;
+        const data = await res.json();
+        const newId = (data.session as Session).id;
+        const updated = await refreshSessions();
+        const full = updated.find((s) => s.id === newId) ?? null;
+        setActiveSessionId(newId);
+        return full;
+      } catch {
+        return null;
       }
-    } catch {
-      // ignore
-    }
-  }, [activeSessionId, refreshSessions]);
+    },
+    [refreshSessions, setActiveSessionId],
+  );
+
+  const switchSession = useCallback(
+    (sessionId: number) => {
+      setActiveSessionId(sessionId);
+    },
+    [setActiveSessionId],
+  );
+
+  const endSession = useCallback(
+    async (sessionId: number) => {
+      try {
+        await fetch(`/api/consultorias/${sessionId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "completed" }),
+        });
+        await refreshSessions();
+        if (activeSessionId === sessionId) {
+          setActiveSessionId(null);
+        }
+      } catch {
+        // ignore
+      }
+    },
+    [activeSessionId, refreshSessions, setActiveSessionId],
+  );
 
   return (
     <ConsultoriaContext.Provider

@@ -34,7 +34,7 @@ export default function ComplianceSectionPage({ params }: { params: Promise<{ sl
   const [saving, setSaving] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Load items from DB
+  // Load items from DB (fetch-on-key-change; setState on initial load / reset is legitimate here)
   useEffect(() => {
     if (!section) return;
     if (!municipalityId) {
@@ -43,6 +43,7 @@ export default function ComplianceSectionPage({ params }: { params: Promise<{ sl
       for (const item of section.items) {
         initial[item.key] = { checked: false, status: "pending", notes: "" };
       }
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reset to defaults when no session; no external system to sync
       setItemStates(initial);
       setLoaded(true);
       return;

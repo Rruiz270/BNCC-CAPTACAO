@@ -205,6 +205,7 @@ export default function ComparativoPage() {
 
     autoSelectedRef.current = true;
     const activeId = activeSession.municipalityId;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-shot auto-select on consultoria change; guarded by autoSelectedRef
     setIdA(activeId);
 
     // Find a similar municipality by closest receitaTotal

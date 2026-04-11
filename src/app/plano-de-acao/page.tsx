@@ -40,9 +40,10 @@ export default function PlanoDeAcaoPage() {
   const [saving, setSaving] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Load tasks from DB
+  // Load tasks from DB (fetch-on-key-change pattern)
   useEffect(() => {
     if (!municipalityId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reset tasks when session cleared
       setTasks([]);
       return;
     }
