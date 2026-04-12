@@ -92,7 +92,7 @@ export default function StepCidade() {
               </div>
             </div>
             <div className="bg-[var(--bg)] rounded-lg p-3">
-              <div className="text-[10px] uppercase text-[var(--text3)]">Receita FUNDEB</div>
+              <div className="text-[10px] uppercase text-[var(--text3)]">Receita FUNDEB Municipal</div>
               <div className="text-base font-bold text-[var(--text1)]">
                 {muni.receitaTotal
                   ? muni.receitaTotal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
@@ -100,7 +100,7 @@ export default function StepCidade() {
               </div>
             </div>
             <div className="bg-[var(--bg)] rounded-lg p-3">
-              <div className="text-[10px] uppercase text-[var(--text3)]">Escolas</div>
+              <div className="text-[10px] uppercase text-[var(--text3)]">Escolas Municipais</div>
               <div className="text-base font-bold text-[var(--text1)]">
                 {muni.totalEscolas ?? "—"}
               </div>

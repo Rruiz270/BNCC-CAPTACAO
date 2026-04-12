@@ -53,7 +53,8 @@ export async function GET() {
 
     const rows = await sql`
       SELECT c.id, c.municipality_id, c.status, c.start_date, c.end_date, c.notes, c.created_at,
-             m.nome, m.total_matriculas, m.receita_total, m.total_escolas, m.total_docentes,
+             m.nome, m.total_matriculas, m.receita_total, m.recursos_receber,
+             m.total_escolas, m.escolas_municipais, m.total_docentes,
              m.codigo_ibge, m.pct_internet, m.pct_biblioteca
       FROM fundeb.consultorias c
       JOIN fundeb.municipalities m ON m.id = c.municipality_id
@@ -91,8 +92,8 @@ export async function GET() {
           id: muniId,
           nome: row.nome,
           totalMatriculas: row.total_matriculas,
-          receitaTotal: row.receita_total,
-          totalEscolas: row.total_escolas,
+          receitaTotal: row.recursos_receber ?? row.receita_total,
+          totalEscolas: row.escolas_municipais ?? row.total_escolas,
           totalDocentes: row.total_docentes,
           codigoIbge: row.codigo_ibge,
           pctInternet: row.pct_internet,
