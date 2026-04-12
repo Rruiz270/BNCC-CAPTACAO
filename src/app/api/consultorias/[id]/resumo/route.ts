@@ -86,18 +86,31 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     // Scenario target
     const scenario = scenarioRows.length > 0 ? scenarioRows[0] : null;
     const parametros = (scenario?.parametros ?? {}) as Record<string, unknown>;
-    const resultado = (scenario?.resultado ?? {}) as Record<string, unknown>;
 
-    const receitaBase = Number(c.receita_total) || 0;
-    const receitaProjetada = Number(resultado.total ?? resultado.receitaProjetada ?? 0);
-    const delta = receitaProjetada > 0 ? receitaProjetada - receitaBase : 0;
-    const deltaPct = receitaBase > 0 && delta > 0 ? (delta / receitaBase) * 100 : 0;
+    // Compute receita from enrollments (fator_vaaf is already R$/student)
+    const receitaBase = enrollmentRows.reduce(
+      (sum: number, e: Record<string, unknown>) => sum + (Number(e.quantidade) || 0) * (Number(e.fator_vaaf) || 0), 0
+    );
+
+    // Compute projected receita using scenario overrides
+    const reclassificacoes = ((parametros.reclassificacoes ?? parametros) as Record<string, number>) || {};
+    const receitaProjetada = enrollmentRows.reduce(
+      (sum: number, e: Record<string, unknown>) => {
+        const cat = e.categoria as string;
+        const override = reclassificacoes[cat] as number | undefined;
+        const qtd = override != null ? Number(override) : (Number(e.quantidade) || 0);
+        return sum + qtd * (Number(e.fator_vaaf) || 0);
+      }, 0
+    );
+
+    const delta = receitaProjetada - receitaBase;
+    const deltaPct = receitaBase > 0 ? (delta / receitaBase) * 100 : 0;
 
     const cenarioAlvo = scenario ? {
       id: scenario.id,
       nome: scenario.nome,
       receitaBase,
-      receitaProjetada: receitaProjetada || receitaBase,
+      receitaProjetada,
       delta,
       deltaPct,
       reclassificacoes: parametros,
@@ -162,10 +175,12 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
       const receitaAtual = Number(e.receita_estimada) || 0;
 
       // Check if scenario has override for this category
-      const override = parametros[cat] as number | undefined;
+      // parametros is { reclassificacoes: { cat: newQtd, ... } }
+      const reclassificacoes = (parametros.reclassificacoes ?? parametros) as Record<string, number>;
+      const override = reclassificacoes[cat] as number | undefined;
       const qtdProjetada = override != null ? Number(override) : qtdAtual;
-      const VAAF_BASE = 5963;
-      const receitaProj = qtdProjetada * fator * VAAF_BASE;
+      // fator is already the full VAAF R$/student (e.g. 10131.14), NOT a multiplier
+      const receitaProj = qtdProjetada * fator;
       const catDelta = receitaProj - receitaAtual;
 
       return {

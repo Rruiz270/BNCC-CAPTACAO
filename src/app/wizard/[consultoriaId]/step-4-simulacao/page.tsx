@@ -6,7 +6,8 @@ import { StepShell } from "@/components/wizard/step-shell";
 import { useWizard } from "@/components/wizard/wizard-provider";
 import { getStepById } from "@/lib/wizard/steps";
 
-const VAAF_BASE = 5963; // valor base do aluno por VAAF referencia 2026
+// fatorVaaf armazena o valor VAAF por aluno (ex: 10131.14 para Creche Integral),
+// portanto NAO multiplicar por VAAF_BASE novamente.
 
 interface Enrollment {
   id: number;
@@ -105,7 +106,7 @@ export default function StepSimulacao() {
   const baseReceita = useMemo(() => {
     if (!muni) return 0;
     return muni.enrollments.reduce(
-      (sum, e) => sum + (e.quantidade ?? 0) * VAAF_BASE * (e.fatorVaaf ?? 0),
+      (sum, e) => sum + (e.quantidade ?? 0) * (e.fatorVaaf ?? 0),
       0
     );
   }, [muni]);
@@ -118,7 +119,7 @@ export default function StepSimulacao() {
       const override = overrides[e.categoria];
       const qtd = override != null ? override : e.quantidade ?? 0;
       if (override != null && override !== (e.quantidade ?? 0)) tocadas.push(e.categoria);
-      receita += qtd * VAAF_BASE * (e.fatorVaaf ?? 0);
+      receita += qtd * (e.fatorVaaf ?? 0);
     }
     const delta = receita - baseReceita;
     const deltaPct = baseReceita > 0 ? (delta / baseReceita) * 100 : 0;
