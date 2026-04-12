@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { useConsultoria } from "@/lib/consultoria-context";
 
@@ -83,10 +84,11 @@ export default function RelatoriosPage() {
             <div className="bg-white border border-[var(--border)] rounded-xl overflow-hidden">
               <div className="grid grid-cols-12 gap-2 px-4 py-2.5 bg-[var(--bg)] border-b border-[var(--border)] text-[10px] font-bold uppercase tracking-wider text-[var(--text3)]">
                 <div className="col-span-3">Municipio</div>
-                <div className="col-span-2 text-center">Status</div>
+                <div className="col-span-1 text-center">Status</div>
                 <div className="col-span-2 text-center">Compliance</div>
                 <div className="col-span-2 text-center">Plano de Acao</div>
-                <div className="col-span-3 text-center">Inicio</div>
+                <div className="col-span-2 text-center">Inicio</div>
+                <div className="col-span-2 text-center">Acoes</div>
               </div>
               {sessions.map((session) => (
                 <div
@@ -101,7 +103,7 @@ export default function RelatoriosPage() {
                       <span className="ml-1.5 text-[9px] px-1.5 py-0.5 rounded-full bg-[#00E5A0]/15 text-[#00C88A] font-bold uppercase">Ativa</span>
                     )}
                   </div>
-                  <div className="col-span-2 text-center">
+                  <div className="col-span-1 text-center">
                     <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
                       session.status === "active" ? "bg-emerald-50 text-emerald-700" :
                       session.status === "completed" ? "bg-blue-50 text-blue-700" :
@@ -132,8 +134,22 @@ export default function RelatoriosPage() {
                       <span className="text-xs text-[var(--text3)] tabular-nums">{session.actionPlanProgress ?? 0}%</span>
                     </div>
                   </div>
-                  <div className="col-span-3 text-center text-xs text-[var(--text3)]">
+                  <div className="col-span-2 text-center text-xs text-[var(--text3)]">
                     {session.startDate ? new Date(session.startDate).toLocaleDateString("pt-BR") : "-"}
+                  </div>
+                  <div className="col-span-2 flex items-center justify-center gap-1.5">
+                    <Link
+                      href={`/consultorias/${session.id}`}
+                      className="px-2.5 py-1 rounded text-[10px] font-bold bg-[var(--navy)] text-white hover:bg-[var(--navy-dark)] transition-colors"
+                    >
+                      Detalhes
+                    </Link>
+                    <Link
+                      href={`/consultorias/${session.id}/relatorio`}
+                      className="px-2.5 py-1 rounded text-[10px] font-bold bg-[var(--cyan)]/10 text-[var(--cyan)] hover:bg-[var(--cyan)]/20 transition-colors"
+                    >
+                      PDF
+                    </Link>
                   </div>
                 </div>
               ))}
