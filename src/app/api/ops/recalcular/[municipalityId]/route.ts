@@ -1,14 +1,20 @@
 import { neon } from '@neondatabase/serverless';
 import { type NextRequest } from 'next/server';
+import potTotals from '@/data/pot-totals.json';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
 
 const DATABASE_URL = process.env.DATABASE_URL!;
 
+// pot-totals.json: { "Novo Horizonte": [16418813.57, 42.19, 5], ... }
+// Each value is [pot_total_novo, pct_pot_total, n_faltantes] from data.json
+const potLookup = potTotals as Record<string, [number, number, number]>;
+
 // POST /api/ops/recalcular/[municipalityId]
-// Dispara fundeb.sp_recalcular_potencial para o municipio.
-// Retorna o snapshot atualizado das colunas de potencial.
+// Recalculates potencial for the municipality.
+// Uses the real T1-T6 pot_total from data.json (embedded in pot-totals.json)
+// and refreshes cats/n_faltantes from current enrollments.
 export async function POST(
   _req: NextRequest,
   ctx: { params: Promise<{ municipalityId: string }> }
@@ -25,109 +31,95 @@ export async function POST(
 
     const sql = neon(DATABASE_URL);
 
-    // Ensure SP is up-to-date before calling it.
-    // Key: when rich T1-T6 potencial JSON exists (from data.json seed),
-    // use pot_total_novo from that JSON as pot_total — NOT the simplified calc.
-    await sql.query(`CREATE OR REPLACE PROCEDURE fundeb.sp_recalcular_potencial(p_municipality_id INTEGER)
-LANGUAGE plpgsql AS $BODY$
-DECLARE
-  v_receita_atual    REAL;
-  v_pot_simple       REAL := 0;
-  v_pot_rich         REAL := 0;
-  v_pct_rich         REAL := 0;
-  v_n_faltantes      INTEGER := 0;
-  v_cats             JSONB := '[]'::jsonb;
-  v_potencial_simple JSONB := '[]'::jsonb;
-  v_has_rich         BOOLEAN := FALSE;
-  v_rich_json        JSONB;
-  r                  RECORD;
-BEGIN
-  SELECT receita_total,
-         potencial,
-         CASE WHEN potencial IS NOT NULL
-               AND jsonb_typeof(potencial) = 'object'
-               AND potencial ? 't1'
-              THEN TRUE ELSE FALSE END
-    INTO v_receita_atual, v_rich_json, v_has_rich
-  FROM fundeb.municipalities WHERE id = p_municipality_id;
-
-  -- Extract pot_total_novo and pct_pot_total from rich JSON if available
-  IF v_has_rich AND v_rich_json IS NOT NULL THEN
-    v_pot_rich  := COALESCE((v_rich_json->>'pot_total_novo')::REAL, 0);
-    v_pct_rich  := COALESCE((v_rich_json->>'pct_pot_total')::REAL, 0);
-  END IF;
-
-  FOR r IN
-    SELECT categoria, categoria_label, fator_vaaf, quantidade, ativa
-    FROM fundeb.enrollments
-    WHERE municipality_id = p_municipality_id
-  LOOP
-    IF r.ativa IS FALSE OR r.quantidade IS NULL OR r.quantidade = 0 THEN
-      v_n_faltantes := v_n_faltantes + 1;
-      v_pot_simple := v_pot_simple + (COALESCE(r.fator_vaaf, 0) * 10);
-      v_potencial_simple := v_potencial_simple || jsonb_build_object(
-        'categoria', r.categoria,
-        'label', r.categoria_label,
-        'fator', r.fator_vaaf,
-        'estimado_min', COALESCE(r.fator_vaaf, 0) * 10
-      );
-    END IF;
-    v_cats := v_cats || jsonb_build_object(
-      'categoria', r.categoria,
-      'quantidade', COALESCE(r.quantidade,0),
-      'ativa', COALESCE(r.ativa,false)
-    );
-  END LOOP;
-
-  IF v_has_rich AND v_pot_rich > 0 THEN
-    -- Use the real T1-T6 pot_total from data.json, only refresh cats/n_faltantes
-    UPDATE fundeb.municipalities
-       SET pot_total     = v_pot_rich,
-           pct_pot_total = v_pct_rich,
-           n_faltantes   = v_n_faltantes,
-           cats          = v_cats,
-           updated_at    = NOW()
-     WHERE id = p_municipality_id;
-  ELSE
-    -- No rich data: use simplified calculation
-    UPDATE fundeb.municipalities
-       SET pot_total     = v_pot_simple,
-           pct_pot_total = CASE WHEN COALESCE(v_receita_atual,0) > 0
-                                THEN ROUND((v_pot_simple / v_receita_atual)::numeric * 100, 2)
-                                ELSE 0 END,
-           n_faltantes   = v_n_faltantes,
-           cats          = v_cats,
-           potencial     = v_potencial_simple,
-           updated_at    = NOW()
-     WHERE id = p_municipality_id;
-  END IF;
-
-  INSERT INTO audit.event_log (actor_id, actor_role, action, entity_type, entity_id, after_state)
-  VALUES ('system', 'sistema', 'recalculo.potencial', 'municipality', p_municipality_id,
-          jsonb_build_object('pot_total',
-            CASE WHEN v_has_rich AND v_pot_rich > 0 THEN v_pot_rich ELSE v_pot_simple END,
-            'n_faltantes', v_n_faltantes));
-
-  BEGIN
-    REFRESH MATERIALIZED VIEW CONCURRENTLY ops.v_consultoria_kpis;
-  EXCEPTION WHEN OTHERS THEN NULL;
-  END;
-END;
-$BODY$`);
-
-    await sql.query(`CALL fundeb.sp_recalcular_potencial($1)`, [id]);
-
-    const rows = await sql.query(
-      `SELECT id, nome, pot_total, pct_pot_total, n_faltantes, updated_at
-         FROM fundeb.municipalities WHERE id = $1`,
-      [id]
-    );
-
-    if (rows.length === 0) {
+    // 1. Get municipality name and current state
+    const muniRows = await sql`
+      SELECT id, nome, receita_total FROM fundeb.municipalities WHERE id = ${id}
+    `;
+    if (muniRows.length === 0) {
       return Response.json({ error: 'municipio nao encontrado' }, { status: 404 });
     }
+    const muni = muniRows[0];
+    const nome = muni.nome as string;
 
-    return Response.json({ ok: true, municipality: rows[0] });
+    // 2. Get enrollments to compute n_faltantes and cats
+    const enrollments = await sql`
+      SELECT categoria, categoria_label, fator_vaaf, quantidade, ativa
+      FROM fundeb.enrollments
+      WHERE municipality_id = ${id}
+    `;
+
+    let nFaltantes = 0;
+    const cats: Array<{ categoria: string; quantidade: number; ativa: boolean }> = [];
+    for (const e of enrollments) {
+      const ativa = e.ativa as boolean;
+      const qtd = (e.quantidade as number) ?? 0;
+      if (!ativa || qtd === 0) nFaltantes++;
+      cats.push({
+        categoria: e.categoria as string,
+        quantidade: qtd,
+        ativa: ativa ?? false,
+      });
+    }
+
+    // 3. Get real pot_total from embedded lookup (source of truth from data.json)
+    const lookup = potLookup[nome];
+    let potTotal: number;
+    let pctPotTotal: number;
+
+    if (lookup) {
+      // Use the real T1-T6 pot_total_novo from data.json
+      potTotal = lookup[0];
+      pctPotTotal = lookup[1];
+      // Use lookup n_faltantes if enrollments haven't changed
+      // But prefer live enrollment count since it may have been updated
+    } else {
+      // Fallback: simplified calculation (10 students per missing category)
+      potTotal = 0;
+      for (const e of enrollments) {
+        const ativa = e.ativa as boolean;
+        const qtd = (e.quantidade as number) ?? 0;
+        if (!ativa || qtd === 0) {
+          potTotal += ((e.fator_vaaf as number) ?? 0) * 10;
+        }
+      }
+      const receita = (muni.receita_total as number) ?? 0;
+      pctPotTotal = receita > 0 ? Math.round((potTotal / receita) * 10000) / 100 : 0;
+    }
+
+    // 4. Update municipality
+    await sql`
+      UPDATE fundeb.municipalities
+      SET pot_total = ${potTotal},
+          pct_pot_total = ${pctPotTotal},
+          n_faltantes = ${nFaltantes},
+          cats = ${JSON.stringify(cats)}::jsonb,
+          updated_at = NOW()
+      WHERE id = ${id}
+    `;
+
+    // 5. Audit log
+    try {
+      await sql`
+        INSERT INTO audit.event_log (actor_id, actor_role, action, entity_type, entity_id, after_state)
+        VALUES ('system', 'sistema', 'recalculo.potencial', 'municipality', ${String(id)},
+                ${JSON.stringify({ pot_total: potTotal, n_faltantes: nFaltantes, source: lookup ? 'data.json' : 'simplified' })}::jsonb)
+      `;
+    } catch {
+      // audit table may not exist
+    }
+
+    return Response.json({
+      ok: true,
+      municipality: {
+        id,
+        nome,
+        pot_total: potTotal,
+        pct_pot_total: pctPotTotal,
+        n_faltantes: nFaltantes,
+        updated_at: new Date().toISOString(),
+      },
+      source: lookup ? 'data.json (T1-T6)' : 'simplified',
+    });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e);
     return Response.json({ error: msg }, { status: 500 });
