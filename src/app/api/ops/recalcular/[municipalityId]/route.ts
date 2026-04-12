@@ -9,7 +9,7 @@ const DATABASE_URL = process.env.DATABASE_URL!;
 
 // pot-totals.json: { "Novo Horizonte": [16418813.57, 42.19, 5], ... }
 // Each value is [pot_total_novo, pct_pot_total, n_faltantes] from data.json
-const potLookup = potTotals as Record<string, [number, number, number]>;
+const potLookup = potTotals as unknown as Record<string, [number, number, number]>;
 
 // POST /api/ops/recalcular/[municipalityId]
 // Recalculates potencial for the municipality.
