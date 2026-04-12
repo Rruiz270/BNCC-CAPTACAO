@@ -24,11 +24,36 @@ interface SessionData {
   municipality?: { id: number; nome: string; slug?: string };
 }
 
+interface T2Item { de: string; para: string; mat: number; diff_por_aluno: number; ganho_total: number }
+interface T3Item { cat: string; mat_especial: number; vaaf_aee: number; ganho_100pct: number }
+interface T1Item { cat: string; vaaf_u: number; fator: number }
+
+interface PotencialDetalhes {
+  categorias_ativas?: string[];
+  categorias_faltantes?: string[];
+  pot_total_novo?: number;
+  pct_pot_total?: number;
+  t1?: { detalhe?: T1Item[] };
+  t2?: { detalhe?: T2Item[]; ganho_total?: number };
+  t3?: { detalhe?: T3Item[]; ganho_total?: number };
+  t4?: { mat_urbano_total?: number };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+}
+
+interface PotencialDetail {
+  potTotal: number;
+  pctPotTotal: number;
+  nFaltantes: number;
+  detalhes: PotencialDetalhes | null;
+}
+
 interface MuniResponse {
   id: number;
   nome: string;
   enrollments: Enrollment[];
   financials: { receitaTotal: number | null };
+  potencial?: PotencialDetail;
 }
 
 interface Scenario {
@@ -102,7 +127,92 @@ export default function StepSimulacao() {
     loadScenarios();
   }, [loadScenarios]);
 
-  // 2) Calcula impacto em tempo real a partir dos overrides
+  // 2a) Build per-category metadata from potencial
+  const catMeta = useMemo(() => {
+    const meta: Record<string, { maxAdd: number; hint: string; tier: string; relevant: boolean }> = {};
+    if (!muni) return meta;
+    const det = muni.potencial?.detalhes;
+
+    // Index enrollments by label for quick lookup
+    const byLabel: Record<string, Enrollment> = {};
+    for (const e of muni.enrollments) byLabel[e.categoriaLabel ?? e.categoria] = e;
+
+    // T2 conversion: partial → integral (max = mat from partial category)
+    if (det?.t2?.detalhe) {
+      for (const item of det.t2.detalhe) {
+        // The "para" category can gain up to "mat" students from the "de" category
+        const target = muni.enrollments.find(
+          (e) => (e.categoriaLabel ?? e.categoria) === item.para
+        );
+        if (target) {
+          const key = target.categoria;
+          meta[key] = {
+            maxAdd: item.mat,
+            hint: `Converter ${item.mat.toLocaleString("pt-BR")} de ${item.de} (+R$${(item.diff_por_aluno ?? 0).toLocaleString("pt-BR",{maximumFractionDigits:0})}/aluno)`,
+            tier: "T2",
+            relevant: true,
+          };
+        }
+      }
+    }
+
+    // T3 AEE: special education double enrollment
+    if (det?.t3?.detalhe) {
+      for (const item of det.t3.detalhe) {
+        const target = muni.enrollments.find(
+          (e) => (e.categoriaLabel ?? e.categoria) === item.cat
+        );
+        if (target) {
+          const key = target.categoria;
+          if (!meta[key]) {
+            meta[key] = { maxAdd: item.mat_especial, hint: "", tier: "T3", relevant: true };
+          }
+          meta[key].hint = `AEE dupla matrícula: ${item.mat_especial.toLocaleString("pt-BR")} alunos (+R$${item.ganho_100pct.toLocaleString("pt-BR",{maximumFractionDigits:0})})`;
+        }
+      }
+    }
+
+    // T1 missing categories — can be started
+    if (det?.t1?.detalhe) {
+      for (const item of det.t1.detalhe) {
+        const target = muni.enrollments.find(
+          (e) => (e.categoriaLabel ?? e.categoria) === item.cat
+        );
+        if (target) {
+          const key = target.categoria;
+          if (!meta[key]) {
+            meta[key] = { maxAdd: 50, hint: "", tier: "T1", relevant: true };
+          }
+          meta[key].hint = `Categoria inexistente — pode ser criada (VAAF R$${item.vaaf_u.toLocaleString("pt-BR",{maximumFractionDigits:0})}/aluno)`;
+        }
+      }
+    }
+
+    // Mark all active categories with existing enrollment as relevant even without specific potential
+    for (const e of muni.enrollments) {
+      if (e.ativa && e.quantidade > 0 && !meta[e.categoria]) {
+        meta[e.categoria] = { maxAdd: 0, hint: "", tier: "", relevant: true };
+      }
+    }
+
+    return meta;
+  }, [muni]);
+
+  // 2b) Filter enrollments to only show relevant categories
+  const visibleEnrollments = useMemo(() => {
+    if (!muni) return [];
+    return muni.enrollments.filter((e) => {
+      // Always show if user already has an override for it
+      if (overrides[e.categoria] != null) return true;
+      // Show if it has potential metadata
+      if (catMeta[e.categoria]?.relevant) return true;
+      // Show if active with existing students
+      if (e.ativa && (e.quantidade ?? 0) > 0) return true;
+      return false;
+    });
+  }, [muni, catMeta, overrides]);
+
+  // 2c) Calcula impacto em tempo real a partir dos overrides
   const baseReceita = useMemo(() => {
     if (!muni) return 0;
     return muni.enrollments.reduce(
@@ -263,6 +373,31 @@ export default function StepSimulacao() {
         />
       </div>
 
+      {/* Teto de captação */}
+      {muni?.potencial && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-blue-600 mb-0.5">
+                Teto de captacao do municipio
+              </div>
+              <div className="text-sm font-bold text-blue-800">
+                {fmtBRL(muni.potencial.potTotal ?? muni.potencial.detalhes?.pot_total_novo ?? 0)}
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-[10px] text-blue-600">Potencial</div>
+              <div className="text-sm font-bold text-blue-800">
+                +{(muni.potencial.pctPotTotal ?? muni.potencial.detalhes?.pct_pot_total ?? 0).toFixed(1)}%
+              </div>
+            </div>
+          </div>
+          <div className="text-[10px] text-blue-600 mt-1">
+            {muni.potencial.nFaltantes} categorias faltantes · {visibleEnrollments.length} categorias com potencial de ajuste
+          </div>
+        </div>
+      )}
+
       {/* Sliders por categoria */}
       <div className="border border-[var(--border)] rounded-lg p-4 mb-4">
         <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--text3)] mb-2">
@@ -270,55 +405,76 @@ export default function StepSimulacao() {
         </div>
         {!muni ? (
           <div className="text-xs text-gray-400">Carregando matriculas do municipio...</div>
-        ) : muni.enrollments.length === 0 ? (
-          <div className="text-xs text-gray-400">Municipio sem matriculas registradas.</div>
+        ) : visibleEnrollments.length === 0 ? (
+          <div className="text-xs text-gray-400">Municipio sem categorias com potencial de ajuste.</div>
         ) : (
-          <div className="space-y-2 max-h-96 overflow-y-auto pr-2">
-            {muni.enrollments.map((e) => {
+          <div className="space-y-2 max-h-[28rem] overflow-y-auto pr-2">
+            {visibleEnrollments.map((e) => {
               const override = overrides[e.categoria];
               const current = override != null ? override : e.quantidade ?? 0;
               const base = e.quantidade ?? 0;
-              const max = Math.max(base * 3, 100, base + 50);
+              const cm = catMeta[e.categoria];
+              // Smart max: base + potential add from T2/T1/T3, or reasonable default
+              const potAdd = cm?.maxAdd ?? 0;
+              const max = Math.max(base + potAdd, base + 20, potAdd > 0 ? base + potAdd : base * 2);
               const modified = override != null && override !== base;
+              const tierBadge = cm?.tier;
               return (
                 <div
                   key={e.categoria}
-                  className={`flex items-center gap-3 text-xs p-2 rounded ${
+                  className={`p-2 rounded ${
                     modified ? "bg-amber-50" : ""
                   }`}
                 >
-                  <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-[var(--text1)] truncate">
-                      {e.categoriaLabel ?? e.categoria}
+                  <div className="flex items-center gap-3 text-xs">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-[var(--text1)] truncate flex items-center gap-1.5">
+                        {e.categoriaLabel ?? e.categoria}
+                        {tierBadge && (
+                          <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${
+                            tierBadge === "T2" ? "bg-purple-100 text-purple-700" :
+                            tierBadge === "T1" ? "bg-green-100 text-green-700" :
+                            tierBadge === "T3" ? "bg-orange-100 text-orange-700" : "bg-gray-100 text-gray-500"
+                          }`}>
+                            {tierBadge}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-[10px] text-[var(--text3)]">
+                        base: {base.toLocaleString("pt-BR")} · VAAF: {fmtBRL(e.fatorVaaf ?? 0)}/aluno ·{" "}
+                        {e.ativa ? "ativa" : "inativa"}
+                        {potAdd > 0 && <span className="text-blue-600"> · max +{potAdd.toLocaleString("pt-BR")}</span>}
+                      </div>
                     </div>
-                    <div className="text-[10px] text-[var(--text3)]">
-                      base: {base} · fator: {e.fatorVaaf?.toFixed(3) ?? "-"} ·{" "}
-                      {e.ativa ? "ativa" : "inativa"}
-                    </div>
+                    <input
+                      type="range"
+                      min={0}
+                      max={max}
+                      step={1}
+                      value={current}
+                      onChange={(ev) =>
+                        setOverrides((o) => ({ ...o, [e.categoria]: parseInt(ev.target.value, 10) }))
+                      }
+                      className="w-40"
+                    />
+                    <input
+                      type="number"
+                      min={0}
+                      value={current}
+                      onChange={(ev) =>
+                        setOverrides((o) => ({
+                          ...o,
+                          [e.categoria]: Math.max(0, parseInt(ev.target.value, 10) || 0),
+                        }))
+                      }
+                      className="w-16 px-1 py-0.5 border border-[var(--border)] rounded text-right text-xs"
+                    />
                   </div>
-                  <input
-                    type="range"
-                    min={0}
-                    max={max}
-                    step={1}
-                    value={current}
-                    onChange={(ev) =>
-                      setOverrides((o) => ({ ...o, [e.categoria]: parseInt(ev.target.value, 10) }))
-                    }
-                    className="w-40"
-                  />
-                  <input
-                    type="number"
-                    min={0}
-                    value={current}
-                    onChange={(ev) =>
-                      setOverrides((o) => ({
-                        ...o,
-                        [e.categoria]: Math.max(0, parseInt(ev.target.value, 10) || 0),
-                      }))
-                    }
-                    className="w-16 px-1 py-0.5 border border-[var(--border)] rounded text-right text-xs"
-                  />
+                  {cm?.hint && (
+                    <div className="text-[10px] text-blue-600 mt-0.5 ml-0.5">
+                      {cm.hint}
+                    </div>
+                  )}
                 </div>
               );
             })}
