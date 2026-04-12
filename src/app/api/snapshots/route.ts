@@ -19,10 +19,10 @@ export async function GET(request: NextRequest) {
     }
 
     const rows = await sql`
-      SELECT id, consultoria_id, hash, signed_by, reason, created_at
+      SELECT id, consultoria_id, hash, signed_by, reason, signed_at
       FROM audit.snapshots
       WHERE consultoria_id = ${consultoriaId}
-      ORDER BY created_at DESC
+      ORDER BY signed_at DESC
     `;
 
     return Response.json({
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
         hash: r.hash,
         signedBy: r.signed_by,
         reason: r.reason,
-        createdAt: r.created_at,
+        createdAt: r.signed_at,
       })),
     });
   } catch (e: unknown) {
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
       }
 
       const snapRows = await sql`
-        SELECT id, consultoria_id, hash, signed_by, reason, created_at
+        SELECT id, consultoria_id, hash, signed_by, reason, signed_at
         FROM audit.snapshots
         WHERE id = ${snapshotId}
       `;
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
           hash: snap.hash,
           signedBy: snap.signed_by,
           reason: snap.reason,
-          createdAt: snap.created_at,
+          createdAt: snap.signed_at,
         },
       });
     } catch (e) {
