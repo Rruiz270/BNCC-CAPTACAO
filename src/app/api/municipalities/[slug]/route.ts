@@ -88,10 +88,16 @@ export async function GET(
     `;
 
     // Fetch census data (full cross-reference row as JSONB)
-    const censusRows = await sql`
-      SELECT raw_data FROM fundeb.census_data WHERE municipality_id = ${muniId} LIMIT 1
-    `;
-    const censusData = censusRows.length > 0 ? censusRows[0].raw_data : null;
+    // Wrapped in try/catch because the table may not exist yet
+    let censusData = null;
+    try {
+      const censusRows = await sql`
+        SELECT raw_data FROM fundeb.census_data WHERE municipality_id = ${muniId} LIMIT 1
+      `;
+      censusData = censusRows.length > 0 ? censusRows[0].raw_data : null;
+    } catch {
+      // Table doesn't exist yet — census data not seeded
+    }
 
     // Fetch action plans
     const actionPlans = await sql`
