@@ -20,6 +20,7 @@ const NAV_ITEMS = [
   { href: "/implementacao/simec", label: "Guia SIMEC" },
   { href: "/implementacao/formacao", label: "Formacao Docente" },
   { type: "divider", label: "Dados" },
+  { href: "/consultorias", label: "Consultorias" },
   { href: "/importar", label: "Importar Dados" },
   { href: "/relatorios", label: "Relatorios" },
   { type: "divider", label: "" },
