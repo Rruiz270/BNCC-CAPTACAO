@@ -78,16 +78,6 @@ export default function StepDiscovery() {
   const [error, setError] = useState<string | null>(null);
   const [intakeResponse, setIntakeResponse] = useState<IntakeResponse | null>(null);
 
-  // Busca intake response
-  useEffect(() => {
-    fetch(`/api/intake?consultoriaId=${consultoriaId}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.response) setIntakeResponse(data.response);
-      })
-      .catch(() => {});
-  }, [consultoriaId]);
-
   // Busca municipio da sessao
   useEffect(() => {
     fetch(`/api/consultorias`)
@@ -98,6 +88,26 @@ export default function StepDiscovery() {
       })
       .catch(() => {});
   }, [consultoriaId]);
+
+  // Busca intake response — first by consultoriaId, then fallback by municipalityId
+  useEffect(() => {
+    fetch(`/api/intake?consultoriaId=${consultoriaId}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.response) {
+          setIntakeResponse(data.response);
+        } else if (muniId) {
+          // Fallback: look for pre-consultoria intake by municipality
+          fetch(`/api/intake?municipalityId=${muniId}`)
+            .then((r) => r.json())
+            .then((fallback) => {
+              if (fallback.response) setIntakeResponse(fallback.response);
+            })
+            .catch(() => {});
+        }
+      })
+      .catch(() => {});
+  }, [consultoriaId, muniId]);
 
   // Estado derivado do wizard_progress.payload (com overrides locais)
   const storedPayload = steps.find((s) => s.step === 2)?.payload as StepPayload | undefined;

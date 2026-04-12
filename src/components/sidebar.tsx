@@ -382,6 +382,16 @@ export function Sidebar() {
           Comparativo
         </Link>
         <Link
+          href="/captacao"
+          className={`flex items-center px-3 py-2.5 rounded-lg text-sm transition-all ${
+            isActive("/captacao")
+              ? "bg-white/15 text-white font-semibold"
+              : "text-white/60 hover:bg-white/8 hover:text-white/90"
+          }`}
+        >
+          Captacao
+        </Link>
+        <Link
           href="/catalogo"
           className={`flex items-center px-3 py-2.5 rounded-lg text-sm transition-all ${
             isActive("/catalogo")
