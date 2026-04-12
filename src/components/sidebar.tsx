@@ -401,6 +401,36 @@ export function Sidebar() {
         >
           Catalogo i10
         </Link>
+        <Link
+          href="/projecao"
+          className={`flex items-center px-3 py-2.5 rounded-lg text-sm transition-all ${
+            isActive("/projecao")
+              ? "bg-white/15 text-white font-semibold"
+              : "text-white/60 hover:bg-white/8 hover:text-white/90"
+          }`}
+        >
+          Projecao Financeira
+        </Link>
+        <Link
+          href="/calculadora-ec135"
+          className={`flex items-center px-3 py-2.5 rounded-lg text-sm transition-all ${
+            isActive("/calculadora-ec135")
+              ? "bg-white/15 text-white font-semibold"
+              : "text-white/60 hover:bg-white/8 hover:text-white/90"
+          }`}
+        >
+          Calculadora EC 135
+        </Link>
+        <Link
+          href="/relatorios/gerar"
+          className={`flex items-center px-3 py-2.5 rounded-lg text-sm transition-all ${
+            isActive("/relatorios/gerar")
+              ? "bg-white/15 text-white font-semibold"
+              : "text-white/60 hover:bg-white/8 hover:text-white/90"
+          }`}
+        >
+          Gerar Relatorio
+        </Link>
 
         {/* ADMIN */}
         <div className="pt-4 pb-1 px-3">

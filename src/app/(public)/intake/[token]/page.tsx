@@ -222,6 +222,8 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
     { label: "Contribuicao FUNDEB", value: fmtBRL(muni.contribuicao), sub: "Recolhido ao fundo" },
     { label: "VAAR", value: muni.vaar && muni.vaar > 0 ? fmtBRL(muni.vaar) : "Nao recebe", sub: muni.vaar && muni.vaar > 0 ? "Complementacao VAAR" : "Sem elegibilidade" },
     { label: "Potencial de Ganho", value: fmtBRL(muni.potTotal), sub: `${(muni.pctPotTotal || 0).toFixed(1)}% da receita atual` },
+    { label: "Matriculas", value: fmtNum(muni.totalMatriculas), sub: "Total registradas" },
+    { label: "Escolas", value: fmtNum(muni.totalEscolas), sub: `${muni.escolasMunicipais || 0} municipais` },
   ];
 
   return (
@@ -256,6 +258,39 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
       </div>
 
       <div className="max-w-[900px] mx-auto px-6 pb-12">
+        {/* Municipality Preview — Consultoria Preview */}
+        <section className="bg-gradient-to-br from-emerald-50 to-cyan-50 border border-emerald-200 rounded-xl p-7 mt-6">
+          <h2 className="text-base font-bold text-[var(--navy)] mb-1">Preview: Oportunidades Identificadas</h2>
+          <p className="text-xs text-[var(--text2)] mb-4">
+            Nossa analise preliminar identificou as seguintes oportunidades de captacao FUNDEB para seu municipio.
+            Os dados detalhados serao apresentados na consultoria.
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {summaryItems.map((item, i) => (
+              <div key={i} className="bg-white rounded-lg p-3 border border-emerald-100">
+                <div className="text-[10px] font-semibold uppercase text-[var(--text2)] tracking-wider">{item.label}</div>
+                <div className="text-lg font-bold text-[var(--navy)] mt-0.5">{item.value}</div>
+                <div className="text-[10px] text-[var(--text2)]">{item.sub}</div>
+              </div>
+            ))}
+          </div>
+          {muni.potTotal > 0 && (
+            <div className="mt-4 bg-white rounded-lg p-4 border border-emerald-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold text-emerald-700">Receita otimizada estimada</span>
+                <span className="text-lg font-bold text-emerald-700">{fmtBRL(muni.receitaTotal + muni.potTotal)}</span>
+              </div>
+              <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-full bg-emerald-400 rounded-full" style={{ width: `${Math.min(((muni.receitaTotal) / (muni.receitaTotal + muni.potTotal)) * 100, 100)}%` }} />
+              </div>
+              <div className="flex justify-between mt-1 text-[10px] text-[var(--text2)]">
+                <span>Atual: {fmtBRL(muni.receitaTotal)}</span>
+                <span className="text-emerald-600 font-semibold">+{fmtBRL(muni.potTotal)} potencial</span>
+              </div>
+            </div>
+          )}
+        </section>
+
         {/* Respondent Info */}
         <section className="bg-white border border-[var(--border)] rounded-xl p-7 mt-6">
           <h2 className="text-base font-bold text-[var(--navy)] mb-1">Dados do Responsavel</h2>

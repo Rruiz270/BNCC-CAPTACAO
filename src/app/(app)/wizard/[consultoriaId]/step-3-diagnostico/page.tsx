@@ -171,6 +171,9 @@ export default function StepDiagnostico() {
         </div>
       )}
 
+      {/* T1-T6 Breakdown */}
+      <TierBreakdown muniId={muniId} />
+
       {/* Painel embarcado: link para /diagnostico/[slug] */}
       <div className="bg-[var(--bg)] border border-[var(--border)] rounded-lg p-4 mb-4">
         <div className="text-xs text-[var(--text3)] mb-2">Painel detalhado (legado)</div>
@@ -227,6 +230,121 @@ function Kpi({
     <div className="bg-[var(--bg)] rounded-lg p-3">
       <div className="text-[10px] uppercase text-[var(--text3)]">{label}</div>
       <div className={`text-lg font-bold ${colors[tone]}`}>{value}</div>
+    </div>
+  );
+}
+
+const TIERS = [
+  { key: "pot_t1", label: "T1 - Categorias Zeradas", desc: "Ativar categorias FUNDEB que tem zero matriculas registradas", color: "#ef4444", difficulty: "Facil" },
+  { key: "pot_t2", label: "T2 - Reclassificacao Integral", desc: "Converter matriculas parciais para integral (maior fator VAAF)", color: "#f59e0b", difficulty: "Medio" },
+  { key: "pot_t3", label: "T3 - AEE/Ed. Especial", desc: "Captar dupla matricula AEE e Ed. Especial nao registrada", color: "#8b5cf6", difficulty: "Medio" },
+  { key: "pot_t4", label: "T4 - Campo/Indigena", desc: "Aplicar multiplicadores de localizacao diferenciada (1.15x campo, 1.40x indigena)", color: "#22c55e", difficulty: "Facil" },
+  { key: "pot_t5", label: "T5 - VAAR/VAAT", desc: "Otimizar complementacoes federais por condicionalidades", color: "#3b82f6", difficulty: "Complexo" },
+  { key: "pot_t6", label: "T6 - EC 135 Integral", desc: "Expansao obrigatoria de escola integral (4%/ano) com ganho FUNDEB", color: "#06b6d4", difficulty: "Longo Prazo" },
+];
+
+interface TierData {
+  pot_t1?: number; pot_t2?: number; pot_t3?: number; pot_t4?: number;
+  pot_t5_vaar?: number; pot_t5_vaat?: number; pot_t6?: number;
+  cats_faltantes?: string; estrategias_resumo?: string; n_estrategias?: number;
+}
+
+function TierBreakdown({ muniId }: { muniId: number | null }) {
+  const [data, setData] = useState<TierData | null>(null);
+
+  useEffect(() => {
+    if (!muniId) return;
+    fetch(`/api/municipalities/${muniId}`)
+      .then((r) => r.json())
+      .then((d) => setData(d))
+      .catch(() => {});
+  }, [muniId]);
+
+  if (!muniId || !data) return null;
+
+  const tierValues = [
+    data.pot_t1 || 0,
+    data.pot_t2 || 0,
+    data.pot_t3 || 0,
+    data.pot_t4 || 0,
+    (data.pot_t5_vaar || 0) + (data.pot_t5_vaat || 0),
+    data.pot_t6 || 0,
+  ];
+
+  const totalTiers = tierValues.reduce((s, v) => s + v, 0);
+  if (totalTiers === 0) return null;
+
+  const maxTier = Math.max(...tierValues, 1);
+
+  const fmt = (v: number) =>
+    v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+  const diffColors: Record<string, string> = {
+    "Facil": "bg-emerald-100 text-emerald-800",
+    "Medio": "bg-amber-100 text-amber-800",
+    "Complexo": "bg-red-100 text-red-800",
+    "Longo Prazo": "bg-blue-100 text-blue-800",
+  };
+
+  return (
+    <div className="border border-[var(--border)] rounded-lg p-5 mb-4">
+      <div className="text-[10px] font-bold uppercase tracking-widest text-[#00B4D8] mb-1">
+        Potencial por Tier (T1-T6)
+      </div>
+      <div className="text-xs text-[var(--text3)] mb-4">
+        Detalhamento de onde esta o ganho financeiro FUNDEB, organizado por estrategia
+      </div>
+
+      <div className="space-y-3">
+        {TIERS.map((tier, i) => (
+          <div key={tier.key} className="flex items-start gap-3">
+            <div
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold text-white shrink-0 mt-0.5"
+              style={{ background: tier.color }}
+            >
+              {i + 1}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-[var(--text1)]">{tier.label}</span>
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded font-medium ${diffColors[tier.difficulty]}`}>
+                    {tier.difficulty}
+                  </span>
+                </div>
+                <span className="text-sm font-bold tabular-nums" style={{ color: tier.color }}>
+                  {fmt(tierValues[i])}
+                </span>
+              </div>
+              <div className="text-xs text-[var(--text3)] mb-1.5">{tier.desc}</div>
+              <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all"
+                  style={{ width: `${Math.max((tierValues[i] / maxTier) * 100, 2)}%`, background: tier.color }}
+                />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Total */}
+      <div className="mt-4 pt-3 border-t border-[var(--border)] flex justify-between">
+        <span className="text-sm font-bold text-[var(--text1)]">Total Potencial T1-T6</span>
+        <span className="text-lg font-bold text-emerald-700">{fmt(totalTiers)}</span>
+      </div>
+
+      {/* Categories and strategies */}
+      {data.cats_faltantes && (
+        <div className="mt-3 bg-red-50 border border-red-200 rounded-lg p-3 text-xs text-red-700">
+          <span className="font-bold">Categorias nao captadas:</span> {data.cats_faltantes}
+        </div>
+      )}
+      {data.estrategias_resumo && (
+        <div className="mt-2 bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-xs text-emerald-700">
+          <span className="font-bold">Estrategias ({data.n_estrategias || 0}):</span> {data.estrategias_resumo}
+        </div>
+      )}
     </div>
   );
 }

@@ -30,10 +30,27 @@ interface SessionData {
   municipality?: { id: number; nome: string };
 }
 
+interface MuniFinancials {
+  vaar: number;
+  potTotal: number;
+  pot_t5_vaar?: number;
+  pot_t5_vaat?: number;
+  pot_t6?: number;
+}
+
 interface StepPayload {
   pct?: number;
   classifiedAll?: boolean;
 }
+
+// Financial impact mapping per compliance section
+const SECTION_IMPACT: Record<string, { label: string; getImpact: (f: MuniFinancials) => number }> = {
+  A: { label: "VAAR em risco", getImpact: (f) => f.vaar || (f.pot_t5_vaar || 0) },
+  B: { label: "VAAR Condicionalidade 5", getImpact: (f) => Math.round((f.vaar || (f.pot_t5_vaar || 0)) * 0.2) },
+  C: { label: "Todas categorias FUNDEB", getImpact: (f) => f.potTotal || 0 },
+  D: { label: "Registro SIMEC", getImpact: (f) => Math.round((f.vaar || 0) * 0.1) },
+  E: { label: "EC 135 / T6", getImpact: (f) => f.pot_t6 || 0 },
+};
 
 export default function StepCompliance() {
   const step = getStepById(5)!;
@@ -44,6 +61,7 @@ export default function StepCompliance() {
   const [dirty, setDirty] = useState<Set<number>>(new Set());
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [financials, setFinancials] = useState<MuniFinancials | null>(null);
 
   // Carrega sessao
   useEffect(() => {
@@ -52,6 +70,18 @@ export default function StepCompliance() {
       .then((data) => {
         const s = data.sessions?.find((x: SessionData) => x.id === consultoriaId);
         setSession(s || null);
+        if (s?.municipality?.id) {
+          fetch(`/api/municipalities/${s.municipality.id}`)
+            .then((r) => r.json())
+            .then((d) => setFinancials({
+              vaar: d.financials?.vaar || 0,
+              potTotal: d.potencial?.potTotal || 0,
+              pot_t5_vaar: d.pot_t5_vaar || 0,
+              pot_t5_vaat: d.pot_t5_vaat || 0,
+              pot_t6: d.pot_t6 || 0,
+            }))
+            .catch(() => {});
+        }
       })
       .catch(() => {});
   }, [consultoriaId]);
@@ -163,6 +193,28 @@ export default function StepCompliance() {
         </div>
       )}
 
+      {/* Financial impact banner */}
+      {financials && financials.potTotal > 0 && (
+        <div className="bg-gradient-to-r from-emerald-50 to-cyan-50 border border-emerald-200 rounded-lg p-4 mb-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-xs font-bold text-emerald-700">Impacto Financeiro do Compliance</div>
+              <div className="text-[10px] text-emerald-600 mt-0.5">
+                Cada item concluido protege receita FUNDEB. Pendencias colocam repasses em risco.
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-lg font-bold text-emerald-700">
+                {(done > 0 && total > 0 ? (financials.potTotal * (done / total)) : 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              </div>
+              <div className="text-[10px] text-emerald-500">
+                de {financials.potTotal.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0, maximumFractionDigits: 0 })} protegido
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Stats + acao de salvar */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
         <div className="border border-[var(--border)] rounded-lg p-3">
@@ -207,15 +259,39 @@ export default function StepCompliance() {
         </div>
       ) : (
         <div className="space-y-4 mb-4">
-          {Object.entries(bySection).map(([section, group]) => (
+          {Object.entries(bySection).map(([section, group]) => {
+            const sectionDone = group.items.filter((i) => i.status === "done").length;
+            const sectionTotal = group.items.length;
+            const sectionPct = sectionTotal > 0 ? Math.round((sectionDone / sectionTotal) * 100) : 0;
+            const impact = financials && SECTION_IMPACT[section] ? SECTION_IMPACT[section].getImpact(financials) : 0;
+            const protected$ = sectionTotal > 0 ? Math.round(impact * (sectionDone / sectionTotal)) : 0;
+            const fmt$ = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+            return (
             <div key={section} className="border border-[var(--border)] rounded-lg">
-              <div className="px-3 py-2 bg-[var(--bg)] border-b border-[var(--border)] flex items-center justify-between">
-                <div className="text-xs font-bold uppercase tracking-widest text-[#00B4D8]">
-                  {section} — {group.sectionName}
+              <div className="px-3 py-2 bg-[var(--bg)] border-b border-[var(--border)]">
+                <div className="flex items-center justify-between">
+                  <div className="text-xs font-bold uppercase tracking-widest text-[#00B4D8]">
+                    {section} — {group.sectionName}
+                  </div>
+                  <div className="text-[10px] text-[var(--text3)]">
+                    {sectionDone} / {sectionTotal}
+                  </div>
                 </div>
-                <div className="text-[10px] text-[var(--text3)]">
-                  {group.items.filter((i) => i.status === "done").length} / {group.items.length}
-                </div>
+                {impact > 0 && (
+                  <div className="flex items-center justify-between mt-1.5">
+                    <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden mr-3">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-[#00B4D8] to-[#00E5A0] transition-all"
+                        style={{ width: `${sectionPct}%` }}
+                      />
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-[9px] text-emerald-600 font-semibold">{fmt$(protected$)} protegido</span>
+                      <span className="text-[9px] text-[var(--text3)]">de {fmt$(impact)} {SECTION_IMPACT[section]?.label}</span>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="divide-y divide-[var(--border)]">
                 {group.items.map((it) => (
@@ -261,7 +337,8 @@ export default function StepCompliance() {
                 ))}
               </div>
             </div>
-          ))}
+          );
+          })}
         </div>
       )}
 

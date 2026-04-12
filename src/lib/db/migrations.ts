@@ -310,6 +310,126 @@ $IMM$ LANGUAGE plpgsql`,
   )`,
   `CREATE UNIQUE INDEX IF NOT EXISTS uq_census_nome ON fundeb.census_data(nome)`,
   `CREATE INDEX IF NOT EXISTS idx_census_muni ON fundeb.census_data(municipality_id)`,
+
+  // ── T1-T6 potencial columns on municipalities ─────────────────────────
+  `DO $$ BEGIN
+    ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS pot_t1 REAL DEFAULT 0;
+    ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS pot_t2 REAL DEFAULT 0;
+    ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS pot_t3 REAL DEFAULT 0;
+    ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS pot_t4 REAL DEFAULT 0;
+    ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS pot_t5_vaar REAL DEFAULT 0;
+    ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS pot_t5_vaat REAL DEFAULT 0;
+    ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS pot_t6 REAL DEFAULT 0;
+    ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS estrategias_resumo TEXT;
+    ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS cats_faltantes TEXT;
+    ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS cats_ativas_list TEXT;
+    ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS n_estrategias INTEGER DEFAULT 0;
+    ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS crescimento_4anos REAL;
+    ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS recebe_vaar BOOLEAN DEFAULT FALSE;
+    ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS recebe_vaat BOOLEAN DEFAULT FALSE;
+    ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS t4_has_campo BOOLEAN DEFAULT FALSE;
+    ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS t4_has_ind BOOLEAN DEFAULT FALSE;
+    ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS t4_ganho_campo REAL DEFAULT 0;
+    ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS t4_ganho_ind REAL DEFAULT 0;
+    ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS t2_ganho REAL DEFAULT 0;
+    ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS t6_pct_integral REAL DEFAULT 0;
+    ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS t6_mat_integral REAL DEFAULT 0;
+    ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS quick_win_score REAL DEFAULT 0;
+  EXCEPTION WHEN OTHERS THEN NULL;
+  END $$`,
+
+  // ── fundeb.vaar_details ──────────────────────────────────────────────
+  `CREATE TABLE IF NOT EXISTS fundeb.vaar_details (
+    id              SERIAL PRIMARY KEY,
+    municipality_id INTEGER REFERENCES fundeb.municipalities(id),
+    rede            TEXT,
+    valor_vaar      REAL DEFAULT 0,
+    cond_gestores   BOOLEAN DEFAULT FALSE,
+    cond_avaliacoes BOOLEAN DEFAULT FALSE,
+    cond_desigualdade BOOLEAN DEFAULT FALSE,
+    cond_colaboracao BOOLEAN DEFAULT FALSE,
+    cond_bncc       BOOLEAN DEFAULT FALSE,
+    raw_data        JSONB,
+    created_at      TIMESTAMP DEFAULT NOW()
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_vaar_details_muni ON fundeb.vaar_details(municipality_id)`,
+
+  // ── fundeb.cronograma_repasses ───────────────────────────────────────
+  `CREATE TABLE IF NOT EXISTS fundeb.cronograma_repasses (
+    id              SERIAL PRIMARY KEY,
+    municipality_id INTEGER REFERENCES fundeb.municipalities(id),
+    tipo            TEXT NOT NULL,
+    parcela         INTEGER,
+    data_prevista   DATE,
+    valor_previsto  REAL,
+    valor_pago      REAL,
+    status          TEXT DEFAULT 'previsto',
+    created_at      TIMESTAMP DEFAULT NOW()
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_cronograma_muni ON fundeb.cronograma_repasses(municipality_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_cronograma_tipo ON fundeb.cronograma_repasses(tipo)`,
+
+  // ── fundeb.ec135_metas ───────────────────────────────────────────────
+  `CREATE TABLE IF NOT EXISTS fundeb.ec135_metas (
+    id              SERIAL PRIMARY KEY,
+    municipality_id INTEGER REFERENCES fundeb.municipalities(id),
+    ano             INTEGER NOT NULL,
+    mat_total       INTEGER DEFAULT 0,
+    mat_integral    INTEGER DEFAULT 0,
+    pct_integral    REAL DEFAULT 0,
+    meta_novas_vagas INTEGER DEFAULT 0,
+    escolas_converter INTEGER DEFAULT 0,
+    custo_estimado  REAL DEFAULT 0,
+    ganho_fundeb_t6 REAL DEFAULT 0,
+    created_at      TIMESTAMP DEFAULT NOW()
+  )`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS uq_ec135_muni_ano ON fundeb.ec135_metas(municipality_id, ano)`,
+
+  // ── fundeb.siconfi_data ──────────────────────────────────────────────
+  `CREATE TABLE IF NOT EXISTS fundeb.siconfi_data (
+    id              SERIAL PRIMARY KEY,
+    municipality_id INTEGER REFERENCES fundeb.municipalities(id),
+    exercicio       INTEGER NOT NULL,
+    periodo         TEXT,
+    tipo            TEXT NOT NULL,
+    anexo           TEXT,
+    cod_conta       TEXT,
+    conta           TEXT,
+    coluna          TEXT,
+    valor           REAL,
+    created_at      TIMESTAMP DEFAULT NOW()
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_siconfi_muni ON fundeb.siconfi_data(municipality_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_siconfi_exercicio ON fundeb.siconfi_data(exercicio, tipo)`,
+
+  // ── fundeb.relatorios ────────────────────────────────────────────────
+  `CREATE TABLE IF NOT EXISTS fundeb.relatorios (
+    id              SERIAL PRIMARY KEY,
+    consultoria_id  INTEGER REFERENCES fundeb.consultorias(id),
+    municipality_id INTEGER REFERENCES fundeb.municipalities(id),
+    tipo            TEXT NOT NULL DEFAULT 'completo',
+    titulo          TEXT,
+    html_content    TEXT,
+    pdf_url         TEXT,
+    metadata        JSONB DEFAULT '{}'::jsonb,
+    created_at      TIMESTAMP DEFAULT NOW()
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_relatorios_muni ON fundeb.relatorios(municipality_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_relatorios_consultoria ON fundeb.relatorios(consultoria_id)`,
+
+  // ── fundeb.municipio_access (post-consultoria login) ─────────────────
+  `CREATE TABLE IF NOT EXISTS fundeb.municipio_access (
+    id              SERIAL PRIMARY KEY,
+    municipality_id INTEGER REFERENCES fundeb.municipalities(id),
+    access_token    VARCHAR(64) NOT NULL UNIQUE,
+    contact_name    TEXT,
+    contact_email   TEXT,
+    expires_at      TIMESTAMP,
+    last_access     TIMESTAMP,
+    created_at      TIMESTAMP DEFAULT NOW()
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_muni_access_token ON fundeb.municipio_access(access_token)`,
+  `CREATE INDEX IF NOT EXISTS idx_muni_access_muni ON fundeb.municipio_access(municipality_id)`,
 ];
 
 // ── Stored Procedures ─────────────────────────────────────────────────────

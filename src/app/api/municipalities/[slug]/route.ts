@@ -271,6 +271,30 @@ export async function GET(
       // Census cross-reference data (all 99 columns as JSONB)
       censusData: censusData ?? null,
 
+      // T1-T6 potencial breakdown
+      pot_t1: m.pot_t1 ?? null,
+      pot_t2: m.pot_t2 ?? null,
+      pot_t3: m.pot_t3 ?? null,
+      pot_t4: m.pot_t4 ?? null,
+      pot_t5_vaar: m.pot_t5_vaar ?? null,
+      pot_t5_vaat: m.pot_t5_vaat ?? null,
+      pot_t6: m.pot_t6 ?? null,
+      estrategias_resumo: m.estrategias_resumo ?? null,
+      cats_faltantes: m.cats_faltantes ?? null,
+      cats_ativas_list: m.cats_ativas_list ?? null,
+      n_estrategias: m.n_estrategias ?? null,
+      crescimento_4anos: m.crescimento_4anos ?? null,
+      recebe_vaar: m.recebe_vaar ?? null,
+      recebe_vaat: m.recebe_vaat ?? null,
+      quick_win_score: m.quick_win_score ?? null,
+      t4_has_campo: m.t4_has_campo ?? null,
+      t4_has_ind: m.t4_has_ind ?? null,
+      t4_ganho_campo: m.t4_ganho_campo ?? null,
+      t4_ganho_ind: m.t4_ganho_ind ?? null,
+      t2_ganho: m.t2_ganho ?? null,
+      t6_pct_integral: m.t6_pct_integral ?? null,
+      t6_mat_integral: m.t6_mat_integral ?? null,
+
       // Timestamps
       createdAt: m.created_at,
       updatedAt: m.updated_at,
