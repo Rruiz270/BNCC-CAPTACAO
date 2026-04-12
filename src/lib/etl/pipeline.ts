@@ -49,9 +49,18 @@ export interface PipelineResult {
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────
-function canonicalHash(rows: Array<Record<string, unknown>>, source: string): string {
+function canonicalHash(
+  rows: Array<Record<string, unknown>>,
+  source: string,
+  consultoriaId: number | null,
+  municipalityId: number | null,
+): string {
   const h = createHash('sha256');
   h.update(source);
+  h.update('\n');
+  h.update(`consultoria:${consultoriaId ?? 'null'}`);
+  h.update('\n');
+  h.update(`municipality:${municipalityId ?? 'null'}`);
   h.update('\n');
   // Ordenacao estavel: cada linha como JSON com chaves ordenadas
   for (const row of rows) {
@@ -77,7 +86,12 @@ export async function extract(sql: Sql, input: ExtractInput): Promise<ExtractOut
     throw new Error('extract: rows vazio ou nao objeto');
   }
 
-  const hash = canonicalHash(rows, input.source);
+  const hash = canonicalHash(
+    rows,
+    input.source,
+    input.consultoriaId ?? null,
+    input.municipalityId ?? null,
+  );
 
   // Dedup: se ja existir, retorna o id
   const existing = await sql.query(
@@ -235,12 +249,53 @@ export async function catalog(sql: Sql, importId: number): Promise<CatalogOutput
 // ── Orchestrator ────────────────────────────────────────────────────────
 export async function runPipeline(sql: Sql, input: ExtractInput): Promise<PipelineResult> {
   const ext = await extract(sql, input);
-  // Se ja existia (mesmo hash), nao reprocessa
+  // Dedup hit: import com mesmo hash ja existe.
+  // Se o import anterior completou treat+catalog (rows_ok > 0), retorna os counts reais.
+  // Se ficou num estado incompleto (rows_ok = 0 com rows_total > 0), re-executa treat+catalog.
   if (ext.alreadyExists) {
+    const imp = await sql.query(
+      `SELECT rows_ok, rows_rejected, rows_total FROM raw.imports WHERE id = $1`,
+      [ext.importId]
+    );
+    const rowsOk = Number(imp[0]?.rows_ok ?? 0);
+    const rowsTotal = Number(imp[0]?.rows_total ?? 0);
+
+    // Import incompleto — re-executa treat + catalog
+    if (rowsOk === 0 && rowsTotal > 0) {
+      // Limpa linhagem e cataloged_at para evitar duplicatas na re-execucao
+      await sql.query(`DELETE FROM raw.lineage WHERE import_id = $1`, [ext.importId]);
+      await sql.query(
+        `UPDATE raw.import_rows SET cataloged_at = NULL WHERE import_id = $1`,
+        [ext.importId]
+      );
+      const tre = await treat(sql, ext.importId);
+      const cat = await catalog(sql, ext.importId);
+      return { extract: ext, treat: tre, catalog: cat };
+    }
+
+    // Import ja completo — le os counts reais
+    const catCount = await sql.query(
+      `SELECT COUNT(*)::int AS n FROM raw.import_rows
+        WHERE import_id = $1 AND cataloged_at IS NOT NULL`,
+      [ext.importId]
+    );
+    const linCount = await sql.query(
+      `SELECT COUNT(*)::int AS n FROM raw.lineage WHERE import_id = $1`,
+      [ext.importId]
+    );
     return {
       extract: ext,
-      treat: { importId: ext.importId, rowsOk: 0, rowsRejected: 0, errors: [] },
-      catalog: { importId: ext.importId, cataloged: 0, lineageRows: 0 },
+      treat: {
+        importId: ext.importId,
+        rowsOk,
+        rowsRejected: Number(imp[0]?.rows_rejected ?? 0),
+        errors: [],
+      },
+      catalog: {
+        importId: ext.importId,
+        cataloged: Number(catCount[0]?.n ?? 0),
+        lineageRows: Number(linCount[0]?.n ?? 0),
+      },
     };
   }
   const tre = await treat(sql, ext.importId);
