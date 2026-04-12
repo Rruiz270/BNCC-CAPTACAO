@@ -1,15 +1,51 @@
 import { neon } from '@neondatabase/serverless';
 import { type NextRequest } from 'next/server';
-import { randomBytes } from 'crypto';
 
 export const dynamic = 'force-dynamic';
 
 const DATABASE_URL = process.env.DATABASE_URL!;
 
+function generateToken(): string {
+  const arr = new Uint8Array(16);
+  crypto.getRandomValues(arr);
+  return Array.from(arr, (b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Ensure intake tables exist
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function ensureIntakeTables(sql: any) {
+  await sql`
+    CREATE TABLE IF NOT EXISTS fundeb.intake_tokens (
+      id             SERIAL PRIMARY KEY,
+      token          VARCHAR(64) NOT NULL UNIQUE,
+      municipality_id INTEGER REFERENCES fundeb.municipalities(id),
+      consultoria_id  INTEGER REFERENCES fundeb.consultorias(id),
+      created_by     TEXT,
+      expires_at     TIMESTAMP NOT NULL,
+      responded_at   TIMESTAMP,
+      created_at     TIMESTAMP DEFAULT NOW()
+    )
+  `;
+  await sql`
+    CREATE TABLE IF NOT EXISTS fundeb.intake_responses (
+      id              SERIAL PRIMARY KEY,
+      token_id        INTEGER REFERENCES fundeb.intake_tokens(id),
+      municipality_id INTEGER REFERENCES fundeb.municipalities(id),
+      respondent_name TEXT NOT NULL,
+      respondent_role TEXT,
+      respondent_email TEXT,
+      data            JSONB,
+      submitted_at    TIMESTAMP DEFAULT NOW()
+    )
+  `;
+}
+
 // POST /api/intake — Generate a new intake token for a consultoria
 export async function POST(request: NextRequest) {
   try {
     const sql = neon(DATABASE_URL);
+    await ensureIntakeTables(sql);
+
     const body = await request.json();
     const { consultoriaId } = body;
 
@@ -34,8 +70,8 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: 'Consultoria nao esta ativa' }, { status: 400 });
     }
 
-    // Generate 32-char hex token
-    const token = randomBytes(16).toString('hex');
+    // Generate 32-char hex token using Web Crypto API
+    const token = generateToken();
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
     await sql`
@@ -61,6 +97,8 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const sql = neon(DATABASE_URL);
+    await ensureIntakeTables(sql);
+
     const { searchParams } = new URL(request.url);
     const consultoriaId = searchParams.get('consultoriaId');
 

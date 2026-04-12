@@ -96,8 +96,10 @@ export function Sidebar() {
   const { sessions, activeSession, startSession, switchSession, endSession, loading } = useConsultoria();
   const [showNewSession, setShowNewSession] = useState(false);
   const [creating, setCreating] = useState(false);
-  const [intakeCopied, setIntakeCopied] = useState(false);
   const [intakeGenerating, setIntakeGenerating] = useState(false);
+  const [intakeLink, setIntakeLink] = useState<string | null>(null);
+  const [intakeCopied, setIntakeCopied] = useState(false);
+  const [intakeError, setIntakeError] = useState<string | null>(null);
   const [showIntakeModal, setShowIntakeModal] = useState(false);
 
   const activeSessions = sessions.filter((s) => s.status === "active");
@@ -112,6 +114,8 @@ export function Sidebar() {
   async function handleGenerateIntakeLink() {
     if (!activeSession) return;
     setIntakeGenerating(true);
+    setIntakeError(null);
+    setIntakeLink(null);
     try {
       const res = await fetch("/api/intake", {
         method: "POST",
@@ -119,16 +123,33 @@ export function Sidebar() {
         body: JSON.stringify({ consultoriaId: activeSession.id }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) throw new Error(data.error || "Erro ao gerar link");
 
       const fullUrl = `${window.location.origin}${data.url}`;
-      await navigator.clipboard.writeText(fullUrl);
-      setIntakeCopied(true);
-      setTimeout(() => setIntakeCopied(false), 3000);
+      setIntakeLink(fullUrl);
+
+      try {
+        await navigator.clipboard.writeText(fullUrl);
+        setIntakeCopied(true);
+        setTimeout(() => setIntakeCopied(false), 3000);
+      } catch {
+        // Clipboard failed — link is still visible for manual copy
+      }
     } catch (e) {
-      console.error("Failed to generate intake link:", e);
+      setIntakeError(e instanceof Error ? e.message : "Erro desconhecido");
     } finally {
       setIntakeGenerating(false);
+    }
+  }
+
+  async function handleCopyLink() {
+    if (!intakeLink) return;
+    try {
+      await navigator.clipboard.writeText(intakeLink);
+      setIntakeCopied(true);
+      setTimeout(() => setIntakeCopied(false), 2000);
+    } catch {
+      // Select text for manual copy as fallback
     }
   }
 
@@ -303,8 +324,38 @@ export function Sidebar() {
               disabled={intakeGenerating}
               className="w-full flex items-center px-3 py-2.5 rounded-lg text-sm transition-all text-white/60 hover:bg-white/8 hover:text-white/90 disabled:opacity-40"
             >
-              {intakeCopied ? "Link copiado!" : intakeGenerating ? "Gerando..." : "Gerar Link Intake"}
+              {intakeGenerating ? "Gerando..." : "Gerar Link Intake"}
             </button>
+
+            {/* Generated link display */}
+            {intakeLink && (
+              <div className="mx-1 mt-1 p-2 bg-white/10 rounded-lg">
+                <div className="text-[9px] text-[#00E5A0] font-semibold mb-1">
+                  {intakeCopied ? "Copiado!" : "Link gerado:"}
+                </div>
+                <div
+                  onClick={handleCopyLink}
+                  className="text-[10px] text-white/80 bg-white/5 rounded px-2 py-1.5 break-all cursor-pointer hover:bg-white/10 transition-colors select-all"
+                  title="Clique para copiar"
+                >
+                  {intakeLink}
+                </div>
+                <button
+                  onClick={handleCopyLink}
+                  className="mt-1.5 w-full text-[9px] py-1 rounded bg-[#00B4D8]/30 text-[#00B4D8] hover:bg-[#00B4D8]/50 transition-colors font-semibold"
+                >
+                  {intakeCopied ? "Copiado!" : "Copiar Link"}
+                </button>
+              </div>
+            )}
+
+            {/* Error display */}
+            {intakeError && (
+              <div className="mx-1 mt-1 p-2 bg-red-500/20 rounded-lg text-[10px] text-red-300">
+                {intakeError}
+              </div>
+            )}
+
             <button
               onClick={() => setShowIntakeModal(true)}
               className="w-full flex items-center px-3 py-2.5 rounded-lg text-sm transition-all text-white/60 hover:bg-white/8 hover:text-white/90"
