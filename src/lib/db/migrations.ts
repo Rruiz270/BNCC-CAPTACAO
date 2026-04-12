@@ -238,6 +238,34 @@ $IMM$ LANGUAGE plpgsql`,
   `CREATE INDEX IF NOT EXISTS idx_ops_pot_cat_muni
      ON ops.v_potencial_categoria(municipality_id)`,
 
+  // ── fundeb.intake_tokens ───────────────────────────────────────────────
+  `CREATE TABLE IF NOT EXISTS fundeb.intake_tokens (
+    id             SERIAL PRIMARY KEY,
+    token          VARCHAR(64) NOT NULL UNIQUE,
+    municipality_id INTEGER REFERENCES fundeb.municipalities(id),
+    consultoria_id  INTEGER REFERENCES fundeb.consultorias(id),
+    created_by     TEXT,
+    expires_at     TIMESTAMP NOT NULL,
+    responded_at   TIMESTAMP,
+    created_at     TIMESTAMP DEFAULT NOW()
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_intake_tokens_consultoria ON fundeb.intake_tokens(consultoria_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_intake_tokens_token ON fundeb.intake_tokens(token)`,
+
+  // ── fundeb.intake_responses ───────────────────────────────────────────
+  `CREATE TABLE IF NOT EXISTS fundeb.intake_responses (
+    id              SERIAL PRIMARY KEY,
+    token_id        INTEGER REFERENCES fundeb.intake_tokens(id),
+    municipality_id INTEGER REFERENCES fundeb.municipalities(id),
+    respondent_name TEXT NOT NULL,
+    respondent_role TEXT,
+    respondent_email TEXT,
+    data            JSONB,
+    submitted_at    TIMESTAMP DEFAULT NOW()
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_intake_responses_token ON fundeb.intake_responses(token_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_intake_responses_municipality ON fundeb.intake_responses(municipality_id)`,
+
   // ── fundeb.census_data ─────────────────────────────────────────────────
   `CREATE TABLE IF NOT EXISTS fundeb.census_data (
     id SERIAL PRIMARY KEY,

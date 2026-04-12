@@ -4,28 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useConsultoria } from "@/lib/consultoria-context";
-
-const NAV_ITEMS = [
-  { href: "/wizard", label: "Wizard de Consultoria" },
-  { type: "divider", label: "Visoes" },
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/diagnostico", label: "Diagnostico" },
-  { href: "/simulador", label: "Simulador" },
-  { href: "/comparativo", label: "Comparativo" },
-  { href: "/compliance", label: "Compliance" },
-  { href: "/plano-de-acao", label: "Plano de Acao" },
-  { type: "divider", label: "Implementacao" },
-  { href: "/implementacao/curriculo", label: "Curriculo BNCC" },
-  { href: "/implementacao/minuta", label: "Minuta CME" },
-  { href: "/implementacao/simec", label: "Guia SIMEC" },
-  { href: "/implementacao/formacao", label: "Formacao Docente" },
-  { type: "divider", label: "Dados" },
-  { href: "/consultorias", label: "Consultorias" },
-  { href: "/importar", label: "Importar Dados" },
-  { href: "/relatorios", label: "Relatorios" },
-  { type: "divider", label: "" },
-  { href: "/catalogo", label: "Catalogo i10" },
-];
+import { IntakeResponseModal } from "@/components/intake-response-modal";
 
 interface MuniOption {
   id: number;
@@ -114,9 +93,12 @@ function SidebarMunicipalityPicker({ onSelect, creating }: { onSelect: (id: numb
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { sessions, activeSession, municipality, startSession, switchSession, endSession, loading } = useConsultoria();
+  const { sessions, activeSession, startSession, switchSession, endSession, loading } = useConsultoria();
   const [showNewSession, setShowNewSession] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [intakeCopied, setIntakeCopied] = useState(false);
+  const [intakeGenerating, setIntakeGenerating] = useState(false);
+  const [showIntakeModal, setShowIntakeModal] = useState(false);
 
   const activeSessions = sessions.filter((s) => s.status === "active");
 
@@ -126,6 +108,31 @@ export function Sidebar() {
     setCreating(false);
     setShowNewSession(false);
   }
+
+  async function handleGenerateIntakeLink() {
+    if (!activeSession) return;
+    setIntakeGenerating(true);
+    try {
+      const res = await fetch("/api/intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ consultoriaId: activeSession.id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      const fullUrl = `${window.location.origin}${data.url}`;
+      await navigator.clipboard.writeText(fullUrl);
+      setIntakeCopied(true);
+      setTimeout(() => setIntakeCopied(false), 3000);
+    } catch (e) {
+      console.error("Failed to generate intake link:", e);
+    } finally {
+      setIntakeGenerating(false);
+    }
+  }
+
+  const isActive = (href: string) => pathname?.startsWith(href);
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 bg-[#0A2463] text-white flex flex-col z-50 overflow-y-auto">
@@ -251,35 +258,115 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-0.5">
-        {NAV_ITEMS.map((item, i) => {
-          if ('type' in item && item.type === 'divider') {
-            return (
-              <div key={i} className="pt-4 pb-1 px-3">
-                {item.label && (
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">
-                    {item.label}
-                  </span>
-                )}
-              </div>
-            );
-          }
-
-          const isActive = item.href && pathname?.startsWith(item.href);
-
-          return (
+        {/* CONSULTORIA ATIVA section — only when activeSession exists */}
+        {activeSession && (
+          <>
+            <div className="pt-1 pb-1 px-3">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">
+                Consultoria Ativa
+              </span>
+            </div>
             <Link
-              key={item.href}
-              href={item.href!}
+              href={`/wizard/${activeSession.id}/step-1-cidade`}
               className={`flex items-center px-3 py-2.5 rounded-lg text-sm transition-all ${
-                isActive
+                isActive("/wizard")
                   ? "bg-white/15 text-white font-semibold"
                   : "text-white/60 hover:bg-white/8 hover:text-white/90"
               }`}
             >
-              <span>{item.label}</span>
+              Wizard
             </Link>
-          );
-        })}
+            <Link
+              href="/dashboard"
+              className={`flex items-center px-3 py-2.5 rounded-lg text-sm transition-all ${
+                isActive("/dashboard")
+                  ? "bg-white/15 text-white font-semibold"
+                  : "text-white/60 hover:bg-white/8 hover:text-white/90"
+              }`}
+            >
+              Dashboard
+            </Link>
+            <Link
+              href="/simulador"
+              className={`flex items-center px-3 py-2.5 rounded-lg text-sm transition-all ${
+                isActive("/simulador")
+                  ? "bg-white/15 text-white font-semibold"
+                  : "text-white/60 hover:bg-white/8 hover:text-white/90"
+              }`}
+            >
+              Simulador
+            </Link>
+
+            {/* Intake actions */}
+            <button
+              onClick={handleGenerateIntakeLink}
+              disabled={intakeGenerating}
+              className="w-full flex items-center px-3 py-2.5 rounded-lg text-sm transition-all text-white/60 hover:bg-white/8 hover:text-white/90 disabled:opacity-40"
+            >
+              {intakeCopied ? "Link copiado!" : intakeGenerating ? "Gerando..." : "Gerar Link Intake"}
+            </button>
+            <button
+              onClick={() => setShowIntakeModal(true)}
+              className="w-full flex items-center px-3 py-2.5 rounded-lg text-sm transition-all text-white/60 hover:bg-white/8 hover:text-white/90"
+            >
+              Ver Resposta Intake
+            </button>
+          </>
+        )}
+
+        {/* FERRAMENTAS */}
+        <div className="pt-4 pb-1 px-3">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">
+            Ferramentas
+          </span>
+        </div>
+        <Link
+          href="/comparativo"
+          className={`flex items-center px-3 py-2.5 rounded-lg text-sm transition-all ${
+            isActive("/comparativo")
+              ? "bg-white/15 text-white font-semibold"
+              : "text-white/60 hover:bg-white/8 hover:text-white/90"
+          }`}
+        >
+          Comparativo
+        </Link>
+        <Link
+          href="/catalogo"
+          className={`flex items-center px-3 py-2.5 rounded-lg text-sm transition-all ${
+            isActive("/catalogo")
+              ? "bg-white/15 text-white font-semibold"
+              : "text-white/60 hover:bg-white/8 hover:text-white/90"
+          }`}
+        >
+          Catalogo i10
+        </Link>
+
+        {/* ADMIN */}
+        <div className="pt-4 pb-1 px-3">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">
+            Admin
+          </span>
+        </div>
+        <Link
+          href="/consultorias"
+          className={`flex items-center px-3 py-2.5 rounded-lg text-sm transition-all ${
+            isActive("/consultorias")
+              ? "bg-white/15 text-white font-semibold"
+              : "text-white/60 hover:bg-white/8 hover:text-white/90"
+          }`}
+        >
+          Historico Consultorias
+        </Link>
+        <Link
+          href="/importar"
+          className={`flex items-center px-3 py-2.5 rounded-lg text-sm transition-all ${
+            isActive("/importar")
+              ? "bg-white/15 text-white font-semibold"
+              : "text-white/60 hover:bg-white/8 hover:text-white/90"
+          }`}
+        >
+          Importar Dados
+        </Link>
       </nav>
 
       {/* Footer */}
@@ -287,6 +374,15 @@ export function Sidebar() {
         <div>FUNDEB SP 2026</div>
         <div>645 municipios - 15 categorias</div>
       </div>
+
+      {/* Intake Response Modal */}
+      {activeSession && (
+        <IntakeResponseModal
+          open={showIntakeModal}
+          onOpenChange={setShowIntakeModal}
+          consultoriaId={activeSession.id}
+        />
+      )}
     </aside>
   );
 }

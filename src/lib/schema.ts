@@ -285,6 +285,30 @@ export const rawLineage = rawSchema.table('lineage', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// intake_tokens — links enviados a secretarias
+export const intakeTokens = fundebSchema.table('intake_tokens', {
+  id: serial('id').primaryKey(),
+  token: varchar('token', { length: 64 }).unique().notNull(),
+  municipalityId: integer('municipality_id').references(() => municipalities.id),
+  consultoriaId: integer('consultoria_id').references(() => consultorias.id),
+  createdBy: text('created_by'),
+  expiresAt: timestamp('expires_at').notNull(),
+  respondedAt: timestamp('responded_at'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// intake_responses — respostas submetidas pelas secretarias
+export const intakeResponses = fundebSchema.table('intake_responses', {
+  id: serial('id').primaryKey(),
+  tokenId: integer('token_id').references(() => intakeTokens.id),
+  municipalityId: integer('municipality_id').references(() => municipalities.id),
+  respondentName: text('respondent_name').notNull(),
+  respondentRole: text('respondent_role'),
+  respondentEmail: text('respondent_email'),
+  data: jsonb('data'),
+  submittedAt: timestamp('submitted_at').defaultNow(),
+});
+
 // audit.event_log — log imutavel (UC-AU.01)
 export const auditEventLog = auditSchema.table('event_log', {
   id: bigserial('id', { mode: 'number' }).primaryKey(),

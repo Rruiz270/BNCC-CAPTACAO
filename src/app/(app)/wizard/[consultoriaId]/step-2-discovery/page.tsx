@@ -8,6 +8,25 @@ import { getStepById } from "@/lib/wizard/steps";
 
 type EtlSource = "censo_escolar" | "siope" | "fnde" | "ibge" | "local";
 
+interface IntakeEnrollmentEntry {
+  publicValue: number;
+  realValue: number;
+  difference: number;
+}
+
+interface IntakeResponse {
+  respondentName: string;
+  respondentRole: string;
+  respondentEmail: string;
+  submittedAt: string;
+  data: {
+    enrollmentData?: Record<string, IntakeEnrollmentEntry>;
+    schoolsTotal?: number;
+    schoolsRural?: number;
+    observations?: string;
+  };
+}
+
 interface PipelineResult {
   extract: { importId: number; rowsTotal: number; contentHash: string; alreadyExists: boolean };
   treat: { importId: number; rowsOk: number; rowsRejected: number };
@@ -57,6 +76,17 @@ export default function StepDiscovery() {
   const [running, setRunning] = useState(false);
   const [localResult, setLocalResult] = useState<PipelineResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [intakeResponse, setIntakeResponse] = useState<IntakeResponse | null>(null);
+
+  // Busca intake response
+  useEffect(() => {
+    fetch(`/api/intake?consultoriaId=${consultoriaId}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.response) setIntakeResponse(data.response);
+      })
+      .catch(() => {});
+  }, [consultoriaId]);
 
   // Busca municipio da sessao
   useEffect(() => {
@@ -129,6 +159,73 @@ export default function StepDiscovery() {
 
   return (
     <StepShell step={step} canAdvance={canAdvance} blockReason={blockReason}>
+      {/* Intake response banner */}
+      {intakeResponse && (
+        <div className="mb-6">
+          <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4">
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span className="text-sm font-semibold text-emerald-800">
+                Secretaria preencheu em {new Date(intakeResponse.submittedAt).toLocaleDateString("pt-BR")}
+              </span>
+            </div>
+            <p className="text-xs text-emerald-700 ml-4">
+              Responsavel: {intakeResponse.respondentName}
+              {intakeResponse.respondentRole && ` (${intakeResponse.respondentRole})`}
+            </p>
+          </div>
+
+          {/* Enrollment comparison table */}
+          {intakeResponse.data?.enrollmentData && Object.keys(intakeResponse.data.enrollmentData).length > 0 && (
+            <div className="border border-[var(--border)] rounded-lg p-4 mb-4">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--text3)] mb-3">
+                Matriculas — Publico vs Informado pela Secretaria
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border-collapse">
+                  <thead>
+                    <tr className="text-xs uppercase text-[var(--text3)] border-b border-[var(--border)]">
+                      <th className="text-left px-3 py-2">Categoria</th>
+                      <th className="text-right px-3 py-2">Publico</th>
+                      <th className="text-right px-3 py-2">Real</th>
+                      <th className="text-right px-3 py-2">Delta</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(intakeResponse.data.enrollmentData).map(([key, entry]) => {
+                      const diff = entry.difference;
+                      const pct = entry.publicValue > 0 ? Math.abs(diff / entry.publicValue * 100) : (diff !== 0 ? 100 : 0);
+                      return (
+                        <tr key={key} className={`border-b border-[var(--border)] ${pct > 10 ? "bg-red-50" : ""}`}>
+                          <td className="px-3 py-1.5 font-medium">{key}</td>
+                          <td className="px-3 py-1.5 text-right tabular-nums text-[var(--text2)]">
+                            {entry.publicValue.toLocaleString("pt-BR")}
+                          </td>
+                          <td className="px-3 py-1.5 text-right tabular-nums font-semibold">
+                            {entry.realValue.toLocaleString("pt-BR")}
+                          </td>
+                          <td className={`px-3 py-1.5 text-right tabular-nums font-semibold ${
+                            diff > 0 ? "text-emerald-700" : diff < 0 ? "text-red-700" : "text-gray-400"
+                          }`}>
+                            {diff > 0 ? "+" : ""}{diff.toLocaleString("pt-BR")}
+                            {pct > 0 && <span className="text-[10px] text-[var(--text3)] ml-1">({pct.toFixed(0)}%)</span>}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              {intakeResponse.data.observations && (
+                <div className="mt-3 text-xs text-[var(--text2)] bg-[var(--bg)] rounded p-2">
+                  <strong>Observacoes:</strong> {intakeResponse.data.observations}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
       <h2 className="text-lg font-bold text-[var(--text1)] mb-2">Discovery — Dados Brutos & ETL</h2>
       <p className="text-sm text-[var(--text3)] mb-6">
         O pipeline percorre <strong>Extracao → Treat → Catalog</strong> sobre a fonte escolhida e
