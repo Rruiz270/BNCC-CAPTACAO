@@ -394,6 +394,172 @@ export async function GET(request: NextRequest) {
         const sql = neon(DATABASE_URL);
 
         // Migration mode: update specific columns without full reseed
+        if (migrate === 'census') {
+          send('Running census_data migration...');
+
+          // Ensure table exists
+          try {
+            await sql.query(`CREATE TABLE IF NOT EXISTS fundeb.census_data (
+              id SERIAL PRIMARY KEY,
+              municipality_id INTEGER REFERENCES fundeb.municipalities(id),
+              nome TEXT NOT NULL,
+              co_municipio VARCHAR(7),
+              censo_mat_total INTEGER,
+              censo_mat_creche INTEGER,
+              censo_mat_pre INTEGER,
+              censo_mat_fund INTEGER,
+              censo_mat_fund_ai INTEGER,
+              censo_mat_fund_af INTEGER,
+              censo_mat_eja INTEGER,
+              censo_mat_esp INTEGER,
+              censo_mat_ei INTEGER,
+              censo_doc_total INTEGER,
+              censo_total_escolas INTEGER,
+              censo_escolas_municipal INTEGER,
+              div_mat_total REAL,
+              div_mat_ei REAL,
+              div_mat_ef REAL,
+              div_mat_pct REAL,
+              saeb_5ef_lp REAL,
+              saeb_5ef_mt REAL,
+              saeb_9ef_lp REAL,
+              saeb_9ef_mt REAL,
+              inep_infraestrutura REAL,
+              inep_pct_internet REAL,
+              inep_pct_biblioteca REAL,
+              fnde_total_repasses REAL,
+              fnde_valor_integral REAL,
+              flag_rural_sem_campo BOOLEAN DEFAULT FALSE,
+              flag_mat_divergente BOOLEAN DEFAULT FALSE,
+              flag_eja_nao_captada BOOLEAN DEFAULT FALSE,
+              flag_sem_vaar BOOLEAN DEFAULT FALSE,
+              flag_baixo_integral BOOLEAN DEFAULT FALSE,
+              flag_esp_nao_captada BOOLEAN DEFAULT FALSE,
+              flag_saeb_baixo BOOLEAN DEFAULT FALSE,
+              quick_win_score REAL,
+              raw_data JSONB,
+              created_at TIMESTAMP DEFAULT NOW()
+            )`);
+            await sql.query(`CREATE UNIQUE INDEX IF NOT EXISTS uq_census_nome ON fundeb.census_data(nome)`);
+            await sql.query(`CREATE INDEX IF NOT EXISTS idx_census_muni ON fundeb.census_data(municipality_id)`);
+          } catch { /* table exists */ }
+
+          send('Loading census CSV...');
+          const fs = await import('fs');
+          const csvPath = '/Users/Raphael/Educacao/scraping-dados-sp/data/analise_fundeb_cruzada_sp_2026.csv';
+          if (!fs.existsSync(csvPath)) {
+            send('ERROR: Census CSV not found at ' + csvPath);
+            controller.close();
+            return;
+          }
+          const csvRaw = fs.readFileSync(csvPath, 'utf-8');
+          const lines = csvRaw.split('\n');
+          const headers = lines[0].split(',').map(h => h.trim());
+
+          // Get municipality ID map
+          const muniRows = await sql`SELECT id, nome FROM fundeb.municipalities ORDER BY id`;
+          const muniMap = new Map<string, number>();
+          for (const row of muniRows) muniMap.set(row.nome as string, row.id as number);
+
+          let censusInserted = 0;
+          const BATCH = 25;
+          for (let i = 1; i < lines.length; i += BATCH) {
+            const end = Math.min(i + BATCH, lines.length);
+            for (let j = i; j < end; j++) {
+              if (!lines[j].trim()) continue;
+              const values = parseCSVLine(lines[j]);
+              const row: Record<string, string> = {};
+              headers.forEach((h, idx) => { row[h] = (values[idx] || '').trim(); });
+
+              const nome = row['nome'];
+              if (!nome) continue;
+              const municipalityId = muniMap.get(nome) ?? null;
+
+              const pf = (key: string) => { const v = parseFloat(row[key] || ''); return isNaN(v) ? null : v; };
+              const pi = (key: string) => { const v = parseInt(row[key] || ''); return isNaN(v) ? null : v; };
+              const pb = (key: string) => row[key] === 'True';
+
+              // Build raw_data JSONB from all columns
+              const rawData = JSON.stringify(row);
+
+              try {
+                await sql`
+                  INSERT INTO fundeb.census_data (
+                    municipality_id, nome, co_municipio,
+                    censo_mat_total, censo_mat_creche, censo_mat_pre, censo_mat_fund,
+                    censo_mat_fund_ai, censo_mat_fund_af, censo_mat_eja, censo_mat_esp,
+                    censo_mat_ei, censo_doc_total, censo_total_escolas, censo_escolas_municipal,
+                    div_mat_total, div_mat_ei, div_mat_ef, div_mat_pct,
+                    saeb_5ef_lp, saeb_5ef_mt, saeb_9ef_lp, saeb_9ef_mt,
+                    inep_infraestrutura, inep_pct_internet, inep_pct_biblioteca,
+                    fnde_total_repasses, fnde_valor_integral,
+                    flag_rural_sem_campo, flag_mat_divergente, flag_eja_nao_captada,
+                    flag_sem_vaar, flag_baixo_integral, flag_esp_nao_captada, flag_saeb_baixo,
+                    quick_win_score, raw_data
+                  ) VALUES (
+                    ${municipalityId}, ${nome}, ${row['CO_MUNICIPIO'] || null},
+                    ${pi('censo_mat_total')}, ${pi('censo_mat_creche')}, ${pi('censo_mat_pre')}, ${pi('censo_mat_fund')},
+                    ${pi('censo_mat_fund_ai')}, ${pi('censo_mat_fund_af')}, ${pi('censo_mat_eja')}, ${pi('censo_mat_esp')},
+                    ${pi('censo_mat_ei')}, ${pi('censo_doc_total')}, ${pi('censo_total_escolas')}, ${pi('censo_escolas_municipal')},
+                    ${pf('div_mat_total')}, ${pf('div_mat_ei')}, ${pf('div_mat_ef')}, ${pf('div_mat_pct')},
+                    ${pf('saeb_5ef_lp')}, ${pf('saeb_5ef_mt')}, ${pf('saeb_9ef_lp')}, ${pf('saeb_9ef_mt')},
+                    ${pf('inep_infraestrutura')}, ${pf('inep_pct_internet')}, ${pf('inep_pct_biblioteca')},
+                    ${pf('fnde_total_repasses')}, ${pf('fnde_valor_integral')},
+                    ${pb('flag_rural_sem_campo')}, ${pb('flag_mat_divergente')}, ${pb('flag_eja_nao_captada')},
+                    ${pb('flag_sem_vaar')}, ${pb('flag_baixo_integral')}, ${pb('flag_esp_nao_captada')}, ${pb('flag_saeb_baixo')},
+                    ${pf('quick_win_score')}, ${rawData}::jsonb
+                  )
+                  ON CONFLICT (nome) DO UPDATE SET
+                    municipality_id = EXCLUDED.municipality_id,
+                    co_municipio = EXCLUDED.co_municipio,
+                    censo_mat_total = EXCLUDED.censo_mat_total,
+                    censo_mat_creche = EXCLUDED.censo_mat_creche,
+                    censo_mat_pre = EXCLUDED.censo_mat_pre,
+                    censo_mat_fund = EXCLUDED.censo_mat_fund,
+                    censo_mat_fund_ai = EXCLUDED.censo_mat_fund_ai,
+                    censo_mat_fund_af = EXCLUDED.censo_mat_fund_af,
+                    censo_mat_eja = EXCLUDED.censo_mat_eja,
+                    censo_mat_esp = EXCLUDED.censo_mat_esp,
+                    censo_mat_ei = EXCLUDED.censo_mat_ei,
+                    censo_doc_total = EXCLUDED.censo_doc_total,
+                    censo_total_escolas = EXCLUDED.censo_total_escolas,
+                    censo_escolas_municipal = EXCLUDED.censo_escolas_municipal,
+                    div_mat_total = EXCLUDED.div_mat_total,
+                    div_mat_ei = EXCLUDED.div_mat_ei,
+                    div_mat_ef = EXCLUDED.div_mat_ef,
+                    div_mat_pct = EXCLUDED.div_mat_pct,
+                    saeb_5ef_lp = EXCLUDED.saeb_5ef_lp,
+                    saeb_5ef_mt = EXCLUDED.saeb_5ef_mt,
+                    saeb_9ef_lp = EXCLUDED.saeb_9ef_lp,
+                    saeb_9ef_mt = EXCLUDED.saeb_9ef_mt,
+                    inep_infraestrutura = EXCLUDED.inep_infraestrutura,
+                    inep_pct_internet = EXCLUDED.inep_pct_internet,
+                    inep_pct_biblioteca = EXCLUDED.inep_pct_biblioteca,
+                    fnde_total_repasses = EXCLUDED.fnde_total_repasses,
+                    fnde_valor_integral = EXCLUDED.fnde_valor_integral,
+                    flag_rural_sem_campo = EXCLUDED.flag_rural_sem_campo,
+                    flag_mat_divergente = EXCLUDED.flag_mat_divergente,
+                    flag_eja_nao_captada = EXCLUDED.flag_eja_nao_captada,
+                    flag_sem_vaar = EXCLUDED.flag_sem_vaar,
+                    flag_baixo_integral = EXCLUDED.flag_baixo_integral,
+                    flag_esp_nao_captada = EXCLUDED.flag_esp_nao_captada,
+                    flag_saeb_baixo = EXCLUDED.flag_saeb_baixo,
+                    quick_win_score = EXCLUDED.quick_win_score,
+                    raw_data = EXCLUDED.raw_data
+                `;
+                censusInserted++;
+              } catch (e: unknown) {
+                const errMsg = e instanceof Error ? e.message : String(e);
+                send(`Census error for ${nome}: ${errMsg.substring(0, 100)}`);
+              }
+            }
+            send(`Census progress: ${censusInserted} rows...`);
+          }
+          send(`Census data seeded: ${censusInserted} rows. DONE`);
+          controller.close();
+          return;
+        }
+
         if (migrate === 'schools') {
           send('Running schools migration: adding escolas_municipais column...');
           try { await sql.query(`ALTER TABLE fundeb.municipalities ADD COLUMN IF NOT EXISTS escolas_municipais INTEGER`); } catch { /* exists */ }

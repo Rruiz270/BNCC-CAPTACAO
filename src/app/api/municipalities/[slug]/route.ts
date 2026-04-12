@@ -87,6 +87,12 @@ export async function GET(
       ORDER BY section, item_key
     `;
 
+    // Fetch census data (full cross-reference row as JSONB)
+    const censusRows = await sql`
+      SELECT raw_data FROM fundeb.census_data WHERE municipality_id = ${muniId} LIMIT 1
+    `;
+    const censusData = censusRows.length > 0 ? censusRows[0].raw_data : null;
+
     // Fetch action plans
     const actionPlans = await sql`
       SELECT
@@ -255,6 +261,9 @@ export async function GET(
 
       // Raw category data (for simulator)
       cats: m.cats,
+
+      // Census cross-reference data (all 99 columns as JSONB)
+      censusData: censusData ?? null,
 
       // Timestamps
       createdAt: m.created_at,

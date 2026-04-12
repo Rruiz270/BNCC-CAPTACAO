@@ -48,12 +48,16 @@ interface PotencialDetail {
   detalhes: PotencialDetalhes | null;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type CensusData = Record<string, any> | null;
+
 interface MuniResponse {
   id: number;
   nome: string;
   enrollments: Enrollment[];
   financials: { receitaTotal: number | null };
   potencial?: PotencialDetail;
+  censusData?: CensusData;
 }
 
 interface Scenario {
@@ -81,6 +85,141 @@ interface StepPayload {
   lastDeltaPct?: number;
 }
 
+type TabKey = "active" | "missing" | "growth";
+
+// ── Census hint generator ────────────────────────────────────────────────
+function getCensusHint(
+  e: Enrollment,
+  tier: string,
+  census: CensusData
+): string | null {
+  if (!census) return null;
+
+  const pf = (k: string) => { const v = parseFloat(census[k]); return isNaN(v) ? null : v; };
+  const label = (e.categoriaLabel ?? e.categoria).toLowerCase();
+
+  // T1 missing categories
+  if (tier === "T1") {
+    const vaaf = e.fatorVaaf ?? 0;
+    return `Categoria inexistente — VAAF R$${vaaf.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}/aluno disponível`;
+  }
+
+  // T2 conversion (parcial → integral)
+  if (tier === "T2") {
+    const fundebTotal = pf("fundeb_tot_mat");
+    const t6Pct = pf("t6_pct_integral");
+    if (t6Pct != null) {
+      return `Atualmente ${t6Pct.toFixed(0)}% integral. Conversão parcial→integral aumenta receita/aluno`;
+    }
+  }
+
+  // T3 AEE special education
+  if (tier === "T3") {
+    const censoEsp = pf("censo_mat_esp");
+    const fundebDm = pf("fundeb_dm_mat");
+    if (censoEsp != null && fundebDm != null) {
+      const gap = Math.max(0, censoEsp - fundebDm);
+      if (gap > 0) {
+        return `Censo: ${censoEsp.toLocaleString("pt-BR")} alunos especiais, FUNDEB capta ${fundebDm.toLocaleString("pt-BR")} = ${gap.toLocaleString("pt-BR")} não capturados`;
+      }
+    }
+    if (censoEsp != null) {
+      return `Censo: ${censoEsp.toLocaleString("pt-BR")} alunos com necessidades especiais no município`;
+    }
+  }
+
+  // Divergence warning for active categories
+  if (e.ativa && e.quantidade > 0) {
+    const divPct = pf("div_mat_pct");
+    if (divPct != null && Math.abs(divPct) > 10) {
+      const censoTotal = pf("censo_mat_total");
+      const fundebTotal = pf("fundeb_tot_mat");
+      if (censoTotal != null && fundebTotal != null) {
+        return `Atenção: Censo mostra ${censoTotal.toLocaleString("pt-BR")} matrículas vs FUNDEB ${fundebTotal.toLocaleString("pt-BR")} — divergência de ${divPct.toFixed(1)}%`;
+      }
+    }
+
+    // EJA not captured
+    if (label.includes("eja") && census["flag_eja_nao_captada"] === "True") {
+      const censoEja = pf("censo_mat_eja");
+      return censoEja
+        ? `Censo: ${censoEja.toLocaleString("pt-BR")} alunos EJA — não captados no FUNDEB`
+        : "EJA não captada no FUNDEB — verificar matrículas";
+    }
+  }
+
+  return null;
+}
+
+// ── Pre-built scenario generators ────────────────────────────────────────
+type ScenarioGenerator = (
+  enrollments: Enrollment[],
+  catMeta: Record<string, { maxAdd: number; tier: string }>,
+  census: CensusData
+) => { overrides: Record<string, number>; label: string };
+
+const scenarioGenerators: Record<string, ScenarioGenerator> = {
+  quickWins: (enrollments, catMeta) => {
+    const overrides: Record<string, number> = {};
+    for (const e of enrollments) {
+      const cm = catMeta[e.categoria];
+      if (!cm) continue;
+      if (cm.tier === "T1") {
+        overrides[e.categoria] = (e.quantidade ?? 0) + 10;
+      }
+      if (cm.tier === "T3") {
+        overrides[e.categoria] = (e.quantidade ?? 0) + Math.round(cm.maxAdd);
+      }
+    }
+    return { overrides, label: "Quick Wins 2026" };
+  },
+  fullCaptacao: (enrollments, catMeta) => {
+    const overrides: Record<string, number> = {};
+    for (const e of enrollments) {
+      const cm = catMeta[e.categoria];
+      if (!cm) continue;
+      if (cm.tier === "T1") {
+        overrides[e.categoria] = (e.quantidade ?? 0) + 50;
+      }
+      if (cm.tier === "T2") {
+        overrides[e.categoria] = (e.quantidade ?? 0) + Math.round(cm.maxAdd);
+      }
+      if (cm.tier === "T3") {
+        overrides[e.categoria] = (e.quantidade ?? 0) + Math.round(cm.maxAdd);
+      }
+    }
+    return { overrides, label: "Captação Total 2027" };
+  },
+  conservative: (enrollments, catMeta) => {
+    const overrides: Record<string, number> = {};
+    for (const e of enrollments) {
+      const cm = catMeta[e.categoria];
+      if (!cm) continue;
+      if (cm.tier === "T1") {
+        overrides[e.categoria] = (e.quantidade ?? 0) + 10;
+      }
+      if (cm.tier === "T3") {
+        overrides[e.categoria] = (e.quantidade ?? 0) + Math.round(cm.maxAdd * 0.5);
+      }
+    }
+    return { overrides, label: "Conservador" };
+  },
+};
+
+function computeGain(
+  enrollments: Enrollment[],
+  overrides: Record<string, number>,
+  baseReceita: number
+): number {
+  let receita = 0;
+  for (const e of enrollments) {
+    const qtd = overrides[e.categoria] != null ? overrides[e.categoria] : (e.quantidade ?? 0);
+    receita += qtd * (e.fatorVaaf ?? 0);
+  }
+  return receita - baseReceita;
+}
+
+// ── Main component ───────────────────────────────────────────────────────
 export default function StepSimulacao() {
   const step = getStepById(4)!;
   const { consultoriaId, steps, updateStep, saving } = useWizard();
@@ -92,6 +231,8 @@ export default function StepSimulacao() {
   const [scenarioName, setScenarioName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabKey>("active");
+  const [activeScenarioLabel, setActiveScenarioLabel] = useState<string | null>(null);
 
   // 1) Carrega sessao + municipio + scenarios em paralelo
   useEffect(() => {
@@ -133,14 +274,9 @@ export default function StepSimulacao() {
     if (!muni) return meta;
     const det = muni.potencial?.detalhes;
 
-    // Index enrollments by label for quick lookup
-    const byLabel: Record<string, Enrollment> = {};
-    for (const e of muni.enrollments) byLabel[e.categoriaLabel ?? e.categoria] = e;
-
-    // T2 conversion: partial → integral (max = mat from partial category)
+    // T2 conversion: partial → integral
     if (det?.t2?.detalhe) {
       for (const item of det.t2.detalhe) {
-        // The "para" category can gain up to "mat" students from the "de" category
         const target = muni.enrollments.find(
           (e) => (e.categoriaLabel ?? e.categoria) === item.para
         );
@@ -148,7 +284,7 @@ export default function StepSimulacao() {
           const key = target.categoria;
           meta[key] = {
             maxAdd: item.mat,
-            hint: `Converter ${item.mat.toLocaleString("pt-BR")} de ${item.de} (+R$${(item.diff_por_aluno ?? 0).toLocaleString("pt-BR",{maximumFractionDigits:0})}/aluno)`,
+            hint: `Converter ${item.mat.toLocaleString("pt-BR")} de ${item.de} (+R$${(item.diff_por_aluno ?? 0).toLocaleString("pt-BR", { maximumFractionDigits: 0 })}/aluno)`,
             tier: "T2",
             relevant: true,
           };
@@ -167,7 +303,7 @@ export default function StepSimulacao() {
           if (!meta[key]) {
             meta[key] = { maxAdd: item.mat_especial, hint: "", tier: "T3", relevant: true };
           }
-          meta[key].hint = `AEE dupla matrícula: ${item.mat_especial.toLocaleString("pt-BR")} alunos (+R$${item.ganho_100pct.toLocaleString("pt-BR",{maximumFractionDigits:0})})`;
+          meta[key].hint = `AEE dupla matrícula: ${item.mat_especial.toLocaleString("pt-BR")} alunos (+R$${item.ganho_100pct.toLocaleString("pt-BR", { maximumFractionDigits: 0 })})`;
         }
       }
     }
@@ -183,12 +319,12 @@ export default function StepSimulacao() {
           if (!meta[key]) {
             meta[key] = { maxAdd: 50, hint: "", tier: "T1", relevant: true };
           }
-          meta[key].hint = `Categoria inexistente — pode ser criada (VAAF R$${item.vaaf_u.toLocaleString("pt-BR",{maximumFractionDigits:0})}/aluno)`;
+          meta[key].hint = `Categoria inexistente — pode ser criada (VAAF R$${item.vaaf_u.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}/aluno)`;
         }
       }
     }
 
-    // Mark all active categories with existing enrollment as relevant even without specific potential
+    // Mark all active categories with existing enrollment as relevant
     for (const e of muni.enrollments) {
       if (e.ativa && e.quantidade > 0 && !meta[e.categoria]) {
         meta[e.categoria] = { maxAdd: 0, hint: "", tier: "", relevant: true };
@@ -198,21 +334,54 @@ export default function StepSimulacao() {
     return meta;
   }, [muni]);
 
-  // 2b) Filter enrollments to only show relevant categories
+  // 2b) Filter enrollments to relevant ones
   const visibleEnrollments = useMemo(() => {
     if (!muni) return [];
     return muni.enrollments.filter((e) => {
-      // Always show if user already has an override for it
       if (overrides[e.categoria] != null) return true;
-      // Show if it has potential metadata
       if (catMeta[e.categoria]?.relevant) return true;
-      // Show if active with existing students
       if (e.ativa && (e.quantidade ?? 0) > 0) return true;
       return false;
     });
   }, [muni, catMeta, overrides]);
 
-  // 2c) Calcula impacto em tempo real a partir dos overrides
+  // 2b-ii) Split into 3 tabs
+  const tabData = useMemo(() => {
+    const active: Enrollment[] = [];
+    const missing: Enrollment[] = [];
+    const growth: Enrollment[] = [];
+
+    for (const e of visibleEnrollments) {
+      const cm = catMeta[e.categoria];
+      const tier = cm?.tier || "";
+      const qty = e.quantidade ?? 0;
+
+      // T1 missing categories (or inactive with no students)
+      if (tier === "T1" || (!e.ativa && qty === 0)) {
+        missing.push(e);
+        continue;
+      }
+
+      // T2/T3 growth opportunities
+      if (tier === "T2" || tier === "T3") {
+        growth.push(e);
+        continue;
+      }
+
+      // Active category with students
+      if (e.ativa && qty > 0) {
+        active.push(e);
+        continue;
+      }
+
+      // Default: active
+      active.push(e);
+    }
+
+    return { active, missing, growth };
+  }, [visibleEnrollments, catMeta]);
+
+  // 2c) Calcula impacto em tempo real
   const baseReceita = useMemo(() => {
     if (!muni) return 0;
     return muni.enrollments.reduce(
@@ -235,6 +404,28 @@ export default function StepSimulacao() {
     const deltaPct = baseReceita > 0 ? (delta / baseReceita) * 100 : 0;
     return { receitaProjetada: receita, delta, deltaPct, tocadas };
   }, [muni, overrides, baseReceita]);
+
+  // Pre-compute scenario gains for button labels
+  const scenarioGains = useMemo(() => {
+    if (!muni) return { quickWins: 0, fullCaptacao: 0, conservative: 0 };
+    const census = muni.censusData ?? null;
+    return {
+      quickWins: computeGain(muni.enrollments, scenarioGenerators.quickWins(muni.enrollments, catMeta, census).overrides, baseReceita),
+      fullCaptacao: computeGain(muni.enrollments, scenarioGenerators.fullCaptacao(muni.enrollments, catMeta, census).overrides, baseReceita),
+      conservative: computeGain(muni.enrollments, scenarioGenerators.conservative(muni.enrollments, catMeta, census).overrides, baseReceita),
+    };
+  }, [muni, catMeta, baseReceita]);
+
+  // Apply a pre-built scenario
+  const applyScenario = useCallback((key: string) => {
+    if (!muni) return;
+    const gen = scenarioGenerators[key];
+    if (!gen) return;
+    const census = muni.censusData ?? null;
+    const { overrides: newOverrides, label } = gen(muni.enrollments, catMeta, census);
+    setOverrides(newOverrides);
+    setActiveScenarioLabel(label);
+  }, [muni, catMeta]);
 
   // 3) Salvar cenario
   const salvarCenario = useCallback(
@@ -342,6 +533,8 @@ export default function StepSimulacao() {
   const fmtBRL = (v: number) =>
     v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 
+  const currentTabEnrollments = tabData[activeTab];
+
   return (
     <StepShell step={step} canAdvance={canAdvance} blockReason={blockReason}>
       <h2 className="text-lg font-bold text-[var(--text1)] mb-2">Simulacao de cenarios</h2>
@@ -398,97 +591,190 @@ export default function StepSimulacao() {
         </div>
       )}
 
-      {/* Sliders por categoria */}
-      <div className="border border-[var(--border)] rounded-lg p-4 mb-4">
-        <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--text3)] mb-2">
-          Reclassificacoes ({projecao.tocadas.length} categoria{projecao.tocadas.length === 1 ? "" : "s"} modificada{projecao.tocadas.length === 1 ? "" : "s"})
+      {/* Pre-built scenario buttons */}
+      <div className="flex gap-2 mb-4">
+        <ScenarioBtn
+          label="Quick Wins 2026"
+          gain={scenarioGains.quickWins}
+          active={activeScenarioLabel === "Quick Wins 2026"}
+          onClick={() => applyScenario("quickWins")}
+          fmtBRL={fmtBRL}
+          color="emerald"
+        />
+        <ScenarioBtn
+          label="Captação Total 2027"
+          gain={scenarioGains.fullCaptacao}
+          active={activeScenarioLabel === "Captação Total 2027"}
+          onClick={() => applyScenario("fullCaptacao")}
+          fmtBRL={fmtBRL}
+          color="blue"
+        />
+        <ScenarioBtn
+          label="Conservador"
+          gain={scenarioGains.conservative}
+          active={activeScenarioLabel === "Conservador"}
+          onClick={() => applyScenario("conservative")}
+          fmtBRL={fmtBRL}
+          color="amber"
+        />
+      </div>
+
+      {/* Tabs */}
+      <div className="border border-[var(--border)] rounded-lg mb-4">
+        <div className="flex border-b border-[var(--border)]">
+          <TabButton
+            active={activeTab === "active"}
+            onClick={() => setActiveTab("active")}
+            label={`Ativas (${tabData.active.length})`}
+          />
+          <TabButton
+            active={activeTab === "missing"}
+            onClick={() => setActiveTab("missing")}
+            label={`Faltantes (${tabData.missing.length})`}
+          />
+          <TabButton
+            active={activeTab === "growth"}
+            onClick={() => setActiveTab("growth")}
+            label={`Crescimento (${tabData.growth.length})`}
+          />
         </div>
-        {!muni ? (
-          <div className="text-xs text-gray-400">Carregando matriculas do municipio...</div>
-        ) : visibleEnrollments.length === 0 ? (
-          <div className="text-xs text-gray-400">Municipio sem categorias com potencial de ajuste.</div>
-        ) : (
-          <div className="space-y-2 max-h-[28rem] overflow-y-auto pr-2">
-            {visibleEnrollments.map((e) => {
-              const override = overrides[e.categoria];
-              const current = override != null ? override : e.quantidade ?? 0;
-              const base = e.quantidade ?? 0;
-              const cm = catMeta[e.categoria];
-              // Smart max: base + potential add from T2/T1/T3, or reasonable default
-              const potAdd = cm?.maxAdd ?? 0;
-              const max = Math.max(base + potAdd, base + 20, potAdd > 0 ? base + potAdd : base * 2);
-              const modified = override != null && override !== base;
-              const tierBadge = cm?.tier;
-              return (
-                <div
-                  key={e.categoria}
-                  className={`p-2 rounded ${
-                    modified ? "bg-amber-50" : ""
-                  }`}
-                >
-                  <div className="flex items-center gap-3 text-xs">
-                    <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-[var(--text1)] truncate flex items-center gap-1.5">
-                        {e.categoriaLabel ?? e.categoria}
-                        {tierBadge && (
-                          <span className={`text-[9px] px-1 py-0.5 rounded font-bold ${
-                            tierBadge === "T2" ? "bg-purple-100 text-purple-700" :
-                            tierBadge === "T1" ? "bg-green-100 text-green-700" :
-                            tierBadge === "T3" ? "bg-orange-100 text-orange-700" : "bg-gray-100 text-gray-500"
-                          }`}>
-                            {tierBadge}
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-[10px] text-[var(--text3)]">
-                        base: {base.toLocaleString("pt-BR")} · VAAF: {fmtBRL(e.fatorVaaf ?? 0)}/aluno ·{" "}
-                        {e.ativa ? "ativa" : "inativa"}
-                        {potAdd > 0 && <span className="text-blue-600"> · max +{potAdd.toLocaleString("pt-BR")}</span>}
-                      </div>
-                    </div>
-                    <input
-                      type="range"
-                      min={0}
-                      max={max}
-                      step={1}
-                      value={current}
-                      onChange={(ev) =>
-                        setOverrides((o) => ({ ...o, [e.categoria]: parseInt(ev.target.value, 10) }))
-                      }
-                      className="w-40"
-                    />
-                    <input
-                      type="number"
-                      min={0}
-                      value={current}
-                      onChange={(ev) =>
-                        setOverrides((o) => ({
-                          ...o,
-                          [e.categoria]: Math.max(0, parseInt(ev.target.value, 10) || 0),
-                        }))
-                      }
-                      className="w-16 px-1 py-0.5 border border-[var(--border)] rounded text-right text-xs"
-                    />
-                  </div>
-                  {cm?.hint && (
-                    <div className="text-[10px] text-blue-600 mt-0.5 ml-0.5">
-                      {cm.hint}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+
+        <div className="p-4">
+          <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--text3)] mb-2">
+            {activeTab === "active" && "Categorias ativas no FUNDEB"}
+            {activeTab === "missing" && "Categorias faltantes — oportunidade de criação"}
+            {activeTab === "growth" && "Oportunidades de crescimento (conversão/AEE)"}
+            {" "}({projecao.tocadas.length} categoria{projecao.tocadas.length === 1 ? "" : "s"} modificada{projecao.tocadas.length === 1 ? "" : "s"})
           </div>
-        )}
-        {projecao.tocadas.length > 0 && (
-          <button
-            type="button"
-            onClick={() => setOverrides({})}
-            className="mt-2 text-[10px] text-[#00B4D8] hover:underline"
-          >
-            Limpar overrides
-          </button>
-        )}
+          {!muni ? (
+            <div className="text-xs text-gray-400">Carregando matriculas do municipio...</div>
+          ) : currentTabEnrollments.length === 0 ? (
+            <div className="text-xs text-gray-400">
+              {activeTab === "active" && "Nenhuma categoria ativa encontrada."}
+              {activeTab === "missing" && "Nenhuma categoria faltante — município já capta todas as categorias."}
+              {activeTab === "growth" && "Nenhuma oportunidade de crescimento identificada."}
+            </div>
+          ) : (
+            <div className="space-y-2 max-h-[28rem] overflow-y-auto pr-2">
+              {currentTabEnrollments.map((e) => {
+                const override = overrides[e.categoria];
+                const current = override != null ? override : e.quantidade ?? 0;
+                const base = e.quantidade ?? 0;
+                const cm = catMeta[e.categoria];
+                const tier = cm?.tier || "";
+                const potAdd = cm?.maxAdd ?? 0;
+                const max = Math.max(base + potAdd, base + 20, potAdd > 0 ? base + potAdd : base * 2 || 100);
+                const modified = override != null && override !== base;
+                const census = muni.censusData ?? null;
+                const censusHint = getCensusHint(e, tier, census);
+
+                // Compute per-card revenue info
+                const cardRevenue = current * (e.fatorVaaf ?? 0);
+                const totalRevenue = projecao.receitaProjetada || baseReceita || 1;
+                const cardPct = ((cardRevenue / totalRevenue) * 100);
+
+                return (
+                  <div
+                    key={e.categoria}
+                    className={`p-2.5 rounded-lg border ${
+                      modified ? "bg-amber-50 border-amber-200" : "border-transparent"
+                    }`}
+                  >
+                    {/* Line 1: Name + tier badge */}
+                    <div className="flex items-center gap-3 text-xs">
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-[var(--text1)] truncate flex items-center gap-1.5">
+                          {e.categoriaLabel ?? e.categoria}
+                          {tier && (
+                            <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${
+                              tier === "T2" ? "bg-purple-100 text-purple-700" :
+                              tier === "T1" ? "bg-green-100 text-green-700" :
+                              tier === "T3" ? "bg-orange-100 text-orange-700" : "bg-gray-100 text-gray-500"
+                            }`}>
+                              {tier}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Line 2: Context based on tab */}
+                        <div className="text-[10px] text-[var(--text3)] mt-0.5">
+                          {activeTab === "active" && (
+                            <>
+                              atual: {base.toLocaleString("pt-BR")} · receita: {fmtBRL(cardRevenue)} · {cardPct.toFixed(1)}% do total
+                            </>
+                          )}
+                          {activeTab === "missing" && (
+                            <>
+                              VAAF: {fmtBRL(e.fatorVaaf ?? 0)}/aluno · ganho com +10: {fmtBRL((e.fatorVaaf ?? 0) * 10)} · com +50: {fmtBRL((e.fatorVaaf ?? 0) * 50)}
+                            </>
+                          )}
+                          {activeTab === "growth" && (
+                            <>
+                              base: {base.toLocaleString("pt-BR")}
+                              {potAdd > 0 && <> · max +{potAdd.toLocaleString("pt-BR")}</>}
+                              {tier === "T3" && <> (AEE)</>}
+                              {" "}· VAAF: {fmtBRL(e.fatorVaaf ?? 0)}/aluno
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Slider + input */}
+                      <input
+                        type="range"
+                        min={0}
+                        max={max}
+                        step={1}
+                        value={current}
+                        onChange={(ev) =>
+                          setOverrides((o) => ({ ...o, [e.categoria]: parseInt(ev.target.value, 10) }))
+                        }
+                        className="w-40"
+                      />
+                      <input
+                        type="number"
+                        min={0}
+                        value={current}
+                        onChange={(ev) =>
+                          setOverrides((o) => ({
+                            ...o,
+                            [e.categoria]: Math.max(0, parseInt(ev.target.value, 10) || 0),
+                          }))
+                        }
+                        className="w-16 px-1 py-0.5 border border-[var(--border)] rounded text-right text-xs"
+                      />
+                    </div>
+
+                    {/* Line 3: Potential hint from catMeta (blue) */}
+                    {cm?.hint && (
+                      <div className="text-[10px] text-blue-600 mt-0.5 ml-0.5">
+                        {cm.hint}
+                      </div>
+                    )}
+
+                    {/* Line 4: Census divergence hint (amber) */}
+                    {censusHint && (
+                      <div className="text-[10px] text-amber-700 bg-amber-50 rounded px-1.5 py-0.5 mt-0.5 ml-0.5">
+                        {censusHint}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Clear overrides */}
+          {projecao.tocadas.length > 0 && (
+            <button
+              type="button"
+              onClick={() => { setOverrides({}); setActiveScenarioLabel(null); }}
+              className="mt-2 text-[10px] text-[#00B4D8] hover:underline"
+            >
+              Limpar overrides
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Salvar cenario */}
@@ -582,6 +868,8 @@ export default function StepSimulacao() {
   );
 }
 
+// ── Sub-components ───────────────────────────────────────────────────────
+
 function Kpi({
   label,
   value,
@@ -601,5 +889,70 @@ function Kpi({
       <div className="text-[10px] uppercase text-[var(--text3)]">{label}</div>
       <div className={`text-sm font-bold ${colors[tone]}`}>{value}</div>
     </div>
+  );
+}
+
+function TabButton({
+  active,
+  onClick,
+  label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex-1 px-3 py-2.5 text-xs font-semibold transition-colors ${
+        active
+          ? "text-[#00B4D8] border-b-2 border-[#00B4D8] bg-white"
+          : "text-[var(--text3)] hover:text-[var(--text1)] hover:bg-gray-50"
+      }`}
+    >
+      {label}
+    </button>
+  );
+}
+
+function ScenarioBtn({
+  label,
+  gain,
+  active,
+  onClick,
+  fmtBRL,
+  color,
+}: {
+  label: string;
+  gain: number;
+  active: boolean;
+  onClick: () => void;
+  fmtBRL: (v: number) => string;
+  color: "emerald" | "blue" | "amber";
+}) {
+  const colorClasses = {
+    emerald: active
+      ? "border-emerald-500 bg-emerald-50 text-emerald-800"
+      : "border-emerald-200 text-emerald-700 hover:bg-emerald-50",
+    blue: active
+      ? "border-blue-500 bg-blue-50 text-blue-800"
+      : "border-blue-200 text-blue-700 hover:bg-blue-50",
+    amber: active
+      ? "border-amber-500 bg-amber-50 text-amber-800"
+      : "border-amber-200 text-amber-700 hover:bg-amber-50",
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex-1 rounded-lg border px-3 py-2 text-left transition-colors ${colorClasses[color]}`}
+    >
+      <div className="text-[10px] font-bold uppercase tracking-wider">{label}</div>
+      <div className="text-xs font-semibold mt-0.5">
+        +{fmtBRL(gain)}
+      </div>
+    </button>
   );
 }
