@@ -25,25 +25,37 @@ export async function POST(
 
     const sql = neon(DATABASE_URL);
 
-    // Ensure SP is up-to-date before calling it
+    // Ensure SP is up-to-date before calling it.
+    // Key: when rich T1-T6 potencial JSON exists (from data.json seed),
+    // use pot_total_novo from that JSON as pot_total — NOT the simplified calc.
     await sql.query(`CREATE OR REPLACE PROCEDURE fundeb.sp_recalcular_potencial(p_municipality_id INTEGER)
 LANGUAGE plpgsql AS $BODY$
 DECLARE
-  v_receita_atual  REAL;
-  v_pot_total      REAL := 0;
-  v_n_faltantes    INTEGER := 0;
-  v_cats           JSONB := '[]'::jsonb;
+  v_receita_atual    REAL;
+  v_pot_simple       REAL := 0;
+  v_pot_rich         REAL := 0;
+  v_pct_rich         REAL := 0;
+  v_n_faltantes      INTEGER := 0;
+  v_cats             JSONB := '[]'::jsonb;
   v_potencial_simple JSONB := '[]'::jsonb;
-  v_has_rich       BOOLEAN := FALSE;
-  r                RECORD;
+  v_has_rich         BOOLEAN := FALSE;
+  v_rich_json        JSONB;
+  r                  RECORD;
 BEGIN
   SELECT receita_total,
+         potencial,
          CASE WHEN potencial IS NOT NULL
                AND jsonb_typeof(potencial) = 'object'
                AND potencial ? 't1'
               THEN TRUE ELSE FALSE END
-    INTO v_receita_atual, v_has_rich
+    INTO v_receita_atual, v_rich_json, v_has_rich
   FROM fundeb.municipalities WHERE id = p_municipality_id;
+
+  -- Extract pot_total_novo and pct_pot_total from rich JSON if available
+  IF v_has_rich AND v_rich_json IS NOT NULL THEN
+    v_pot_rich  := COALESCE((v_rich_json->>'pot_total_novo')::REAL, 0);
+    v_pct_rich  := COALESCE((v_rich_json->>'pct_pot_total')::REAL, 0);
+  END IF;
 
   FOR r IN
     SELECT categoria, categoria_label, fator_vaaf, quantidade, ativa
@@ -52,7 +64,7 @@ BEGIN
   LOOP
     IF r.ativa IS FALSE OR r.quantidade IS NULL OR r.quantidade = 0 THEN
       v_n_faltantes := v_n_faltantes + 1;
-      v_pot_total := v_pot_total + (COALESCE(r.fator_vaaf, 0) * 10);
+      v_pot_simple := v_pot_simple + (COALESCE(r.fator_vaaf, 0) * 10);
       v_potencial_simple := v_potencial_simple || jsonb_build_object(
         'categoria', r.categoria,
         'label', r.categoria_label,
@@ -67,32 +79,34 @@ BEGIN
     );
   END LOOP;
 
-  IF v_has_rich THEN
+  IF v_has_rich AND v_pot_rich > 0 THEN
+    -- Use the real T1-T6 pot_total from data.json, only refresh cats/n_faltantes
     UPDATE fundeb.municipalities
-       SET pot_total = v_pot_total,
-           pct_pot_total = CASE WHEN COALESCE(v_receita_atual,0) > 0
-                                THEN ROUND((v_pot_total / v_receita_atual)::numeric * 100, 2)
-                                ELSE 0 END,
-           n_faltantes = v_n_faltantes,
-           cats = v_cats,
-           updated_at = NOW()
+       SET pot_total     = v_pot_rich,
+           pct_pot_total = v_pct_rich,
+           n_faltantes   = v_n_faltantes,
+           cats          = v_cats,
+           updated_at    = NOW()
      WHERE id = p_municipality_id;
   ELSE
+    -- No rich data: use simplified calculation
     UPDATE fundeb.municipalities
-       SET pot_total = v_pot_total,
+       SET pot_total     = v_pot_simple,
            pct_pot_total = CASE WHEN COALESCE(v_receita_atual,0) > 0
-                                THEN ROUND((v_pot_total / v_receita_atual)::numeric * 100, 2)
+                                THEN ROUND((v_pot_simple / v_receita_atual)::numeric * 100, 2)
                                 ELSE 0 END,
-           n_faltantes = v_n_faltantes,
-           cats = v_cats,
-           potencial = v_potencial_simple,
-           updated_at = NOW()
+           n_faltantes   = v_n_faltantes,
+           cats          = v_cats,
+           potencial     = v_potencial_simple,
+           updated_at    = NOW()
      WHERE id = p_municipality_id;
   END IF;
 
   INSERT INTO audit.event_log (actor_id, actor_role, action, entity_type, entity_id, after_state)
   VALUES ('system', 'sistema', 'recalculo.potencial', 'municipality', p_municipality_id,
-          jsonb_build_object('pot_total', v_pot_total, 'n_faltantes', v_n_faltantes));
+          jsonb_build_object('pot_total',
+            CASE WHEN v_has_rich AND v_pot_rich > 0 THEN v_pot_rich ELSE v_pot_simple END,
+            'n_faltantes', v_n_faltantes));
 
   BEGIN
     REFRESH MATERIALIZED VIEW CONCURRENTLY ops.v_consultoria_kpis;
