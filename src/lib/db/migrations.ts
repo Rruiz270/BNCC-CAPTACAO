@@ -251,10 +251,17 @@ DECLARE
   v_pot_total      REAL := 0;
   v_n_faltantes    INTEGER := 0;
   v_cats           JSONB := '[]'::jsonb;
-  v_potencial      JSONB := '[]'::jsonb;
+  v_potencial_simple JSONB := '[]'::jsonb;
+  v_has_rich       BOOLEAN := FALSE;
   r                RECORD;
 BEGIN
-  SELECT receita_total INTO v_receita_atual
+  -- Check if municipality already has rich potencial JSON (from data.json seed)
+  SELECT receita_total,
+         CASE WHEN potencial IS NOT NULL
+               AND jsonb_typeof(potencial) = 'object'
+               AND potencial ? 't1'
+              THEN TRUE ELSE FALSE END
+    INTO v_receita_atual, v_has_rich
   FROM fundeb.municipalities WHERE id = p_municipality_id;
 
   FOR r IN
@@ -264,12 +271,14 @@ BEGIN
   LOOP
     IF r.ativa IS FALSE OR r.quantidade IS NULL OR r.quantidade = 0 THEN
       v_n_faltantes := v_n_faltantes + 1;
-      v_pot_total := v_pot_total + (5963 * r.fator_vaaf * 10);
-      v_potencial := v_potencial || jsonb_build_object(
+      -- fator_vaaf already stores the VAAF value per student (e.g. 10131.14),
+      -- NOT the raw factor (1.25). Do NOT multiply by VAAF_BASE (5963) again.
+      v_pot_total := v_pot_total + (COALESCE(r.fator_vaaf, 0) * 10);
+      v_potencial_simple := v_potencial_simple || jsonb_build_object(
         'categoria', r.categoria,
         'label', r.categoria_label,
         'fator', r.fator_vaaf,
-        'estimado_min', 5963 * r.fator_vaaf * 10
+        'estimado_min', COALESCE(r.fator_vaaf, 0) * 10
       );
     END IF;
     v_cats := v_cats || jsonb_build_object(
@@ -279,16 +288,30 @@ BEGIN
     );
   END LOOP;
 
-  UPDATE fundeb.municipalities
-     SET pot_total = v_pot_total,
-         pct_pot_total = CASE WHEN COALESCE(v_receita_atual,0) > 0
-                              THEN ROUND((v_pot_total / v_receita_atual)::numeric * 100, 2)
-                              ELSE 0 END,
-         n_faltantes = v_n_faltantes,
-         cats = v_cats,
-         potencial = v_potencial,
-         updated_at = NOW()
-   WHERE id = p_municipality_id;
+  -- Update pot_total, n_faltantes, cats always.
+  -- Only overwrite potencial JSON if there is no rich T1-T6 data from seed.
+  IF v_has_rich THEN
+    UPDATE fundeb.municipalities
+       SET pot_total = v_pot_total,
+           pct_pot_total = CASE WHEN COALESCE(v_receita_atual,0) > 0
+                                THEN ROUND((v_pot_total / v_receita_atual)::numeric * 100, 2)
+                                ELSE 0 END,
+           n_faltantes = v_n_faltantes,
+           cats = v_cats,
+           updated_at = NOW()
+     WHERE id = p_municipality_id;
+  ELSE
+    UPDATE fundeb.municipalities
+       SET pot_total = v_pot_total,
+           pct_pot_total = CASE WHEN COALESCE(v_receita_atual,0) > 0
+                                THEN ROUND((v_pot_total / v_receita_atual)::numeric * 100, 2)
+                                ELSE 0 END,
+           n_faltantes = v_n_faltantes,
+           cats = v_cats,
+           potencial = v_potencial_simple,
+           updated_at = NOW()
+     WHERE id = p_municipality_id;
+  END IF;
 
   INSERT INTO audit.event_log (actor_id, actor_role, action, entity_type, entity_id, after_state)
   VALUES ('system', 'sistema', 'recalculo.potencial', 'municipality', p_municipality_id,
