@@ -63,16 +63,16 @@ export default function GerarRelatorio() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="max-w-6xl mx-auto p-6 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">Gerar Relatorio de Consultoria</h1>
-        <p className="text-white/50 text-sm mt-1">
+        <h1 className="text-2xl font-bold text-[var(--text1)]">Gerar Relatorio de Consultoria</h1>
+        <p className="text-[var(--text3)] text-sm mt-1">
           Relatorio completo com ficha municipal, diagnostico T1-T6, matriculas, compliance e plano de acao
         </p>
       </div>
 
-      <div className="bg-white/5 rounded-2xl p-5 border border-white/10">
-        <h2 className="text-sm font-semibold text-white/80 mb-3">Municipio</h2>
+      <div className="bg-white rounded-xl p-5 border border-[var(--border)]">
+        <h2 className="text-sm font-semibold text-[var(--text2)] mb-3">Municipio</h2>
         {!selectedId ? (
           <div>
             <input
@@ -80,13 +80,13 @@ export default function GerarRelatorio() {
               placeholder="Buscar municipio..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-white/10 text-white border border-white/20 placeholder-white/40 outline-none focus:border-[#00B4D8] text-sm"
+              className="w-full px-4 py-2.5 rounded-xl bg-[var(--bg)] text-[var(--text1)] border border-[var(--border)] placeholder-[var(--text3)] outline-none focus:border-[#00B4D8] text-sm"
             />
             {filtered.length > 0 && (
-              <div className="mt-2 max-h-48 overflow-y-auto rounded-xl bg-white/5 border border-white/10">
+              <div className="mt-2 max-h-48 overflow-y-auto rounded-xl bg-white border border-[var(--border)]">
                 {filtered.map(m => (
                   <button key={m.id} onClick={() => { setSelectedId(m.id); setSelectedNome(m.nome); setSearch(''); }}
-                    className="w-full text-left px-4 py-2 text-sm text-white/80 hover:bg-[#00B4D8]/20 hover:text-white transition-colors"
+                    className="w-full text-left px-4 py-2 text-sm text-[var(--text2)] hover:bg-[#00B4D8]/10 hover:text-[#0A2463] transition-colors"
                   >{m.nome}</button>
                 ))}
               </div>
@@ -94,9 +94,9 @@ export default function GerarRelatorio() {
           </div>
         ) : (
           <div className="flex items-center gap-3">
-            <div className="flex-1 px-4 py-2.5 rounded-xl bg-[#00B4D8]/20 text-white font-semibold text-sm">{selectedNome}</div>
+            <div className="flex-1 px-4 py-2.5 rounded-xl bg-[#00B4D8]/10 text-[#0A2463] font-semibold text-sm">{selectedNome}</div>
             <button onClick={() => { setSelectedId(null); setSelectedNome(''); setSearch(''); setReportHtml(null); }}
-              className="px-3 py-2 rounded-xl bg-white/10 text-white/60 hover:text-white text-sm">Trocar</button>
+              className="px-3 py-2 rounded-xl bg-[var(--bg)] text-[var(--text3)] hover:text-[var(--text1)] text-sm border border-[var(--border)]">Trocar</button>
           </div>
         )}
 
@@ -111,7 +111,7 @@ export default function GerarRelatorio() {
         )}
 
         {error && (
-          <div className="mt-3 p-3 bg-red-500/20 rounded-xl text-red-300 text-sm">{error}</div>
+          <div className="mt-3 p-3 bg-red-50 rounded-xl text-red-600 text-sm border border-red-200">{error}</div>
         )}
       </div>
 
@@ -123,15 +123,15 @@ export default function GerarRelatorio() {
               Imprimir / PDF
             </button>
             <button onClick={handleDownload}
-              className="px-6 py-2.5 rounded-xl bg-white/10 text-white font-semibold hover:bg-white/20 text-sm">
+              className="px-6 py-2.5 rounded-xl bg-[var(--bg)] text-[var(--text1)] font-semibold hover:bg-gray-100 text-sm border border-[var(--border)]">
               Download HTML
             </button>
             <button onClick={() => setReportHtml(null)}
-              className="px-6 py-2.5 rounded-xl bg-white/10 text-white/60 hover:text-white text-sm">
+              className="px-6 py-2.5 rounded-xl bg-[var(--bg)] text-[var(--text3)] hover:text-[var(--text1)] text-sm border border-[var(--border)]">
               Fechar Preview
             </button>
           </div>
-          <div className="bg-white rounded-2xl overflow-hidden shadow-2xl">
+          <div className="bg-white rounded-xl overflow-hidden shadow-lg">
             <iframe
               srcDoc={reportHtml}
               className="w-full border-0"
