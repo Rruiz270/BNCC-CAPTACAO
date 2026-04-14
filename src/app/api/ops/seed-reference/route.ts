@@ -9,6 +9,9 @@ const FNDE_DATA = process.env.FNDE_DATA_PATH || '/Users/Raphael/fundeb-sp-2026/f
 const SP_DATA = process.env.SP_DATA_PATH || '/Users/Raphael/fundeb-sp-2026';
 const BATCH_SIZE = 200;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type NeonSQL = any;
+
 type SSEWriter = {
   write: (event: string, data: Record<string, unknown>) => void;
 };
@@ -36,8 +39,8 @@ function createSSEStream() {
 
 // ── Build municipality lookup maps ──────────────────────────
 
-async function buildMunicipalityMaps(sql: ReturnType<typeof neon>) {
-  const rows = await sql(`SELECT id, nome, codigo_ibge FROM fundeb.municipalities`);
+async function buildMunicipalityMaps(sql: NeonSQL) {
+  const rows = await sql.query('SELECT id, nome, codigo_ibge FROM fundeb.municipalities');
   const nameToId = new Map<string, number>();
   const ibgeToId = new Map<string, number>();
   for (const m of rows) {
@@ -71,13 +74,13 @@ function intOrNull(val: unknown): string {
 // ── Seed: fatores_ponderacao ────────────────────────────────
 
 async function seedFatoresPonderacao(
-  sql: ReturnType<typeof neon>,
+  sql: NeonSQL,
   brDb: Database.Database,
   writer: SSEWriter,
 ) {
   writer.write('progress', { table: 'ref_fatores_ponderacao', status: 'starting' });
 
-  await sql(`DELETE FROM fundeb.ref_fatores_ponderacao`);
+  await sql.query('DELETE FROM fundeb.ref_fatores_ponderacao');
 
   const rows = brDb.prepare('SELECT * FROM fatores_ponderacao').all() as Array<{
     descricao: string | null; segmento: string; fp_vaaf: number | null;
@@ -92,7 +95,7 @@ async function seedFatoresPonderacao(
       `(${esc(r.descricao)}, ${esc(r.segmento)}, ${num(r.fp_vaaf)}, ${num(r.fp_vaat)}, ${num(r.f_multi ?? 1.0)}, ${num(r.fp_final_vaaf)}, ${num(r.fp_final_vaat)})`
     ).join(',\n');
 
-    await sql(`
+    await sql.query(`
       INSERT INTO fundeb.ref_fatores_ponderacao (descricao, segmento, fp_vaaf, fp_vaat, f_multi, fp_final_vaaf, fp_final_vaat)
       VALUES ${values}
       ON CONFLICT (segmento) DO UPDATE SET
@@ -113,14 +116,14 @@ async function seedFatoresPonderacao(
 // ── Seed: inep_censo ────────────────────────────────────────
 
 async function seedInepCenso(
-  sql: ReturnType<typeof neon>,
+  sql: NeonSQL,
   brDb: Database.Database,
   ibgeToId: Map<string, number>,
   writer: SSEWriter,
 ) {
   writer.write('progress', { table: 'ref_inep_censo', status: 'starting' });
 
-  await sql(`DELETE FROM fundeb.ref_inep_censo`);
+  await sql.query('DELETE FROM fundeb.ref_inep_censo');
 
   const rows = brDb.prepare(
     `SELECT * FROM inep_censo_2024 WHERE uf = 'São Paulo'`
@@ -136,7 +139,7 @@ async function seedInepCenso(
       return `(${esc(ibge)}, ${munId ?? 'NULL'}, ${esc(r.uf as string)}, ${esc(r.municipio as string)}, ${intOrNull(r.mat_total)}, ${intOrNull(r.mat_ei_total)}, ${intOrNull(r.mat_creche)}, ${intOrNull(r.mat_pre_escola)}, ${intOrNull(r.mat_ef_total)}, ${intOrNull(r.mat_ef_ai)}, ${intOrNull(r.mat_ef_af)}, ${intOrNull(r.mat_em_total)}, ${intOrNull(r.mat_em_propedeutico)}, ${intOrNull(r.mat_em_normal)}, ${intOrNull(r.mat_em_tec_integrado)}, ${intOrNull(r.mat_prof_total)}, ${intOrNull(r.mat_eja_total)}, ${intOrNull(r.mat_eja_fund)}, ${intOrNull(r.mat_eja_medio)}, ${intOrNull(r.mat_especial_total)}, ${intOrNull(r.mat_especial_comum)}, ${intOrNull(r.mat_especial_exclusiva)})`;
     }).join(',\n');
 
-    await sql(`
+    await sql.query(`
       INSERT INTO fundeb.ref_inep_censo (${cols})
       VALUES ${values}
       ON CONFLICT (codigo_ibge) DO NOTHING
@@ -151,14 +154,14 @@ async function seedInepCenso(
 // ── Seed: nse ───────────────────────────────────────────────
 
 async function seedNse(
-  sql: ReturnType<typeof neon>,
+  sql: NeonSQL,
   brDb: Database.Database,
   ibgeToId: Map<string, number>,
   writer: SSEWriter,
 ) {
   writer.write('progress', { table: 'ref_nse', status: 'starting' });
 
-  await sql(`DELETE FROM fundeb.ref_nse`);
+  await sql.query('DELETE FROM fundeb.ref_nse');
 
   // codigo_ibge > 99 excludes state-level entry (codigo_ibge=35)
   const rows = brDb.prepare(
@@ -176,7 +179,7 @@ async function seedNse(
       return `(${esc(ibge)}, ${munId ?? 'NULL'}, ${esc(r.uf)}, ${esc(r.nome)}, ${num(r.ponderador_nse)})`;
     }).join(',\n');
 
-    await sql(`
+    await sql.query(`
       INSERT INTO fundeb.ref_nse (codigo_ibge, municipality_id, uf, nome, ponderador_nse)
       VALUES ${values}
       ON CONFLICT (codigo_ibge) DO UPDATE SET
@@ -192,13 +195,13 @@ async function seedNse(
 // ── Seed: historico_stn ─────────────────────────────────────
 
 async function seedHistoricoStn(
-  sql: ReturnType<typeof neon>,
+  sql: NeonSQL,
   brDb: Database.Database,
   writer: SSEWriter,
 ) {
   writer.write('progress', { table: 'ref_historico_stn', status: 'starting' });
 
-  await sql(`DELETE FROM fundeb.ref_historico_stn`);
+  await sql.query('DELETE FROM fundeb.ref_historico_stn');
 
   const rows = brDb.prepare(
     `SELECT * FROM historico_stn_uf WHERE uf = 'SP'`
@@ -218,7 +221,7 @@ async function seedHistoricoStn(
       `(${esc(r.uf)}, ${r.ano}, ${esc(r.nivel)}, ${esc(r.origem)}, ${num(r.jan)}, ${num(r.fev)}, ${num(r.mar)}, ${num(r.abr)}, ${num(r.mai)}, ${num(r.jun)}, ${num(r.jul)}, ${num(r.ago)}, ${num(r.sete)}, ${num(r.outu)}, ${num(r.novt)}, ${num(r.dezt)}, ${num(r.total_ano)})`
     ).join(',\n');
 
-    await sql(`
+    await sql.query(`
       INSERT INTO fundeb.ref_historico_stn (uf, ano, nivel, origem, jan, fev, mar, abr, mai, jun, jul, ago, sete, outu, novt, dezt, total_ano)
       VALUES ${values}
       ON CONFLICT (uf, ano, nivel, origem) DO UPDATE SET
@@ -238,14 +241,14 @@ async function seedHistoricoStn(
 // ── Seed: matriculas_vaaf ───────────────────────────────────
 
 async function seedMatriculasVaaf(
-  sql: ReturnType<typeof neon>,
+  sql: NeonSQL,
   spDb: Database.Database,
   nameToId: Map<string, number>,
   writer: SSEWriter,
 ) {
   writer.write('progress', { table: 'ref_matriculas_vaaf', status: 'starting' });
 
-  await sql(`DELETE FROM fundeb.ref_matriculas_vaaf`);
+  await sql.query('DELETE FROM fundeb.ref_matriculas_vaaf');
 
   // Build local municipio_id -> municipalities.id mapping via name
   const spMunicipios = spDb.prepare('SELECT id, nome FROM municipios').all() as Array<{
@@ -287,7 +290,7 @@ async function seedMatriculasVaaf(
     }
 
     if (validRows.length > 0) {
-      await sql(`
+      await sql.query(`
         INSERT INTO fundeb.ref_matriculas_vaaf (municipality_id, secao, categoria, localidade, matriculas, vaaf_valor, subtotal)
         VALUES ${validRows.join(',\n')}
       `);
@@ -396,10 +399,9 @@ export async function POST(request: Request) {
 
       // Audit (best-effort)
       try {
-        await sql(
+        await sql.query(
           `INSERT INTO audit.event_log (actor_id, actor_role, action, entity_type, entity_id, after_state)
-           VALUES ('system', 'sistema', 'seed.reference', 'migration', NULL, $1::jsonb)`,
-          [JSON.stringify(results)]
+           VALUES ('system', 'sistema', 'seed.reference', 'migration', NULL, '${JSON.stringify(results).replace(/'/g, "''")}'::jsonb)`
         );
       } catch { /* ignore */ }
 
