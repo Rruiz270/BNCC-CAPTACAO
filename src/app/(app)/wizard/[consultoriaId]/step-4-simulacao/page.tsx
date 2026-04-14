@@ -233,6 +233,7 @@ export default function StepSimulacao() {
   const [submitting, setSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>("active");
   const [activeScenarioLabel, setActiveScenarioLabel] = useState<string | null>(null);
+  const [refVaafMap, setRefVaafMap] = useState<Record<string, { urbano: number; campo: number }>>({});
 
   // 1) Carrega sessao + municipio + scenarios em paralelo
   useEffect(() => {
@@ -252,6 +253,26 @@ export default function StepSimulacao() {
       .then((r) => r.json())
       .then((data: MuniResponse) => setMuni(data))
       .catch((e) => setError(String(e)));
+
+    // Fetch ref_matriculas_vaaf for contextual info
+    fetch(`/api/ref/matriculas-vaaf?municipalityId=${session.municipality.id}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (!d.data) return;
+        const map: Record<string, { urbano: number; campo: number }> = {};
+        for (const row of d.data as Array<{ categoria: string; localidade: string; matriculas: number }>) {
+          const cat = row.categoria;
+          if (!map[cat]) map[cat] = { urbano: 0, campo: 0 };
+          const loc = (row.localidade || '').toLowerCase();
+          if (loc.includes('campo') || loc.includes('rural')) {
+            map[cat].campo += row.matriculas || 0;
+          } else {
+            map[cat].urbano += row.matriculas || 0;
+          }
+        }
+        setRefVaafMap(map);
+      })
+      .catch(() => {});
   }, [session]);
 
   const loadScenarios = useCallback(async () => {
@@ -758,6 +779,20 @@ export default function StepSimulacao() {
                         {censusHint}
                       </div>
                     )}
+
+                    {/* Line 5: VAAF ref data badge */}
+                    {(() => {
+                      // Match enrollment label to ref_matriculas_vaaf
+                      const label = (e.categoriaLabel ?? e.categoria).toLowerCase();
+                      const matchedKey = Object.keys(refVaafMap).find((k) => label.includes(k.toLowerCase()) || k.toLowerCase().includes(label));
+                      const refEntry = matchedKey ? refVaafMap[matchedKey] : null;
+                      if (!refEntry || (refEntry.urbano === 0 && refEntry.campo === 0)) return null;
+                      return (
+                        <div className="text-[10px] text-purple-600 bg-purple-50 rounded px-1.5 py-0.5 mt-0.5 ml-0.5">
+                          VAAF: Urbano {refEntry.urbano.toLocaleString("pt-BR")} · Campo {refEntry.campo.toLocaleString("pt-BR")}
+                        </div>
+                      );
+                    })()}
                   </div>
                 );
               })}
@@ -808,22 +843,32 @@ export default function StepSimulacao() {
         </div>
       </div>
 
-      {/* Lista de cenarios salvos */}
+      {/* Lista de cenarios salvos — radio group for target selection */}
       {scenarios.length > 0 && (
         <div className="border border-[var(--border)] rounded-lg p-4 mb-4">
           <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--text3)] mb-2">
-            Cenarios salvos ({scenarios.length})
+            Cenarios salvos ({scenarios.length}) — selecione o cenario-alvo
           </div>
           <div className="space-y-2">
             {scenarios.map((s) => (
-              <div
+              <label
                 key={s.id}
-                className={`flex items-center gap-3 text-xs p-2 rounded border ${
+                className={`flex items-center gap-3 text-xs p-2 rounded border cursor-pointer transition-colors ${
                   s.isTarget
                     ? "border-emerald-400 bg-emerald-50"
-                    : "border-[var(--border)]"
+                    : "border-[var(--border)] hover:bg-gray-50"
                 }`}
               >
+                <input
+                  type="radio"
+                  name="target-scenario"
+                  checked={s.isTarget}
+                  disabled={submitting}
+                  onChange={() => {
+                    if (!s.isTarget) marcarComoTarget(s.id);
+                  }}
+                  className="accent-emerald-600"
+                />
                 <div className="flex-1 min-w-0">
                   <div className="font-semibold text-[var(--text1)] truncate">
                     {s.nome} {s.isTarget && <span className="text-emerald-700 text-[10px]">ALVO</span>}
@@ -838,16 +883,7 @@ export default function StepSimulacao() {
                     {s.resultado.deltaPct.toFixed(1)}%)
                   </div>
                 </div>
-                {!s.isTarget && (
-                  <button
-                    onClick={() => marcarComoTarget(s.id)}
-                    disabled={submitting}
-                    className="px-2 py-1 text-[10px] font-semibold rounded border border-[#00B4D8] text-[#00B4D8] hover:bg-[#00B4D8] hover:text-white disabled:opacity-50"
-                  >
-                    Marcar como alvo
-                  </button>
-                )}
-              </div>
+              </label>
             ))}
           </div>
         </div>

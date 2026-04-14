@@ -20,9 +20,33 @@ export default function StepEntrega() {
 
   const [signed, setSigned] = useState(false);
   const [signedBy, setSignedBy] = useState("");
+  const [consultantName, setConsultantName] = useState("");
+  const [secretaryName, setSecretaryName] = useState("");
   const [snapshot, setSnapshot] = useState<SnapshotRow | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Pre-populate consultant and secretary names from consultoria data
+  useEffect(() => {
+    fetch(`/api/consultorias/${consultoriaId}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.consultantName) setConsultantName(data.consultantName);
+        if (data.secretaryName) setSecretaryName(data.secretaryName);
+      })
+      .catch(() => {});
+
+    // Fallback: get secretary name from intake response
+    fetch(`/api/intake?consultoriaId=${consultoriaId}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.response?.respondentName && !secretaryName) {
+          setSecretaryName((prev) => prev || data.response.respondentName);
+        }
+      })
+      .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [consultoriaId]);
 
   const requiredCompleted = [1, 2, 3, 4, 5, 6, 7].every((id) => {
     const s = steps.find((x) => x.step === id);
@@ -58,6 +82,18 @@ export default function StepEntrega() {
     setBusy(true);
     setError(null);
     try {
+      // Save consultant and secretary names to consultoria
+      if (consultantName.trim() || secretaryName.trim()) {
+        await fetch(`/api/consultorias/${consultoriaId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            consultantName: consultantName.trim(),
+            secretaryName: secretaryName.trim(),
+          }),
+        });
+      }
+
       const res = await fetch(`/api/snapshots`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -85,7 +121,7 @@ export default function StepEntrega() {
     } finally {
       setBusy(false);
     }
-  }, [requiredCompleted, signed, signedBy, consultoriaId, updateStep]);
+  }, [requiredCompleted, signed, signedBy, consultantName, secretaryName, consultoriaId, updateStep]);
 
   const canAdvance = requiredCompleted && signed && snapshot !== null;
   const blockReason = !requiredCompleted
@@ -161,6 +197,38 @@ export default function StepEntrega() {
           />
         </div>
       </label>
+
+      {/* Signature fields */}
+      <div className="border border-[var(--border)] rounded-lg p-4 mb-4">
+        <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--text3)] mb-3">
+          Assinaturas da consultoria
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="text-xs text-[var(--text3)] block mb-1">Nome do Consultor i10</label>
+            <input
+              type="text"
+              placeholder="Ex: Raphael Silva"
+              value={consultantName}
+              onChange={(e) => setConsultantName(e.target.value)}
+              className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-[var(--text3)] block mb-1">Nome do(a) Secretario(a) / Gestor(a)</label>
+            <input
+              type="text"
+              placeholder="Ex: Maria Oliveira"
+              value={secretaryName}
+              onChange={(e) => setSecretaryName(e.target.value)}
+              className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-lg"
+            />
+          </div>
+        </div>
+        <div className="text-[10px] text-[var(--text3)] mt-2">
+          Estes nomes serao incluidos no snapshot e no relatorio final da consultoria.
+        </div>
+      </div>
 
       {!snapshot ? (
         <button

@@ -77,6 +77,8 @@ export default function StepDiscovery() {
   const [localResult, setLocalResult] = useState<PipelineResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [intakeResponse, setIntakeResponse] = useState<IntakeResponse | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [inepData, setInepData] = useState<Record<string, any> | null>(null);
 
   // Busca municipio da sessao
   useEffect(() => {
@@ -88,6 +90,15 @@ export default function StepDiscovery() {
       })
       .catch(() => {});
   }, [consultoriaId]);
+
+  // Fetch INEP Census reference data
+  useEffect(() => {
+    if (!muniId) return;
+    fetch(`/api/ref/inep-censo?municipalityId=${muniId}`)
+      .then((r) => r.json())
+      .then((d) => { if (d.data) setInepData(d.data); })
+      .catch(() => {});
+  }, [muniId]);
 
   // Busca intake response — first by consultoriaId, then fallback by municipalityId
   useEffect(() => {
@@ -185,34 +196,57 @@ export default function StepDiscovery() {
             </p>
           </div>
 
-          {/* Enrollment comparison table */}
-          {intakeResponse.data?.enrollmentData && Object.keys(intakeResponse.data.enrollmentData).length > 0 && (
-            <div className="border border-[var(--border)] rounded-lg p-4 mb-4">
-              <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--text3)] mb-3">
-                Matriculas — Publico vs Informado pela Secretaria
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm border-collapse">
-                  <thead>
-                    <tr className="text-xs uppercase text-[var(--text3)] border-b border-[var(--border)]">
-                      <th className="text-left px-3 py-2">Categoria</th>
-                      <th className="text-right px-3 py-2">Publico</th>
-                      <th className="text-right px-3 py-2">Real</th>
-                      <th className="text-right px-3 py-2">Delta</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Object.entries(intakeResponse.data.enrollmentData).map(([key, entry]) => {
-                      const diff = entry.difference;
-                      const pct = entry.publicValue > 0 ? Math.abs(diff / entry.publicValue * 100) : (diff !== 0 ? 100 : 0);
-                      return (
+          {/* Enrollment comparison table with INEP and financial impact */}
+          {intakeResponse.data?.enrollmentData && Object.keys(intakeResponse.data.enrollmentData).length > 0 && (() => {
+            const VAAF_APPROX = 5963; // base VAAF per student for rough impact calc
+            const entries = Object.entries(intakeResponse.data!.enrollmentData!);
+            let totalImpact = 0;
+            const rowsData = entries.map(([key, entry]) => {
+              const diff = entry.difference;
+              const pct = entry.publicValue > 0 ? Math.abs(diff / entry.publicValue * 100) : (diff !== 0 ? 100 : 0);
+              // Match INEP field to category key
+              const inepMap: Record<string, string> = {
+                "Creche": "matCreche", "Pre-Escola": "matPreEscola",
+                "EF - Anos Iniciais": "matEfAi", "EF - Anos Finais": "matEfAf",
+                "Ensino Medio": "matEmTotal", "EJA": "matEjaTotal",
+                "Educacao Especial": "matEspecialTotal", "Total": "matTotal",
+              };
+              const inepKey = inepMap[key];
+              const inepVal = inepKey && inepData ? (inepData[inepKey] as number | undefined) : undefined;
+              const impact = diff * VAAF_APPROX;
+              totalImpact += impact;
+              return { key, entry, diff, pct, inepVal, impact };
+            });
+
+            return (
+              <div className="border border-[var(--border)] rounded-lg p-4 mb-4">
+                <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--text3)] mb-3">
+                  Comparacao — Secretaria vs INEP Oficial vs FUNDEB
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm border-collapse">
+                    <thead>
+                      <tr className="text-xs uppercase text-[var(--text3)] border-b border-[var(--border)]">
+                        <th className="text-left px-3 py-2">Categoria</th>
+                        <th className="text-right px-3 py-2">Secretaria</th>
+                        <th className="text-right px-3 py-2">INEP Oficial</th>
+                        <th className="text-right px-3 py-2">FUNDEB Atual</th>
+                        <th className="text-right px-3 py-2">Divergencia</th>
+                        <th className="text-right px-3 py-2">Impacto R$</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rowsData.map(({ key, entry, diff, pct, inepVal, impact }) => (
                         <tr key={key} className={`border-b border-[var(--border)] ${pct > 10 ? "bg-red-50" : ""}`}>
                           <td className="px-3 py-1.5 font-medium">{key}</td>
-                          <td className="px-3 py-1.5 text-right tabular-nums text-[var(--text2)]">
-                            {entry.publicValue.toLocaleString("pt-BR")}
-                          </td>
                           <td className="px-3 py-1.5 text-right tabular-nums font-semibold">
                             {entry.realValue.toLocaleString("pt-BR")}
+                          </td>
+                          <td className="px-3 py-1.5 text-right tabular-nums text-blue-600">
+                            {inepVal != null ? inepVal.toLocaleString("pt-BR") : <span className="text-gray-300">—</span>}
+                          </td>
+                          <td className="px-3 py-1.5 text-right tabular-nums text-[var(--text2)]">
+                            {entry.publicValue.toLocaleString("pt-BR")}
                           </td>
                           <td className={`px-3 py-1.5 text-right tabular-nums font-semibold ${
                             diff > 0 ? "text-emerald-700" : diff < 0 ? "text-red-700" : "text-gray-400"
@@ -220,19 +254,44 @@ export default function StepDiscovery() {
                             {diff > 0 ? "+" : ""}{diff.toLocaleString("pt-BR")}
                             {pct > 0 && <span className="text-[10px] text-[var(--text3)] ml-1">({pct.toFixed(0)}%)</span>}
                           </td>
+                          <td className={`px-3 py-1.5 text-right tabular-nums font-semibold ${
+                            impact > 0 ? "text-emerald-700" : impact < 0 ? "text-red-700" : "text-gray-400"
+                          }`}>
+                            {impact !== 0 ? `${impact > 0 ? "+" : ""}${impact.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })}` : "—"}
+                          </td>
                         </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-              {intakeResponse.data.observations && (
-                <div className="mt-3 text-xs text-[var(--text2)] bg-[var(--bg)] rounded p-2">
-                  <strong>Observacoes:</strong> {intakeResponse.data.observations}
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              )}
-            </div>
-          )}
+
+                {/* Financial impact summary card */}
+                <div className={`mt-3 rounded-lg p-3 border ${
+                  totalImpact > 0 ? "bg-emerald-50 border-emerald-200" : totalImpact < 0 ? "bg-red-50 border-red-200" : "bg-gray-50 border-[var(--border)]"
+                }`}>
+                  <div className="flex items-center justify-between">
+                    <div className="text-xs font-semibold text-[var(--text1)]">
+                      Impacto financeiro estimado das divergencias
+                    </div>
+                    <div className={`text-sm font-bold ${
+                      totalImpact > 0 ? "text-emerald-700" : totalImpact < 0 ? "text-red-700" : "text-gray-500"
+                    }`}>
+                      {totalImpact > 0 ? "+" : ""}{totalImpact.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })}
+                    </div>
+                  </div>
+                  <div className="text-[10px] text-[var(--text3)] mt-1">
+                    Baseado em VAAF estimado de R$ {VAAF_APPROX.toLocaleString("pt-BR")}/aluno. Valor real varia por categoria.
+                  </div>
+                </div>
+
+                {intakeResponse.data!.observations && (
+                  <div className="mt-3 text-xs text-[var(--text2)] bg-[var(--bg)] rounded p-2">
+                    <strong>Observacoes:</strong> {intakeResponse.data!.observations}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
         </div>
       )}
 

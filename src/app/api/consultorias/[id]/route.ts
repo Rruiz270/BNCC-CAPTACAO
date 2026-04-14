@@ -31,6 +31,9 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
       startDate: row.start_date,
       endDate: row.end_date,
       notes: row.notes,
+      consultantName: row.consultant_name,
+      secretaryName: row.secretary_name,
+      annotations: row.annotations,
       municipality: {
         id: row.municipality_id,
         nome: row.nome,
@@ -55,7 +58,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   try {
     const sql = neon(DATABASE_URL);
     const body = await request.json();
-    const { status, notes } = body;
+    const { status, notes, consultantName, secretaryName, annotations } = body;
 
     const updates: string[] = [];
     const values: unknown[] = [];
@@ -72,6 +75,21 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     if (notes !== undefined) {
       updates.push(`notes = $${idx}`);
       values.push(notes);
+      idx++;
+    }
+    if (consultantName !== undefined) {
+      updates.push(`consultant_name = $${idx}`);
+      values.push(consultantName);
+      idx++;
+    }
+    if (secretaryName !== undefined) {
+      updates.push(`secretary_name = $${idx}`);
+      values.push(secretaryName);
+      idx++;
+    }
+    if (annotations !== undefined) {
+      updates.push(`annotations = $${idx}`);
+      values.push(annotations);
       idx++;
     }
 

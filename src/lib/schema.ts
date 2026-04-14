@@ -156,6 +156,9 @@ export const consultorias = fundebSchema.table('consultorias', {
   startDate: timestamp('start_date').defaultNow(),
   endDate: timestamp('end_date'),
   notes: text('notes'),
+  consultantName: text('consultant_name'),
+  secretaryName: text('secretary_name'),
+  annotations: text('annotations'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });

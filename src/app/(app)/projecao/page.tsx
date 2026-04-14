@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useConsultoria } from '@/lib/consultoria-context'
 
 interface Municipality {
   id: number
@@ -54,6 +55,7 @@ const TIER_INFO = [
 ]
 
 export default function ProjecaoFinanceira() {
+  const { activeSession } = useConsultoria()
   const [municipalities, setMunicipalities] = useState<Municipality[]>([])
   const [search, setSearch] = useState('')
   const [selectedId, setSelectedId] = useState<number | null>(null)
@@ -66,6 +68,14 @@ export default function ProjecaoFinanceira() {
       .then(d => setMunicipalities(d.data || []))
       .catch(() => {})
   }, [])
+
+  // Auto-populate from active consultoria
+  useEffect(() => {
+    const activeMuniId = activeSession?.municipality?.id
+    if (activeMuniId && !selectedId) {
+      setSelectedId(activeMuniId)
+    }
+  }, [activeSession, selectedId])
 
   useEffect(() => {
     if (!selectedId) return

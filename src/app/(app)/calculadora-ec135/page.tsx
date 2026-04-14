@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useConsultoria } from '@/lib/consultoria-context'
 
 interface Municipality {
   id: number
@@ -42,6 +43,7 @@ const GANHO_POR_CONVERSAO = VALOR_INTEGRAL - VALOR_PARCIAL // ~2981
 const CUSTO_INFRA_POR_VAGA = 3500 // estimated infrastructure cost per integral slot
 
 export default function CalculadoraEC135() {
+  const { activeSession } = useConsultoria()
   const [municipalities, setMunicipalities] = useState<Municipality[]>([])
   const [search, setSearch] = useState('')
   const [selectedId, setSelectedId] = useState<number | null>(null)
@@ -60,6 +62,14 @@ export default function CalculadoraEC135() {
       .then(d => setMunicipalities(d.data || []))
       .catch(() => {})
   }, [])
+
+  // Auto-populate from active consultoria
+  useEffect(() => {
+    const activeMuniId = activeSession?.municipality?.id
+    if (activeMuniId && !selectedId) {
+      setSelectedId(activeMuniId)
+    }
+  }, [activeSession, selectedId])
 
   useEffect(() => {
     if (!selectedId) return

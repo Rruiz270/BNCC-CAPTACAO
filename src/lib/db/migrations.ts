@@ -509,6 +509,14 @@ $IMM$ LANGUAGE plpgsql`,
   )`,
   `CREATE INDEX IF NOT EXISTS idx_ref_matriculas_vaaf_muni ON fundeb.ref_matriculas_vaaf(municipality_id)`,
 
+  // ── consultorias: add consultant/secretary/annotations columns ──────
+  `DO $$ BEGIN
+    ALTER TABLE fundeb.consultorias ADD COLUMN IF NOT EXISTS consultant_name TEXT;
+    ALTER TABLE fundeb.consultorias ADD COLUMN IF NOT EXISTS secretary_name TEXT;
+    ALTER TABLE fundeb.consultorias ADD COLUMN IF NOT EXISTS annotations TEXT;
+  EXCEPTION WHEN OTHERS THEN NULL;
+  END $$`,
+
   // ── fundeb.municipio_access (post-consultoria login) ─────────────────
   `CREATE TABLE IF NOT EXISTS fundeb.municipio_access (
     id              SERIAL PRIMARY KEY,

@@ -243,6 +243,25 @@ const TIERS = [
   { key: "pot_t6", label: "T6 - EC 135 Integral", desc: "Expansao obrigatoria de escola integral (4%/ano) com ganho FUNDEB", color: "#06b6d4", difficulty: "Longo Prazo" },
 ];
 
+interface VaafEntry {
+  secao: string;
+  categoria: string;
+  localidade: string;
+  matriculas: number;
+  vaafValor: number;
+  subtotal: number;
+}
+
+interface FatorEntry {
+  segmento: string;
+  descricao: string;
+  fpVaaf: number | null;
+  fpVaat: number | null;
+  fMulti: number | null;
+  fpFinalVaaf: number | null;
+  fpFinalVaat: number | null;
+}
+
 interface TierData {
   pot_t1?: number; pot_t2?: number; pot_t3?: number; pot_t4?: number;
   pot_t5_vaar?: number; pot_t5_vaat?: number; pot_t6?: number;
@@ -251,12 +270,23 @@ interface TierData {
 
 function TierBreakdown({ muniId }: { muniId: number | null }) {
   const [data, setData] = useState<TierData | null>(null);
+  const [vaafData, setVaafData] = useState<VaafEntry[]>([]);
+  const [fatores, setFatores] = useState<FatorEntry[]>([]);
 
   useEffect(() => {
     if (!muniId) return;
     fetch(`/api/municipalities/${muniId}`)
       .then((r) => r.json())
       .then((d) => setData(d))
+      .catch(() => {});
+    // Fetch ref data for context
+    fetch(`/api/ref/matriculas-vaaf?municipalityId=${muniId}`)
+      .then((r) => r.json())
+      .then((d) => { if (d.data) setVaafData(d.data); })
+      .catch(() => {});
+    fetch(`/api/ref/fatores`)
+      .then((r) => r.json())
+      .then((d) => { if (d.data) setFatores(d.data); })
       .catch(() => {});
   }, [muniId]);
 
@@ -296,36 +326,72 @@ function TierBreakdown({ muniId }: { muniId: number | null }) {
       </div>
 
       <div className="space-y-3">
-        {TIERS.map((tier, i) => (
-          <div key={tier.key} className="flex items-start gap-3">
-            <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold text-white shrink-0 mt-0.5"
-              style={{ background: tier.color }}
-            >
-              {i + 1}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-[var(--text1)]">{tier.label}</span>
-                  <span className={`text-[9px] px-1.5 py-0.5 rounded font-medium ${diffColors[tier.difficulty]}`}>
-                    {tier.difficulty}
-                  </span>
-                </div>
-                <span className="text-sm font-bold tabular-nums" style={{ color: tier.color }}>
-                  {fmt(tierValues[i])}
-                </span>
-              </div>
-              <div className="text-xs text-[var(--text3)] mb-1.5">{tier.desc}</div>
-              <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+        {TIERS.map((tier, i) => {
+          // Build contextual info from ref data for each tier
+          const tierKey = `T${i + 1}`;
+          const relevantVaaf = vaafData.filter((v) => {
+            if (tierKey === "T1") return v.matriculas === 0;
+            if (tierKey === "T2") return v.categoria?.toLowerCase().includes("integral");
+            if (tierKey === "T3") return v.categoria?.toLowerCase().includes("especial") || v.categoria?.toLowerCase().includes("aee");
+            if (tierKey === "T4") return v.localidade?.toLowerCase() === "campo" || v.localidade?.toLowerCase() === "indigena";
+            return false;
+          }).slice(0, 3);
+
+          const relevantFatores = fatores.filter((f) => {
+            if (tierKey === "T2") return f.segmento?.toLowerCase().includes("integral");
+            if (tierKey === "T3") return f.segmento?.toLowerCase().includes("especial") || f.segmento?.toLowerCase().includes("aee");
+            if (tierKey === "T4") return f.fMulti != null && f.fMulti > 1;
+            return false;
+          }).slice(0, 3);
+
+          return (
+            <div key={tier.key}>
+              <div className="flex items-start gap-3">
                 <div
-                  className="h-full rounded-full transition-all"
-                  style={{ width: `${Math.max((tierValues[i] / maxTier) * 100, 2)}%`, background: tier.color }}
-                />
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold text-white shrink-0 mt-0.5"
+                  style={{ background: tier.color }}
+                >
+                  {i + 1}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-[var(--text1)]">{tier.label}</span>
+                      <span className={`text-[9px] px-1.5 py-0.5 rounded font-medium ${diffColors[tier.difficulty]}`}>
+                        {tier.difficulty}
+                      </span>
+                    </div>
+                    <span className="text-sm font-bold tabular-nums" style={{ color: tier.color }}>
+                      {fmt(tierValues[i])}
+                    </span>
+                  </div>
+                  <div className="text-xs text-[var(--text3)] mb-1.5">{tier.desc}</div>
+                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all"
+                      style={{ width: `${Math.max((tierValues[i] / maxTier) * 100, 2)}%`, background: tier.color }}
+                    />
+                  </div>
+                </div>
               </div>
+              {/* Contextual VAAF/factor info */}
+              {(relevantVaaf.length > 0 || relevantFatores.length > 0) && tierValues[i] > 0 && (
+                <div className="ml-11 mt-1 mb-1 text-[10px] text-[var(--text3)] bg-gray-50 rounded p-2 space-y-0.5">
+                  {relevantVaaf.map((v, vi) => (
+                    <div key={vi}>
+                      {v.categoria}: {v.localidade} — {Number(v.matriculas).toLocaleString("pt-BR")} mat · VAAF {fmt(v.vaafValor || 0)}
+                    </div>
+                  ))}
+                  {relevantFatores.map((f, fi) => (
+                    <div key={`f-${fi}`} className="text-blue-600">
+                      Fator {f.segmento}: VAAF {f.fpFinalVaaf?.toFixed(4) || '-'} · VAAT {f.fpFinalVaat?.toFixed(4) || '-'}{f.fMulti && f.fMulti > 1 ? ` · Multi ${f.fMulti}x` : ''}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Total */}

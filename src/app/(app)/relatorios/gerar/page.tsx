@@ -1,14 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useConsultoria } from '@/lib/consultoria-context'
 
 interface Municipality { id: number; nome: string }
 
 export default function GerarRelatorio() {
+  const { activeSession } = useConsultoria()
   const [municipalities, setMunicipalities] = useState<Municipality[]>([])
   const [search, setSearch] = useState('')
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [selectedNome, setSelectedNome] = useState('')
+  const [consultoriaId, setConsultoriaId] = useState<number | null>(null)
   const [generating, setGenerating] = useState(false)
   const [reportHtml, setReportHtml] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -20,6 +23,17 @@ export default function GerarRelatorio() {
       .catch(() => {})
   }, [])
 
+  // Auto-populate from active consultoria
+  useEffect(() => {
+    const activeMuniId = activeSession?.municipality?.id
+    const activeMuniNome = activeSession?.municipality?.nome
+    if (activeMuniId && !selectedId) {
+      setSelectedId(activeMuniId)
+      setSelectedNome(activeMuniNome || '')
+      setConsultoriaId(activeSession.id)
+    }
+  }, [activeSession, selectedId])
+
   const filtered = search.length > 1
     ? municipalities.filter(m => m.nome.toLowerCase().includes(search.toLowerCase())).slice(0, 30)
     : []
@@ -30,7 +44,9 @@ export default function GerarRelatorio() {
     setError(null)
     setReportHtml(null)
     try {
-      const res = await fetch(`/api/relatorios?municipalityId=${selectedId}`)
+      const params = new URLSearchParams({ municipalityId: String(selectedId) })
+      if (consultoriaId) params.set('consultoriaId', String(consultoriaId))
+      const res = await fetch(`/api/relatorios?${params}`)
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Erro ao gerar')
       setReportHtml(data.html)

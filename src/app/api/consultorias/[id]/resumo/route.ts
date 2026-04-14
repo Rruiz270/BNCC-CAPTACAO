@@ -13,12 +13,16 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   try {
     const sql = neon(DATABASE_URL);
 
-    // 1. Consultoria + Municipality
+    // 1. Consultoria + Municipality (including T1-T6 and new columns)
     const cRows = await sql`
       SELECT c.id, c.status, c.start_date, c.end_date, c.notes,
+             c.consultant_name, c.secretary_name, c.annotations,
              m.id as muni_id, m.nome, m.codigo_ibge, m.receita_total, m.total_matriculas,
              m.populacao, m.regiao, m.contribuicao, m.recursos_receber,
-             m.vaat, m.vaar, m.ganho_perda, m.pot_total, m.pct_pot_total
+             m.vaat, m.vaar, m.ganho_perda, m.pot_total, m.pct_pot_total,
+             m.pot_t1, m.pot_t2, m.pot_t3, m.pot_t4,
+             m.pot_t5_vaar, m.pot_t5_vaat, m.pot_t6,
+             m.cats_faltantes, m.estrategias_resumo, m.n_estrategias
       FROM fundeb.consultorias c
       JOIN fundeb.municipalities m ON m.id = c.municipality_id
       WHERE c.id = ${consultoriaId}
@@ -31,14 +35,29 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     const c = cRows[0];
     const muniId = c.muni_id as number;
 
-    // 2. Target scenario
+    // 2. All scenarios (not just target)
     const scenarioRows = await sql`
       SELECT id, nome, is_target, parametros, resultado, created_at
       FROM fundeb.scenarios
-      WHERE consultoria_id = ${consultoriaId} AND is_target = true
-      ORDER BY created_at DESC
-      LIMIT 1
+      WHERE consultoria_id = ${consultoriaId}
+      ORDER BY is_target DESC, created_at DESC
     `;
+
+    // 2b. Intake responses (for secretary name fallback)
+    let intakeRespondentName: string | null = null;
+    try {
+      const intakeRows = await sql`
+        SELECT ir.respondent_name
+        FROM fundeb.intake_responses ir
+        JOIN fundeb.intake_tokens it ON it.id = ir.token_id
+        WHERE it.consultoria_id = ${consultoriaId}
+        ORDER BY ir.submitted_at DESC
+        LIMIT 1
+      `;
+      if (intakeRows.length > 0) {
+        intakeRespondentName = intakeRows[0].respondent_name as string;
+      }
+    } catch { /* intake tables may not exist */ }
 
     // 3. Enrollments
     const enrollmentRows = await sql`
@@ -83,8 +102,8 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
 
     // --- Build response ---
 
-    // Scenario target
-    const scenario = scenarioRows.length > 0 ? scenarioRows[0] : null;
+    // Scenario target (first row is the target since we ordered by is_target DESC)
+    const scenario = scenarioRows.find((s: Record<string, unknown>) => s.is_target) ?? null;
     const parametros = (scenario?.parametros ?? {}) as Record<string, unknown>;
 
     // Compute receita from enrollments (fator_vaaf is already R$/student)
@@ -223,6 +242,16 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
       reason: snapRows[0].reason,
     } : null;
 
+    // Build all scenarios list
+    const allScenarios = scenarioRows.map((s: Record<string, unknown>) => ({
+      id: s.id,
+      nome: s.nome,
+      isTarget: s.is_target,
+      parametros: s.parametros,
+      resultado: s.resultado,
+      createdAt: s.created_at,
+    }));
+
     return Response.json({
       consultoria: {
         id: c.id,
@@ -230,6 +259,9 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
         startDate: c.start_date,
         endDate: c.end_date,
         notes: c.notes,
+        consultantName: c.consultant_name,
+        secretaryName: c.secretary_name || intakeRespondentName,
+        annotations: c.annotations,
       },
       municipio: {
         id: muniId,
@@ -240,7 +272,20 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
         populacao: c.populacao,
         regiao: c.regiao,
       },
+      tierBreakdown: {
+        t1: Number(c.pot_t1) || 0,
+        t2: Number(c.pot_t2) || 0,
+        t3: Number(c.pot_t3) || 0,
+        t4: Number(c.pot_t4) || 0,
+        t5Vaar: Number(c.pot_t5_vaar) || 0,
+        t5Vaat: Number(c.pot_t5_vaat) || 0,
+        t6: Number(c.pot_t6) || 0,
+        catsFaltantes: c.cats_faltantes,
+        estrategiasResumo: c.estrategias_resumo,
+        nEstrategias: c.n_estrategias,
+      },
       cenarioAlvo,
+      cenarios: allScenarios,
       compliance: {
         total: compTotal,
         done: compDone,

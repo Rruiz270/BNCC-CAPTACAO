@@ -10,10 +10,11 @@ const fmt = (v: number | null) => {
   return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0, maximumFractionDigits: 0 });
 };
 
-// GET /api/relatorios?municipalityId=X - generate HTML report
+// GET /api/relatorios?municipalityId=X&consultoriaId=Y - generate HTML report
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const muniId = searchParams.get('municipalityId');
+  const consultoriaIdParam = searchParams.get('consultoriaId');
 
   if (!muniId) return Response.json({ error: 'municipalityId required' }, { status: 400 });
 
@@ -35,15 +36,54 @@ export async function GET(request: Request) {
   `;
 
   const actionPlans = await sql`
-    SELECT phase, semana_label, tarefa, status, due_date
+    SELECT phase, semana_label, tarefa, responsavel, status, due_date
     FROM fundeb.action_plans WHERE municipality_id = ${parseInt(muniId)} ORDER BY phase, semana
   `;
 
-  let censusData: Record<string, unknown> | null = null;
-  try {
-    const census = await sql`SELECT raw_data FROM fundeb.census_data WHERE municipality_id = ${parseInt(muniId)} LIMIT 1`;
-    censusData = census.length > 0 ? census[0].raw_data as Record<string, unknown> : null;
-  } catch { /* table may not exist */ }
+  // Consultoria-specific data (when consultoriaId is provided)
+  let consultantName = '';
+  let secretaryName = '';
+  let annotations = '';
+  let scenarios: Array<Record<string, unknown>> = [];
+
+  if (consultoriaIdParam) {
+    const cId = parseInt(consultoriaIdParam);
+    try {
+      const cRows = await sql`
+        SELECT consultant_name, secretary_name, annotations
+        FROM fundeb.consultorias WHERE id = ${cId}
+      `;
+      if (cRows.length > 0) {
+        consultantName = (cRows[0].consultant_name as string) || '';
+        secretaryName = (cRows[0].secretary_name as string) || '';
+        annotations = (cRows[0].annotations as string) || '';
+      }
+
+      // Fallback: get secretary from intake
+      if (!secretaryName) {
+        try {
+          const intakeRows = await sql`
+            SELECT ir.respondent_name
+            FROM fundeb.intake_responses ir
+            JOIN fundeb.intake_tokens it ON it.id = ir.token_id
+            WHERE it.consultoria_id = ${cId}
+            ORDER BY ir.submitted_at DESC LIMIT 1
+          `;
+          if (intakeRows.length > 0) {
+            secretaryName = (intakeRows[0].respondent_name as string) || '';
+          }
+        } catch { /* intake tables may not exist */ }
+      }
+
+      // Fetch all scenarios
+      const scenarioRows = await sql`
+        SELECT nome, is_target, parametros, resultado, created_at
+        FROM fundeb.scenarios WHERE consultoria_id = ${cId}
+        ORDER BY is_target DESC, created_at DESC
+      `;
+      scenarios = scenarioRows as Array<Record<string, unknown>>;
+    } catch { /* consultoria columns may not exist yet */ }
+  }
 
   const nome = m.nome as string;
   const receitaTotal = (m.receita_total as number) || 0;
@@ -58,10 +98,58 @@ export async function GET(request: Request) {
   const t2 = (m.pot_t2 as number) || 0;
   const t3 = (m.pot_t3 as number) || 0;
   const t4 = (m.pot_t4 as number) || 0;
-  const t5 = ((m.pot_t5_vaar as number) || 0) + ((m.pot_t5_vaat as number) || 0);
+  const t5vaar = (m.pot_t5_vaar as number) || 0;
+  const t5vaat = (m.pot_t5_vaat as number) || 0;
+  const t5 = t5vaar + t5vaat;
   const t6 = (m.pot_t6 as number) || 0;
+  const totalTiers = t1 + t2 + t3 + t4 + t5 + t6;
 
   const hoje = new Date().toLocaleDateString('pt-BR');
+
+  // Compliance aggregation
+  const compTotal = compliance.length;
+  const compDone = compliance.filter((c: Record<string, unknown>) => c.status === 'done').length;
+  const compPct = compTotal > 0 ? Math.round((compDone / compTotal) * 100) : 0;
+
+  // Action plan aggregation
+  const apTotal = actionPlans.length;
+  const apDone = actionPlans.filter((a: Record<string, unknown>) => a.status === 'done').length;
+  const apPct = apTotal > 0 ? Math.round((apDone / apTotal) * 100) : 0;
+
+  // Scenario comparison section
+  const scenarioHtml = scenarios.length > 0 ? `<div class="section">
+  <h2>7. Cenarios Simulados</h2>
+  <table>
+    <tr><th>Cenario</th><th>Alvo</th><th>Categorias</th><th>Receita Projetada</th><th>Ganho</th><th>%</th></tr>
+    ${scenarios.map((s: Record<string, unknown>) => {
+      const resultado = (s.resultado || {}) as Record<string, unknown>;
+      const parametros = (s.parametros || {}) as Record<string, unknown>;
+      const reclassificacoes = (parametros.reclassificacoes || parametros) as Record<string, unknown>;
+      const nCats = Object.keys(reclassificacoes).length;
+      const delta = (resultado.delta as number) || 0;
+      const deltaPct = (resultado.deltaPct as number) || 0;
+      const receitaProj = (resultado.receitaProjetada as number) || 0;
+      return `<tr>
+        <td><strong>${s.nome}</strong></td>
+        <td>${s.is_target ? '<span class="badge done">ALVO</span>' : '-'}</td>
+        <td>${nCats}</td>
+        <td>${fmt(receitaProj)}</td>
+        <td style="color:${delta >= 0 ? '#00A878' : '#e63946'}">${delta >= 0 ? '+' : ''}${fmt(delta)}</td>
+        <td>${deltaPct >= 0 ? '+' : ''}${deltaPct.toFixed(1)}%</td>
+      </tr>`;
+    }).join('')}
+  </table>
+</div>` : '';
+
+  // Annotations section
+  const annotationsHtml = annotations ? `<div class="section">
+  <h2>8. Anotacoes da Consultoria</h2>
+  <div style="background:#f8f9fa;border-radius:8px;padding:20px;border:1px solid #e9ecef;white-space:pre-wrap;font-size:13px;line-height:1.8">${annotations}</div>
+</div>` : '';
+
+  // Signature lines
+  const signatureConsultant = consultantName || '________________________';
+  const signatureSecretary = secretaryName || '________________________';
 
   const html = `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -99,6 +187,12 @@ export async function GET(request: Request) {
   .badge.done { background: #d4edda; color: #155724; }
   .badge.pending { background: #fff3cd; color: #856404; }
   .badge.progress { background: #d1ecf1; color: #0c5460; }
+  .progress-bar { height: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden; margin-top: 6px; }
+  .progress-bar .fill { height: 100%; border-radius: 4px; background: #00A878; }
+  .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px; padding-top: 30px; border-top: 2px solid #e9ecef; }
+  .sig-block { text-align: center; }
+  .sig-block .line { border-top: 1px solid #999; padding-top: 8px; margin-top: 60px; font-size: 13px; font-weight: 600; }
+  .sig-block .role { font-size: 11px; color: #666; margin-top: 2px; }
   .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; color: #999; font-size: 11px; }
   @media print { body { padding: 20px; } .section { page-break-inside: avoid; } }
 </style>
@@ -150,13 +244,29 @@ export async function GET(request: Request) {
 
 <div class="section">
   <h2>2. Potencial por Tier (T1-T6)</h2>
+  <div class="grid" style="margin-bottom:15px">
+    <div class="kpi">
+      <div class="label">Potencial Total T1-T6</div>
+      <div class="value green">${fmt(totalTiers)}</div>
+    </div>
+    <div class="kpi">
+      <div class="label">VAAR</div>
+      <div class="value">${fmt(t5vaar)}</div>
+      <div class="sub">T5 - Complementacao federal</div>
+    </div>
+    <div class="kpi">
+      <div class="label">VAAT</div>
+      <div class="value">${fmt(t5vaat)}</div>
+      <div class="sub">T5 - Complementacao federal</div>
+    </div>
+  </div>
   ${[
-    { label: 'T1 - Categorias Zeradas', val: t1, color: '#ef4444' },
-    { label: 'T2 - Reclassificacao Integral', val: t2, color: '#f59e0b' },
-    { label: 'T3 - AEE/Ed. Especial', val: t3, color: '#8b5cf6' },
-    { label: 'T4 - Campo/Indigena', val: t4, color: '#22c55e' },
-    { label: 'T5 - VAAR/VAAT', val: t5, color: '#3b82f6' },
-    { label: 'T6 - EC 135 Integral', val: t6, color: '#06b6d4' },
+    { label: 'T1 - Categorias Zeradas', val: t1, color: '#ef4444', desc: 'Ativar categorias FUNDEB sem matriculas' },
+    { label: 'T2 - Reclassificacao Integral', val: t2, color: '#f59e0b', desc: 'Converter parcial para integral (maior VAAF)' },
+    { label: 'T3 - AEE/Ed. Especial', val: t3, color: '#8b5cf6', desc: 'Dupla matricula e educacao especial' },
+    { label: 'T4 - Campo/Indigena', val: t4, color: '#22c55e', desc: 'Multiplicadores localizacao diferenciada' },
+    { label: 'T5 - VAAR/VAAT', val: t5, color: '#3b82f6', desc: 'Complementacoes federais por condicionalidades' },
+    { label: 'T6 - EC 135 Integral', val: t6, color: '#06b6d4', desc: 'Expansao escola integral obrigatoria' },
   ].map(t => {
     const maxVal = Math.max(t1, t2, t3, t4, t5, t6, 1);
     const pctW = Math.max((t.val / maxVal) * 100, 2);
@@ -164,9 +274,11 @@ export async function GET(request: Request) {
       <div class="label" style="color:${t.color}">${t.label}</div>
       <div class="bar"><div class="fill" style="width:${pctW}%;background:${t.color}"></div></div>
       <div class="val" style="color:${t.color}">${fmt(t.val)}</div>
-    </div>`;
+    </div>
+    <div style="font-size:11px;color:#666;margin:-4px 0 12px 210px">${t.desc}</div>`;
   }).join('')}
   ${(m.cats_faltantes as string) ? `<div style="margin-top:10px;padding:10px;background:#fff3cd;border-radius:6px;font-size:12px"><strong>Categorias nao captadas:</strong> ${m.cats_faltantes}</div>` : ''}
+  ${(m.estrategias_resumo as string) ? `<div style="margin-top:8px;padding:10px;background:#d4edda;border-radius:6px;font-size:12px"><strong>Estrategias identificadas (${(m.n_estrategias as number) || 0}):</strong> ${m.estrategias_resumo}</div>` : ''}
 </div>
 
 <div class="section">
@@ -200,6 +312,21 @@ export async function GET(request: Request) {
 
 ${compliance.length > 0 ? `<div class="section">
   <h2>5. Status de Compliance</h2>
+  <div class="grid" style="margin-bottom:15px">
+    <div class="kpi">
+      <div class="label">Total Itens</div>
+      <div class="value">${compTotal}</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Concluidos</div>
+      <div class="value green">${compDone}</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Progresso</div>
+      <div class="value blue">${compPct}%</div>
+      <div class="progress-bar"><div class="fill" style="width:${compPct}%"></div></div>
+    </div>
+  </div>
   <table>
     <tr><th>Secao</th><th>Item</th><th>Status</th></tr>
     ${compliance.map((c: Record<string, unknown>) => `<tr>
@@ -212,29 +339,67 @@ ${compliance.length > 0 ? `<div class="section">
 
 ${actionPlans.length > 0 ? `<div class="section">
   <h2>6. Plano de Acao</h2>
+  <div class="grid" style="margin-bottom:15px">
+    <div class="kpi">
+      <div class="label">Total Tarefas</div>
+      <div class="value">${apTotal}</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Concluidas</div>
+      <div class="value green">${apDone}</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Progresso</div>
+      <div class="value blue">${apPct}%</div>
+      <div class="progress-bar"><div class="fill" style="width:${apPct}%"></div></div>
+    </div>
+  </div>
   <table>
-    <tr><th>Fase</th><th>Semana</th><th>Tarefa</th><th>Prazo</th><th>Status</th></tr>
+    <tr><th>Fase</th><th>Semana</th><th>Tarefa</th><th>Responsavel</th><th>Prazo</th><th>Status</th></tr>
     ${actionPlans.map((a: Record<string, unknown>) => `<tr>
       <td>${a.phase === 'curto' ? 'Quick Win' : a.phase === 'medio' ? 'Medio' : 'Longo'}</td>
       <td>${a.semana_label || '-'}</td>
       <td>${a.tarefa}</td>
+      <td>${a.responsavel || '-'}</td>
       <td>${a.due_date || '-'}</td>
       <td><span class="badge ${a.status}">${a.status === 'done' ? 'Concluido' : a.status === 'progress' ? 'Em Andamento' : 'Pendente'}</span></td>
     </tr>`).join('')}
   </table>
 </div>` : ''}
 
+${scenarioHtml}
+
+${annotationsHtml}
+
+<div class="signatures">
+  <div class="sig-block">
+    <div class="line">${signatureConsultant}</div>
+    <div class="role">Consultor i10</div>
+  </div>
+  <div class="sig-block">
+    <div class="line">${signatureSecretary}</div>
+    <div class="role">Secretario(a) Municipal / Gestor(a)</div>
+  </div>
+</div>
+
 <div class="footer">
   <p>Relatorio gerado automaticamente pela Plataforma FUNDEB - Instituto i10</p>
   <p>Dados extraidos do FNDE, Censo Escolar/INEP, SICONFI e sistemas municipais | ${hoje}</p>
+  <p style="margin-top:5px;font-size:10px">Este documento possui carater consultivo. Valores sujeitos a atualizacao conforme publicacoes oficiais do FNDE.</p>
 </div>
 </body>
 </html>`;
 
   // Save to DB
   try {
-    await sql`INSERT INTO fundeb.relatorios (municipality_id, tipo, titulo, html_content, metadata)
-      VALUES (${parseInt(muniId)}, 'completo', ${'Relatorio FUNDEB - ' + nome}, ${html}, ${JSON.stringify({ generated: hoje })}::jsonb)`;
+    const metadata = {
+      generated: hoje,
+      consultoriaId: consultoriaIdParam ? parseInt(consultoriaIdParam) : null,
+      consultantName: consultantName || null,
+      secretaryName: secretaryName || null,
+    };
+    await sql`INSERT INTO fundeb.relatorios (municipality_id, consultoria_id, tipo, titulo, html_content, metadata)
+      VALUES (${parseInt(muniId)}, ${consultoriaIdParam ? parseInt(consultoriaIdParam) : null}, 'completo', ${'Relatorio FUNDEB - ' + nome}, ${html}, ${JSON.stringify(metadata)}::jsonb)`;
   } catch { /* table may not exist */ }
 
   // Return based on accept header
