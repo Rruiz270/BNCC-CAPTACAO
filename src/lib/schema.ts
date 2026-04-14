@@ -325,6 +325,96 @@ export const auditEventLog = auditSchema.table('event_log', {
   requestId: text('request_id'),
 });
 
+// ── FUNDEB Reference Tables ─────────────────────────────────
+
+// ref_fatores_ponderacao — official FNDE weighting factors by segment (325 rows, national)
+export const refFatoresPonderacao = fundebSchema.table('ref_fatores_ponderacao', {
+  id: serial('id').primaryKey(),
+  descricao: text('descricao'),
+  segmento: text('segmento').notNull().unique(),
+  fpVaaf: real('fp_vaaf'),
+  fpVaat: real('fp_vaat'),
+  fMulti: real('f_multi').default(1.0),
+  fpFinalVaaf: real('fp_final_vaaf'),
+  fpFinalVaat: real('fp_final_vaat'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// ref_inep_censo — INEP Census 2024 enrollments by education level (645 SP rows)
+export const refInepCenso = fundebSchema.table('ref_inep_censo', {
+  id: serial('id').primaryKey(),
+  codigoIbge: varchar('codigo_ibge', { length: 7 }).unique(),
+  municipalityId: integer('municipality_id').references(() => municipalities.id),
+  uf: text('uf'),
+  municipio: text('municipio'),
+  matTotal: integer('mat_total'),
+  matEiTotal: integer('mat_ei_total'),
+  matCreche: integer('mat_creche'),
+  matPreEscola: integer('mat_pre_escola'),
+  matEfTotal: integer('mat_ef_total'),
+  matEfAi: integer('mat_ef_ai'),
+  matEfAf: integer('mat_ef_af'),
+  matEmTotal: integer('mat_em_total'),
+  matEmPropedeutico: integer('mat_em_propedeutico'),
+  matEmNormal: integer('mat_em_normal'),
+  matEmTecIntegrado: integer('mat_em_tec_integrado'),
+  matProfTotal: integer('mat_prof_total'),
+  matEjaTotal: integer('mat_eja_total'),
+  matEjaFund: integer('mat_eja_fund'),
+  matEjaMedio: integer('mat_eja_medio'),
+  matEspecialTotal: integer('mat_especial_total'),
+  matEspecialComum: integer('mat_especial_comum'),
+  matEspecialExclusiva: integer('mat_especial_exclusiva'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// ref_nse — socioeconomic weighting per municipality (645 SP rows)
+export const refNse = fundebSchema.table('ref_nse', {
+  id: serial('id').primaryKey(),
+  codigoIbge: varchar('codigo_ibge', { length: 7 }).unique(),
+  municipalityId: integer('municipality_id').references(() => municipalities.id),
+  uf: text('uf'),
+  nome: text('nome'),
+  ponderadorNse: real('ponderador_nse'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// ref_historico_stn — monthly STN transfers by origin (168 SP rows)
+export const refHistoricoStn = fundebSchema.table('ref_historico_stn', {
+  id: serial('id').primaryKey(),
+  uf: text('uf').notNull(),
+  ano: integer('ano').notNull(),
+  nivel: text('nivel').notNull(),
+  origem: text('origem').notNull(),
+  jan: real('jan'),
+  fev: real('fev'),
+  mar: real('mar'),
+  abr: real('abr'),
+  mai: real('mai'),
+  jun: real('jun'),
+  jul: real('jul'),
+  ago: real('ago'),
+  sete: real('sete'),
+  outu: real('outu'),
+  novt: real('novt'),
+  dezt: real('dezt'),
+  totalAno: real('total_ano'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// ref_matriculas_vaaf — enrollments × VAAF by category/locality (30,315 SP rows)
+export const refMatriculasVaaf = fundebSchema.table('ref_matriculas_vaaf', {
+  id: serial('id').primaryKey(),
+  municipalityId: integer('municipality_id').references(() => municipalities.id),
+  secao: text('secao'),
+  categoria: text('categoria'),
+  localidade: text('localidade'),
+  matriculas: real('matriculas'),
+  vaafValor: real('vaaf_valor'),
+  subtotal: real('subtotal'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 // audit.snapshots — snapshot imutavel (UC-AU.05, UC-AU.07)
 export const auditSnapshots = auditSchema.table('snapshots', {
   id: bigserial('id', { mode: 'number' }).primaryKey(),

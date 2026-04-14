@@ -417,6 +417,98 @@ $IMM$ LANGUAGE plpgsql`,
   `CREATE INDEX IF NOT EXISTS idx_relatorios_muni ON fundeb.relatorios(municipality_id)`,
   `CREATE INDEX IF NOT EXISTS idx_relatorios_consultoria ON fundeb.relatorios(consultoria_id)`,
 
+  // ── fundeb.ref_fatores_ponderacao ────────────────────────────────────
+  `CREATE TABLE IF NOT EXISTS fundeb.ref_fatores_ponderacao (
+    id            SERIAL PRIMARY KEY,
+    descricao     TEXT,
+    segmento      TEXT NOT NULL UNIQUE,
+    fp_vaaf       REAL,
+    fp_vaat       REAL,
+    f_multi       REAL DEFAULT 1.0,
+    fp_final_vaaf REAL,
+    fp_final_vaat REAL,
+    created_at    TIMESTAMP DEFAULT NOW()
+  )`,
+
+  // ── fundeb.ref_inep_censo ─────────────────────────────────────────
+  `CREATE TABLE IF NOT EXISTS fundeb.ref_inep_censo (
+    id                     SERIAL PRIMARY KEY,
+    codigo_ibge            VARCHAR(7) UNIQUE,
+    municipality_id        INTEGER REFERENCES fundeb.municipalities(id),
+    uf                     TEXT,
+    municipio              TEXT,
+    mat_total              INTEGER,
+    mat_ei_total           INTEGER,
+    mat_creche             INTEGER,
+    mat_pre_escola         INTEGER,
+    mat_ef_total           INTEGER,
+    mat_ef_ai              INTEGER,
+    mat_ef_af              INTEGER,
+    mat_em_total           INTEGER,
+    mat_em_propedeutico    INTEGER,
+    mat_em_normal          INTEGER,
+    mat_em_tec_integrado   INTEGER,
+    mat_prof_total         INTEGER,
+    mat_eja_total          INTEGER,
+    mat_eja_fund           INTEGER,
+    mat_eja_medio          INTEGER,
+    mat_especial_total     INTEGER,
+    mat_especial_comum     INTEGER,
+    mat_especial_exclusiva INTEGER,
+    created_at             TIMESTAMP DEFAULT NOW()
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_ref_inep_censo_muni ON fundeb.ref_inep_censo(municipality_id)`,
+
+  // ── fundeb.ref_nse ────────────────────────────────────────────────
+  `CREATE TABLE IF NOT EXISTS fundeb.ref_nse (
+    id              SERIAL PRIMARY KEY,
+    codigo_ibge     VARCHAR(7) UNIQUE,
+    municipality_id INTEGER REFERENCES fundeb.municipalities(id),
+    uf              TEXT,
+    nome            TEXT,
+    ponderador_nse  REAL,
+    created_at      TIMESTAMP DEFAULT NOW()
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_ref_nse_muni ON fundeb.ref_nse(municipality_id)`,
+
+  // ── fundeb.ref_historico_stn ──────────────────────────────────────
+  `CREATE TABLE IF NOT EXISTS fundeb.ref_historico_stn (
+    id         SERIAL PRIMARY KEY,
+    uf         TEXT NOT NULL,
+    ano        INTEGER NOT NULL,
+    nivel      TEXT NOT NULL,
+    origem     TEXT NOT NULL,
+    jan        REAL,
+    fev        REAL,
+    mar        REAL,
+    abr        REAL,
+    mai        REAL,
+    jun        REAL,
+    jul        REAL,
+    ago        REAL,
+    sete       REAL,
+    outu       REAL,
+    novt       REAL,
+    dezt       REAL,
+    total_ano  REAL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(uf, ano, nivel, origem)
+  )`,
+
+  // ── fundeb.ref_matriculas_vaaf ────────────────────────────────────
+  `CREATE TABLE IF NOT EXISTS fundeb.ref_matriculas_vaaf (
+    id              SERIAL PRIMARY KEY,
+    municipality_id INTEGER REFERENCES fundeb.municipalities(id),
+    secao           TEXT,
+    categoria       TEXT,
+    localidade      TEXT,
+    matriculas      REAL,
+    vaaf_valor      REAL,
+    subtotal        REAL,
+    created_at      TIMESTAMP DEFAULT NOW()
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_ref_matriculas_vaaf_muni ON fundeb.ref_matriculas_vaaf(municipality_id)`,
+
   // ── fundeb.municipio_access (post-consultoria login) ─────────────────
   `CREATE TABLE IF NOT EXISTS fundeb.municipio_access (
     id              SERIAL PRIMARY KEY,

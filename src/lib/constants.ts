@@ -82,6 +82,25 @@ export const COMPLIANCE_SECTIONS = [
 
 export const VAAF_BASE = 5963; // R$/aluno base (EF Anos Iniciais Parcial)
 
+// FUNDEB Parameters (national reference values 2026)
+export const FUNDEB_PARAMS = {
+  VAAF_BASE: 5962.79,
+  VAAF_MIN_NACIONAL: 5962.79,
+  VAAT_MIN_NACIONAL: 10194.38,
+  VAAR_MEDIAN_SP: 710.24,
+  VAAT_MEDIAN_SP: 500.50,
+  PETI_POR_ALUNO: 1693.22,
+  ANO_REFERENCIA: 2026,
+} as const;
+
+// Potential T2 conversions (partial -> integral) and VAAF gain per student
+export const T2_CONVERSIONS = [
+  { from: 'creche_parcial', to: 'creche_integral', ganho: 3912 },
+  { from: 'pre_parcial', to: 'pre_integral', ganho: 2087 },
+  { from: 'ef_inicial', to: 'ef_integral', ganho: 2981 },
+  { from: 'ef_final', to: 'ef_integral', ganho: 2385 },
+] as const;
+
 export const ACTION_PLAN_WEEKS = [
   { semana: 1, label: 'Semana 1: Discovery e Diagnostico', dates: '7-11 Abr', color: '#3b82f6' },
   { semana: 2, label: 'Semana 2: Plano Aprovado + Inicio Execucao', dates: '14-18 Abr', color: '#8b5cf6' },
