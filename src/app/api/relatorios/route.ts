@@ -15,6 +15,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const muniId = searchParams.get('municipalityId');
   const consultoriaIdParam = searchParams.get('consultoriaId');
+  const reportType = searchParams.get('tipo') || 'inicial'; // 'inicial' or 'final'
 
   if (!muniId) return Response.json({ error: 'municipalityId required' }, { status: 400 });
 
@@ -118,7 +119,7 @@ export async function GET(request: Request) {
 
   // Scenario comparison section
   const scenarioHtml = scenarios.length > 0 ? `<div class="section">
-  <h2>7. Cenarios Simulados</h2>
+  <h2>8. Cenarios Simulados</h2>
   <table>
     <tr><th>Cenario</th><th>Alvo</th><th>Categorias</th><th>Receita Projetada</th><th>Ganho</th><th>%</th></tr>
     ${scenarios.map((s: Record<string, unknown>) => {
@@ -143,7 +144,7 @@ export async function GET(request: Request) {
 
   // Annotations section
   const annotationsHtml = annotations ? `<div class="section">
-  <h2>8. Anotacoes da Consultoria</h2>
+  <h2>9. Anotacoes da Consultoria</h2>
   <div style="background:#f8f9fa;border-radius:8px;padding:20px;border:1px solid #e9ecef;white-space:pre-wrap;font-size:13px;line-height:1.8">${annotations}</div>
 </div>` : '';
 
@@ -187,6 +188,13 @@ export async function GET(request: Request) {
   .badge.done { background: #d4edda; color: #155724; }
   .badge.pending { background: #fff3cd; color: #856404; }
   .badge.progress { background: #d1ecf1; color: #0c5460; }
+  .phase-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .phase-curto { background: #fff3cd; color: #92400e; border: 1px solid #fde68a; }
+  .phase-medio { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+  .phase-longo { background: #cffafe; color: #0e7490; border: 1px solid #67e8f9; }
+  .alert-box { padding: 15px 20px; border-radius: 8px; margin-bottom: 15px; }
+  .alert-urgent { background: #fef2f2; border: 2px solid #fca5a5; color: #991b1b; }
+  .alert-info { background: #eff6ff; border: 1px solid #93c5fd; color: #1e40af; }
   .progress-bar { height: 8px; background: #e9ecef; border-radius: 4px; overflow: hidden; margin-top: 6px; }
   .progress-bar .fill { height: 100%; border-radius: 4px; background: #00A878; }
   .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px; padding-top: 30px; border-top: 2px solid #e9ecef; }
@@ -200,9 +208,10 @@ export async function GET(request: Request) {
 <body>
 <div class="header">
   <div class="brand">Instituto i10 - Plataforma FUNDEB</div>
-  <h1>Relatorio de Consultoria FUNDEB</h1>
+  <h1>${reportType === 'final' ? 'Relatorio Final de Consultoria FUNDEB' : 'Relatorio Inicial de Consultoria FUNDEB'}</h1>
   <h2 style="color:#00B4D8; font-size:24px; margin-top:10px;">${nome}</h2>
   <div class="subtitle">Gerado em ${hoje} | Exercicio 2026 | Estado de Sao Paulo</div>
+  <div style="font-size:11px;color:#999;margin-top:8px">Protocolo: i10-${consultoriaIdParam || muniId}-${Date.now().toString(36).toUpperCase()}</div>
 </div>
 
 <div class="section">
@@ -242,8 +251,32 @@ export async function GET(request: Request) {
   </div>
 </div>
 
+<div class="section" style="page-break-inside:avoid">
+  <div class="alert-box alert-urgent">
+    <strong>PRAZO CRITICO — Censo Escolar 2026</strong><br>
+    <span style="font-size:13px">Data de referencia: <strong>27 de Maio de 2026</strong>. As acoes abaixo devem ser executadas ANTES desta data para que as matriculas sejam contabilizadas no FUNDEB 2027.</span>
+  </div>
+  <h2>2. Acoes para o Censo 2026 <span class="phase-badge phase-curto">Curto Prazo</span></h2>
+  <table>
+    <tr><th>#</th><th>Acao</th><th>Impacto</th><th>Responsavel</th></tr>
+    <tr><td>1</td><td>Revisar e ativar categorias FUNDEB zeradas no Educacenso</td><td style="color:#00A878;font-weight:700">${fmt(t1)}</td><td>Secretaria de Educacao</td></tr>
+    <tr><td>2</td><td>Reclassificar alunos de jornada parcial para integral (7h+)</td><td style="color:#00A878;font-weight:700">${fmt(t2)}</td><td>Direcao escolar</td></tr>
+    <tr><td>3</td><td>Registrar dupla matricula AEE e educacao especial</td><td style="color:#00A878;font-weight:700">${fmt(t3)}</td><td>Coordenacao pedagogica</td></tr>
+    <tr><td>4</td><td>Registrar alunos em escolas de campo/indigena com multiplicadores</td><td style="color:#00A878;font-weight:700">${fmt(t4)}</td><td>Secretaria de Educacao</td></tr>
+    <tr><td>5</td><td>Validar todas as matriculas no sistema Educacenso antes de 27/mai</td><td>Validacao</td><td>Equipe tecnica</td></tr>
+  </table>
+  <div class="alert-box alert-info" style="margin-top:15px">
+    <strong>Acoes de Medio Prazo</strong> <span class="phase-badge phase-medio">Medio Prazo — Ate Agosto 2026</span><br>
+    <span style="font-size:12px">Atualizar curriculo com BNCC Computacao, aprovar no CME, registrar no SIMEC. Impacto: elegibilidade VAAR 2027 (${fmt((m.vaar as number) || 0)}).</span>
+  </div>
+  <div class="alert-box alert-info" style="margin-top:8px">
+    <strong>Acoes de Longo Prazo</strong> <span class="phase-badge phase-longo">Longo Prazo — 2027+</span><br>
+    <span style="font-size:12px">Expansao de escola integral (EC 135), otimizacao VAAR/VAAT, infraestrutura digital. Impacto estimado: ${fmt(t5 + t6)}/ano.</span>
+  </div>
+</div>
+
 <div class="section">
-  <h2>2. Potencial por Tier (T1-T6)</h2>
+  <h2>3. Potencial por Tier (T1-T6)</h2>
   <div class="grid" style="margin-bottom:15px">
     <div class="kpi">
       <div class="label">Potencial Total T1-T6</div>
@@ -282,7 +315,7 @@ export async function GET(request: Request) {
 </div>
 
 <div class="section">
-  <h2>3. Evolucao Historica</h2>
+  <h2>4. Evolucao Historica</h2>
   <table>
     <tr><th>Ano</th><th>Receita FUNDEB</th><th>Variacao</th></tr>
     ${['2022','2023','2024','2025','2026'].map((year, i) => {
@@ -295,7 +328,7 @@ export async function GET(request: Request) {
 </div>
 
 <div class="section">
-  <h2>4. Matriculas por Categoria FUNDEB</h2>
+  <h2>5. Matriculas por Categoria FUNDEB</h2>
   <table>
     <tr><th>Categoria</th><th>Qtd</th><th>Urbano</th><th>Campo</th><th>Valor/Aluno</th><th>Receita</th><th>Status</th></tr>
     ${enrollments.map((e: Record<string, unknown>) => `<tr>
@@ -311,7 +344,7 @@ export async function GET(request: Request) {
 </div>
 
 ${compliance.length > 0 ? `<div class="section">
-  <h2>5. Status de Compliance</h2>
+  <h2>6. Status de Compliance</h2>
   <div class="grid" style="margin-bottom:15px">
     <div class="kpi">
       <div class="label">Total Itens</div>
@@ -338,7 +371,7 @@ ${compliance.length > 0 ? `<div class="section">
 </div>` : ''}
 
 ${actionPlans.length > 0 ? `<div class="section">
-  <h2>6. Plano de Acao</h2>
+  <h2>7. Plano de Acao</h2>
   <div class="grid" style="margin-bottom:15px">
     <div class="kpi">
       <div class="label">Total Tarefas</div>
@@ -371,6 +404,75 @@ ${scenarioHtml}
 
 ${annotationsHtml}
 
+${reportType === 'final' ? `<div class="section">
+  <h2>10. Analise Comparativa — Antes vs Depois <span class="phase-badge phase-longo">Relatorio Final</span></h2>
+  <div class="alert-box alert-info">
+    <strong>Este relatorio final compara o estado do municipio no inicio da consultoria com o estado atual.</strong><br>
+    <span style="font-size:12px">Os ganhos efetivos serao realizados a partir do exercicio FUNDEB 2027, com base nas matriculas registradas no Censo 2026.</span>
+  </div>
+  <table>
+    <tr><th>Indicador</th><th>Inicio da Consultoria</th><th>Situacao Atual</th><th>Variacao</th></tr>
+    <tr>
+      <td><strong>Receita FUNDEB</strong></td>
+      <td>${fmt(receitaTotal)}</td>
+      <td>${fmt(receitaTotal + potTotal)}</td>
+      <td style="color:#00A878;font-weight:700">+${fmt(potTotal)}</td>
+    </tr>
+    <tr>
+      <td><strong>Categorias Ativas</strong></td>
+      <td>${enrollments.filter((e: Record<string, unknown>) => e.ativa).length} de ${enrollments.length}</td>
+      <td>${enrollments.length} (meta)</td>
+      <td>+${nFaltantes} categorias</td>
+    </tr>
+    <tr>
+      <td><strong>Compliance</strong></td>
+      <td>0%</td>
+      <td>${compPct}%</td>
+      <td style="color:#00A878">+${compPct}%</td>
+    </tr>
+    <tr>
+      <td><strong>Plano de Acao</strong></td>
+      <td>0%</td>
+      <td>${apPct}%</td>
+      <td style="color:#00A878">+${apPct}%</td>
+    </tr>
+  </table>
+</div>
+
+<div class="section">
+  <h2>11. Oportunidades Nao Capturadas</h2>
+  <p style="font-size:13px;color:#666;margin-bottom:15px">Itens identificados durante a consultoria que nao foram executados ate o fechamento. Representam potencial ainda disponivel para captura futura.</p>
+  ${compliance.filter((c: Record<string, unknown>) => c.status !== 'done').length > 0 ? `<table>
+    <tr><th>Item</th><th>Secao</th><th>Status</th></tr>
+    ${compliance.filter((c: Record<string, unknown>) => c.status !== 'done').map((c: Record<string, unknown>) => `<tr>
+      <td>${c.item_text}</td>
+      <td>${c.section_name || c.section}</td>
+      <td><span class="badge pending">Pendente</span></td>
+    </tr>`).join('')}
+  </table>` : '<p style="color:#00A878;font-weight:600">Todos os itens de compliance foram concluidos.</p>'}
+</div>
+
+<div class="section">
+  <h2>12. Projecao 2027-2030 <span class="phase-badge phase-longo">Longo Prazo</span></h2>
+  <p style="font-size:13px;color:#666;margin-bottom:15px">Projecao de ganhos FUNDEB com base nas otimizacoes implementadas e expansao de escola integral (EC 135 — 4%/ano).</p>
+  <table>
+    <tr><th>Ano</th><th>Receita Base</th><th>Ganho T1-T4</th><th>Ganho T5 (VAAR/VAAT)</th><th>Ganho T6 (EC 135)</th><th>Total Projetado</th></tr>
+    ${[2027, 2028, 2029, 2030].map((ano, i) => {
+      const t14 = t1 + t2 + t3 + t4;
+      const t6Growth = t6 * (1 + (i * 0.04)); // 4% growth per year
+      const projected = receitaTotal + t14 + t5 + t6Growth;
+      return `<tr>
+        <td><strong>${ano}</strong></td>
+        <td>${fmt(receitaTotal)}</td>
+        <td style="color:#00A878">${fmt(t14)}</td>
+        <td style="color:#3b82f6">${fmt(t5)}</td>
+        <td style="color:#06b6d4">${fmt(t6Growth)}</td>
+        <td style="font-weight:700;color:#0A2463">${fmt(projected)}</td>
+      </tr>`;
+    }).join('')}
+  </table>
+</div>` : ''}
+
 <div class="signatures">
   <div class="sig-block">
     <div class="line">${signatureConsultant}</div>
@@ -398,8 +500,9 @@ ${annotationsHtml}
       consultantName: consultantName || null,
       secretaryName: secretaryName || null,
     };
+    const titulo = reportType === 'final' ? `Relatorio Final FUNDEB - ${nome}` : `Relatorio Inicial FUNDEB - ${nome}`;
     await sql`INSERT INTO fundeb.relatorios (municipality_id, consultoria_id, tipo, titulo, html_content, metadata)
-      VALUES (${parseInt(muniId)}, ${consultoriaIdParam ? parseInt(consultoriaIdParam) : null}, 'completo', ${'Relatorio FUNDEB - ' + nome}, ${html}, ${JSON.stringify(metadata)}::jsonb)`;
+      VALUES (${parseInt(muniId)}, ${consultoriaIdParam ? parseInt(consultoriaIdParam) : null}, ${reportType}, ${titulo}, ${html}, ${JSON.stringify(metadata)}::jsonb)`;
   } catch { /* table may not exist */ }
 
   // Return based on accept header

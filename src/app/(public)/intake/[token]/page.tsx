@@ -70,6 +70,36 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
   const [realValues, setRealValues] = useState<Record<number, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
+  // Educacao Especial e AEE
+  const [alunosAee, setAlunosAee] = useState("");
+  const [alunosDuplaMatricula, setAlunosDuplaMatricula] = useState("");
+  const [alunosClasseEspecial, setAlunosClasseEspecial] = useState("");
+  const [salaRecursosMultifuncionais, setSalaRecursosMultifuncionais] = useState("");
+
+  // Escolas de Localizacao Diferenciada
+  const [escolasCampo, setEscolasCampo] = useState("");
+  const [escolasIndigena, setEscolasIndigena] = useState("");
+  const [escolasQuilombola, setEscolasQuilombola] = useState("");
+  const [alunosCampo, setAlunosCampo] = useState("");
+  const [alunosIndigena, setAlunosIndigena] = useState("");
+
+  // Escola Integral
+  const [escolasIntegral, setEscolasIntegral] = useState("");
+  const [alunosIntegral, setAlunosIntegral] = useState("");
+  const [expandirIntegral, setExpandirIntegral] = useState("");
+
+  // BNCC Computacao
+  const [curriculoComputacao, setCurriculoComputacao] = useState("");
+  const [curriculoAprovadoCme, setCurriculoAprovadoCme] = useState("");
+  const [curriculoSimec, setCurriculoSimec] = useState("");
+  const [laboratoriosInformatica, setLaboratoriosInformatica] = useState("");
+  const [formacaoDocente, setFormacaoDocente] = useState("");
+
+  // Infraestrutura
+  const [pctBandaLarga, setPctBandaLarga] = useState("");
+  const [pctBiblioteca, setPctBiblioteca] = useState("");
+  const [plataformaDigital, setPlataformaDigital] = useState("");
+
   const showError = useCallback((title: string, message: string) => {
     setErrorTitle(title);
     setErrorMessage(message);
@@ -145,6 +175,31 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
         schoolsRural: schoolsRural ? parseInt(schoolsRural, 10) : null,
         enrollmentData,
         observations: observations.trim() || null,
+        // Educacao Especial e AEE
+        alunosAee: alunosAee ? parseInt(alunosAee, 10) : null,
+        alunosDuplaMatricula: alunosDuplaMatricula ? parseInt(alunosDuplaMatricula, 10) : null,
+        alunosClasseEspecial: alunosClasseEspecial ? parseInt(alunosClasseEspecial, 10) : null,
+        salaRecursosMultifuncionais: salaRecursosMultifuncionais || null,
+        // Escolas de Localizacao Diferenciada
+        escolasCampo: escolasCampo ? parseInt(escolasCampo, 10) : null,
+        escolasIndigena: escolasIndigena ? parseInt(escolasIndigena, 10) : null,
+        escolasQuilombola: escolasQuilombola ? parseInt(escolasQuilombola, 10) : null,
+        alunosCampo: alunosCampo ? parseInt(alunosCampo, 10) : null,
+        alunosIndigena: alunosIndigena ? parseInt(alunosIndigena, 10) : null,
+        // Escola Integral
+        escolasIntegral: escolasIntegral ? parseInt(escolasIntegral, 10) : null,
+        alunosIntegral: alunosIntegral ? parseInt(alunosIntegral, 10) : null,
+        expandirIntegral: expandirIntegral || null,
+        // BNCC Computacao
+        curriculoComputacao: curriculoComputacao || null,
+        curriculoAprovadoCme: curriculoAprovadoCme || null,
+        curriculoSimec: curriculoSimec || null,
+        laboratoriosInformatica: laboratoriosInformatica || null,
+        formacaoDocente: formacaoDocente || null,
+        // Infraestrutura
+        pctBandaLarga: pctBandaLarga ? parseInt(pctBandaLarga, 10) : null,
+        pctBiblioteca: pctBiblioteca ? parseInt(pctBiblioteca, 10) : null,
+        plataformaDigital: plataformaDigital || null,
       },
     };
 
@@ -361,6 +416,304 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
                 placeholder={muni.escolasRurais ? `Dados publicos: ${muni.escolasRurais}` : "Ex: 3"}
                 className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
               />
+            </div>
+          </div>
+        </section>
+
+        {/* Educacao Especial e AEE */}
+        <section className="bg-white border border-[var(--border)] rounded-xl p-7 mt-6">
+          <h2 className="text-base font-bold text-[var(--navy)] mb-1">
+            Educacao Especial e AEE{" "}
+            <span className="inline-block text-[10px] px-2 py-0.5 rounded-full font-semibold bg-orange-100 text-orange-700">CURTO PRAZO — Impacto no Censo 27/Mai</span>
+          </h2>
+          <p className="text-xs text-[var(--text2)] mb-4">Dados sobre atendimento educacional especializado na rede</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Quantos alunos possuem laudo e recebem AEE (Atendimento Educacional Especializado)?</label>
+              <input
+                type="number"
+                value={alunosAee}
+                onChange={(e) => setAlunosAee(e.target.value)}
+                min="0"
+                placeholder="Ex: 45"
+                className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Destes, quantos estao registrados no Educacenso como dupla matricula?</label>
+              <input
+                type="number"
+                value={alunosDuplaMatricula}
+                onChange={(e) => setAlunosDuplaMatricula(e.target.value)}
+                min="0"
+                placeholder="Ex: 30"
+                className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Alunos em classes especiais exclusivas</label>
+              <input
+                type="number"
+                value={alunosClasseEspecial}
+                onChange={(e) => setAlunosClasseEspecial(e.target.value)}
+                min="0"
+                placeholder="Ex: 10"
+                className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">A rede possui sala de recursos multifuncionais?</label>
+              <select
+                value={salaRecursosMultifuncionais}
+                onChange={(e) => setSalaRecursosMultifuncionais(e.target.value)}
+                className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
+              >
+                <option value="">Selecione...</option>
+                <option value="Sim">Sim</option>
+                <option value="Nao">Nao</option>
+                <option value="Parcial">Parcial</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        {/* Escolas de Localizacao Diferenciada */}
+        <section className="bg-white border border-[var(--border)] rounded-xl p-7 mt-6">
+          <h2 className="text-base font-bold text-[var(--navy)] mb-1">
+            Escolas de Localizacao Diferenciada{" "}
+            <span className="inline-block text-[10px] px-2 py-0.5 rounded-full font-semibold bg-orange-100 text-orange-700">CURTO PRAZO — Impacto no Censo 27/Mai</span>
+          </h2>
+          <p className="text-xs text-[var(--text2)] mb-4">Escolas e matriculas em areas de localizacao diferenciada</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Escolas em area de campo (rural)</label>
+              <input
+                type="number"
+                value={escolasCampo}
+                onChange={(e) => setEscolasCampo(e.target.value)}
+                min="0"
+                placeholder="Ex: 3"
+                className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Escolas em area indigena</label>
+              <input
+                type="number"
+                value={escolasIndigena}
+                onChange={(e) => setEscolasIndigena(e.target.value)}
+                min="0"
+                placeholder="Ex: 0"
+                className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Escolas em area quilombola</label>
+              <input
+                type="number"
+                value={escolasQuilombola}
+                onChange={(e) => setEscolasQuilombola(e.target.value)}
+                min="0"
+                placeholder="Ex: 0"
+                className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Alunos matriculados em escolas de campo</label>
+              <input
+                type="number"
+                value={alunosCampo}
+                onChange={(e) => setAlunosCampo(e.target.value)}
+                min="0"
+                placeholder="Ex: 120"
+                className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Alunos matriculados em escolas indigenas</label>
+              <input
+                type="number"
+                value={alunosIndigena}
+                onChange={(e) => setAlunosIndigena(e.target.value)}
+                min="0"
+                placeholder="Ex: 0"
+                className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Escola Integral */}
+        <section className="bg-white border border-[var(--border)] rounded-xl p-7 mt-6">
+          <h2 className="text-base font-bold text-[var(--navy)] mb-1">
+            Escola Integral{" "}
+            <span className="inline-block text-[10px] px-2 py-0.5 rounded-full font-semibold bg-orange-100 text-orange-700">CURTO PRAZO — Impacto no Censo 27/Mai</span>
+          </h2>
+          <p className="text-xs text-[var(--text2)] mb-4">Dados sobre oferta de educacao em tempo integral</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Quantas escolas oferecem jornada integral (7h+ diarias)?</label>
+              <input
+                type="number"
+                value={escolasIntegral}
+                onChange={(e) => setEscolasIntegral(e.target.value)}
+                min="0"
+                placeholder="Ex: 5"
+                className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Total de alunos em jornada integral</label>
+              <input
+                type="number"
+                value={alunosIntegral}
+                onChange={(e) => setAlunosIntegral(e.target.value)}
+                min="0"
+                placeholder="Ex: 800"
+                className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">A rede planeja expandir escola integral em 2026?</label>
+              <select
+                value={expandirIntegral}
+                onChange={(e) => setExpandirIntegral(e.target.value)}
+                className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
+              >
+                <option value="">Selecione...</option>
+                <option value="Sim">Sim</option>
+                <option value="Nao">Nao</option>
+                <option value="Em estudo">Em estudo</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        {/* BNCC Computacao */}
+        <section className="bg-white border border-[var(--border)] rounded-xl p-7 mt-6">
+          <h2 className="text-base font-bold text-[var(--navy)] mb-1">
+            BNCC Computacao{" "}
+            <span className="inline-block text-[10px] px-2 py-0.5 rounded-full font-semibold bg-blue-100 text-blue-700">MEDIO PRAZO — Prazo Agosto 2026</span>
+          </h2>
+          <p className="text-xs text-[var(--text2)] mb-4">Situacao do curriculo de computacao e infraestrutura tecnologica</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">O curriculo municipal ja inclui competencias de computacao?</label>
+              <select
+                value={curriculoComputacao}
+                onChange={(e) => setCurriculoComputacao(e.target.value)}
+                className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
+              >
+                <option value="">Selecione...</option>
+                <option value="Sim">Sim</option>
+                <option value="Nao">Nao</option>
+                <option value="Em elaboracao">Em elaboracao</option>
+              </select>
+            </div>
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">O curriculo foi aprovado pelo CME?</label>
+              <select
+                value={curriculoAprovadoCme}
+                onChange={(e) => setCurriculoAprovadoCme(e.target.value)}
+                className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
+              >
+                <option value="">Selecione...</option>
+                <option value="Sim">Sim</option>
+                <option value="Nao">Nao</option>
+                <option value="Em tramitacao">Em tramitacao</option>
+              </select>
+            </div>
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">O curriculo esta registrado no SIMEC?</label>
+              <select
+                value={curriculoSimec}
+                onChange={(e) => setCurriculoSimec(e.target.value)}
+                className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
+              >
+                <option value="">Selecione...</option>
+                <option value="Sim">Sim</option>
+                <option value="Nao">Nao</option>
+              </select>
+            </div>
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">A rede possui laboratorios de informatica?</label>
+              <select
+                value={laboratoriosInformatica}
+                onChange={(e) => setLaboratoriosInformatica(e.target.value)}
+                className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
+              >
+                <option value="">Selecione...</option>
+                <option value="Sim, todas escolas">Sim, todas escolas</option>
+                <option value="Sim, algumas">Sim, algumas</option>
+                <option value="Nao">Nao</option>
+              </select>
+            </div>
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">A rede possui programa de formacao docente em tecnologia?</label>
+              <select
+                value={formacaoDocente}
+                onChange={(e) => setFormacaoDocente(e.target.value)}
+                className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
+              >
+                <option value="">Selecione...</option>
+                <option value="Sim">Sim</option>
+                <option value="Nao">Nao</option>
+                <option value="Em planejamento">Em planejamento</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        {/* Infraestrutura */}
+        <section className="bg-white border border-[var(--border)] rounded-xl p-7 mt-6">
+          <h2 className="text-base font-bold text-[var(--navy)] mb-1">
+            Infraestrutura{" "}
+            <span className="inline-block text-[10px] px-2 py-0.5 rounded-full font-semibold bg-blue-100 text-blue-700">MEDIO PRAZO</span>
+          </h2>
+          <p className="text-xs text-[var(--text2)] mb-4">Infraestrutura tecnologica e fisica da rede escolar</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Percentual de escolas com internet banda larga</label>
+              <div className="relative">
+                <input
+                  type="number"
+                  value={pctBandaLarga}
+                  onChange={(e) => setPctBandaLarga(e.target.value)}
+                  min="0"
+                  max="100"
+                  placeholder="Ex: 75"
+                  className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors pr-8"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[var(--text3)]">%</span>
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Percentual de escolas com biblioteca</label>
+              <div className="relative">
+                <input
+                  type="number"
+                  value={pctBiblioteca}
+                  onChange={(e) => setPctBiblioteca(e.target.value)}
+                  min="0"
+                  max="100"
+                  placeholder="Ex: 60"
+                  className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors pr-8"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[var(--text3)]">%</span>
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">A rede utiliza plataforma digital de aprendizagem?</label>
+              <select
+                value={plataformaDigital}
+                onChange={(e) => setPlataformaDigital(e.target.value)}
+                className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
+              >
+                <option value="">Selecione...</option>
+                <option value="Sim">Sim</option>
+                <option value="Nao">Nao</option>
+                <option value="Em implantacao">Em implantacao</option>
+              </select>
             </div>
           </div>
         </section>

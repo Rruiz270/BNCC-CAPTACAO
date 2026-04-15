@@ -365,12 +365,39 @@ export function Sidebar() {
           </>
         )}
 
+        {/* GESTAO */}
+        <div className="pt-4 pb-1 px-3">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">
+            Gestao
+          </span>
+        </div>
+        <Link
+          href="/portfolio"
+          className={`flex items-center px-3 py-2.5 rounded-lg text-sm transition-all ${
+            isActive("/portfolio")
+              ? "bg-white/15 text-white font-semibold"
+              : "text-white/60 hover:bg-white/8 hover:text-white/90"
+          }`}
+        >
+          Portfolio Consultorias
+        </Link>
+
         {/* FERRAMENTAS */}
         <div className="pt-4 pb-1 px-3">
           <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">
             Ferramentas
           </span>
         </div>
+        <Link
+          href="/bncc-computacao"
+          className={`flex items-center px-3 py-2.5 rounded-lg text-sm transition-all ${
+            isActive("/bncc-computacao")
+              ? "bg-white/15 text-white font-semibold"
+              : "text-white/60 hover:bg-white/8 hover:text-white/90"
+          }`}
+        >
+          BNCC Computacao
+        </Link>
         <Link
           href="/comparativo"
           className={`flex items-center px-3 py-2.5 rounded-lg text-sm transition-all ${

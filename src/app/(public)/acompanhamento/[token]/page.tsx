@@ -75,6 +75,45 @@ export default function AcompanhamentoPage({ params }: { params: Promise<{ token
       </header>
 
       <main className="max-w-5xl mx-auto px-8 py-8 space-y-6">
+        {/* Countdown to Censo */}
+        {(() => {
+          const censoDate = new Date('2026-05-27T23:59:59');
+          const bnccDate = new Date('2026-08-31T23:59:59');
+          const now = new Date();
+          const censoDays = Math.max(0, Math.ceil((censoDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+          const bnccDays = Math.max(0, Math.ceil((bnccDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+          return (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className={`rounded-2xl p-4 border ${censoDays <= 14 ? 'bg-red-500/20 border-red-500/40' : censoDays <= 30 ? 'bg-orange-500/20 border-orange-500/40' : 'bg-white/5 border-white/10'}`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-xs text-white/40">Censo Escolar 2026</div>
+                    <div className="text-sm text-white/70 mt-0.5">Prazo para quick wins no Educacenso</div>
+                  </div>
+                  <div className="text-right">
+                    <div className={`text-2xl font-bold ${censoDays <= 14 ? 'text-red-400' : censoDays <= 30 ? 'text-orange-400' : 'text-white'}`}>{censoDays}</div>
+                    <div className="text-xs text-white/40">dias restantes</div>
+                  </div>
+                </div>
+                <div className="text-xs text-white/30 mt-2">Data referencia: 27/05/2026</div>
+              </div>
+              <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-xs text-white/40">BNCC Computacao</div>
+                    <div className="text-sm text-white/70 mt-0.5">Curriculo + CME + SIMEC para VAAR 2027</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-[#00B4D8]">{bnccDays}</div>
+                    <div className="text-xs text-white/40">dias restantes</div>
+                  </div>
+                </div>
+                <div className="text-xs text-white/30 mt-2">Prazo: Agosto 2026</div>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
@@ -118,28 +157,35 @@ export default function AcompanhamentoPage({ params }: { params: Promise<{ token
           </div>
         </div>
 
-        {/* Upcoming tasks */}
-        <div className="bg-white/5 rounded-2xl p-5 border border-white/10">
-          <h2 className="text-sm font-semibold text-white/80 mb-4">Proximas Tarefas</h2>
-          {upcomingTasks.length === 0 ? (
-            <div className="text-center py-4 text-white/30">Todas as tarefas concluidas!</div>
-          ) : (
-            <div className="space-y-2">
-              {upcomingTasks.map((t, i) => (
-                <div key={i} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl">
-                  <div className={`w-2 h-2 rounded-full ${t.status === 'progress' ? 'bg-[#00B4D8]' : 'bg-orange-400'}`}/>
-                  <div className="flex-1">
-                    <div className="text-sm text-white/80">{t.tarefa}</div>
-                    <div className="text-xs text-white/40">{t.phase === 'curto' ? 'Quick Win' : t.phase === 'medio' ? 'Medio Prazo' : 'Longo Prazo'} {t.dueDate ? `| Prazo: ${t.dueDate}` : ''}</div>
+        {/* Upcoming tasks grouped by phase */}
+        {(['curto', 'medio', 'longo'] as const).map(phase => {
+          const phaseTasks = upcomingTasks.filter(t => t.phase === phase);
+          if (phaseTasks.length === 0) return null;
+          const phaseConfig = {
+            curto: { label: 'Curto Prazo — Quick Wins (Censo 27/Mai)', color: 'orange', bg: 'bg-orange-500/10', border: 'border-orange-500/30' },
+            medio: { label: 'Medio Prazo — BNCC Computacao (Agosto 2026)', color: 'blue', bg: 'bg-blue-500/10', border: 'border-blue-500/30' },
+            longo: { label: 'Longo Prazo — EC 135 e Expansao (2027+)', color: 'cyan', bg: 'bg-cyan-500/10', border: 'border-cyan-500/30' },
+          }[phase];
+          return (
+            <div key={phase} className={`${phaseConfig.bg} rounded-2xl p-5 border ${phaseConfig.border}`}>
+              <h2 className="text-sm font-semibold text-white/80 mb-4">{phaseConfig.label}</h2>
+              <div className="space-y-2">
+                {phaseTasks.map((t, i) => (
+                  <div key={i} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl">
+                    <div className={`w-2 h-2 rounded-full ${t.status === 'progress' ? 'bg-[#00B4D8]' : 'bg-orange-400'}`}/>
+                    <div className="flex-1">
+                      <div className="text-sm text-white/80">{t.tarefa}</div>
+                      {t.dueDate && <div className="text-xs text-white/40">Prazo: {t.dueDate}</div>}
+                    </div>
+                    <span className={`text-xs px-2 py-1 rounded-lg ${t.status === 'progress' ? 'bg-[#00B4D8]/20 text-[#00B4D8]' : 'bg-orange-400/20 text-orange-400'}`}>
+                      {t.status === 'progress' ? 'Em andamento' : 'Pendente'}
+                    </span>
                   </div>
-                  <span className={`text-xs px-2 py-1 rounded-lg ${t.status === 'progress' ? 'bg-[#00B4D8]/20 text-[#00B4D8]' : 'bg-orange-400/20 text-orange-400'}`}>
-                    {t.status === 'progress' ? 'Em andamento' : 'Pendente'}
-                  </span>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          )}
-        </div>
+          );
+        })}
       </main>
     </div>
   )

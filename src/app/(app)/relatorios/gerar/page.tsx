@@ -12,6 +12,7 @@ export default function GerarRelatorio() {
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [selectedNome, setSelectedNome] = useState('')
   const [consultoriaId, setConsultoriaId] = useState<number | null>(null)
+  const [reportType, setReportType] = useState<'inicial' | 'final'>('inicial')
   const [generating, setGenerating] = useState(false)
   const [reportHtml, setReportHtml] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -44,7 +45,7 @@ export default function GerarRelatorio() {
     setError(null)
     setReportHtml(null)
     try {
-      const params = new URLSearchParams({ municipalityId: String(selectedId) })
+      const params = new URLSearchParams({ municipalityId: String(selectedId), tipo: reportType })
       if (consultoriaId) params.set('consultoriaId', String(consultoriaId))
       const res = await fetch(`/api/relatorios?${params}`)
       const data = await res.json()
@@ -117,13 +118,36 @@ export default function GerarRelatorio() {
         )}
 
         {selectedId && !reportHtml && (
-          <button
-            onClick={handleGenerate}
-            disabled={generating}
-            className="mt-4 w-full py-3 rounded-xl bg-[#00B4D8] text-white font-semibold hover:bg-[#00B4D8]/80 disabled:opacity-50 transition-colors"
-          >
-            {generating ? 'Gerando relatorio...' : 'Gerar Relatorio Completo'}
-          </button>
+          <div className="mt-4 space-y-3">
+            <div>
+              <label className="text-xs font-semibold text-[var(--text2)] block mb-2">Tipo de Relatorio</label>
+              <div className="flex gap-3">
+                <label className={`flex-1 p-3 rounded-xl border-2 cursor-pointer transition-colors ${
+                  reportType === 'inicial' ? 'border-[#00B4D8] bg-[#00B4D8]/5' : 'border-[var(--border)]'
+                }`}>
+                  <input type="radio" name="reportType" value="inicial" checked={reportType === 'inicial'} onChange={() => setReportType('inicial')} className="sr-only" />
+                  <div className="text-sm font-semibold text-[var(--text1)]">Relatorio Inicial</div>
+                  <div className="text-xs text-[var(--text3)] mt-0.5">R1 — Quick wins, acoes Censo 2026, diagnostico T1-T6</div>
+                  <span className="inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full font-semibold bg-orange-100 text-orange-700">Curto Prazo</span>
+                </label>
+                <label className={`flex-1 p-3 rounded-xl border-2 cursor-pointer transition-colors ${
+                  reportType === 'final' ? 'border-[#00B4D8] bg-[#00B4D8]/5' : 'border-[var(--border)]'
+                }`}>
+                  <input type="radio" name="reportType" value="final" checked={reportType === 'final'} onChange={() => setReportType('final')} className="sr-only" />
+                  <div className="text-sm font-semibold text-[var(--text1)]">Relatorio Final</div>
+                  <div className="text-xs text-[var(--text3)] mt-0.5">R3 — Comparativo antes/depois, oportunidades, projecao 2027-2030</div>
+                  <span className="inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full font-semibold bg-cyan-100 text-cyan-700">Longo Prazo</span>
+                </label>
+              </div>
+            </div>
+            <button
+              onClick={handleGenerate}
+              disabled={generating}
+              className="w-full py-3 rounded-xl bg-[#00B4D8] text-white font-semibold hover:bg-[#00B4D8]/80 disabled:opacity-50 transition-colors"
+            >
+              {generating ? 'Gerando relatorio...' : `Gerar ${reportType === 'final' ? 'Relatorio Final' : 'Relatorio Inicial'}`}
+            </button>
+          </div>
         )}
 
         {error && (
