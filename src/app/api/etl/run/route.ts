@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { requireAdminApi } from '@/lib/guard';
 import { type NextRequest } from 'next/server';
 import { runPipeline, type EtlSource, type ExtractInput } from '@/lib/etl/pipeline';
 
@@ -26,6 +27,8 @@ const VALID_SOURCES: readonly EtlSource[] = [
 //   metadata?: Record<string, unknown>
 // }
 export async function POST(req: NextRequest) {
+  const gate = await requireAdminApi();
+  if (gate) return gate;
   try {
     if (!DATABASE_URL) {
       return Response.json({ error: 'DATABASE_URL nao configurado' }, { status: 500 });

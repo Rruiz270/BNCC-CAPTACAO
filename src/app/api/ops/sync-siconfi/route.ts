@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { requireAdminApi } from '@/lib/guard';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -11,6 +12,8 @@ const DATABASE_URL = process.env.DATABASE_URL!;
 // a batch of records posted as JSON (used from a local script).
 // Or, when run locally, reads directly from the SQLite database.
 export async function POST(request: Request) {
+  const gate = await requireAdminApi();
+  if (gate) return gate;
   try {
     const sql = neon(DATABASE_URL);
     const body = await request.json();
@@ -90,6 +93,8 @@ export async function POST(request: Request) {
 // GET /api/ops/sync-siconfi?municipalityId=X
 // Returns SICONFI fiscal summary for a municipality
 export async function GET(request: Request) {
+  const gate = await requireAdminApi();
+  if (gate) return gate;
   try {
     const { searchParams } = new URL(request.url);
     const muniId = searchParams.get('municipalityId');

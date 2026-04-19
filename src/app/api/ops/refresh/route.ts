@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { requireAdminApi } from '@/lib/guard';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
@@ -9,6 +10,8 @@ const DATABASE_URL = process.env.DATABASE_URL!;
 // Chama ops.sp_refresh_ops_views() para atualizar as materialized views.
 // Seguro de rodar a qualquer momento (best-effort dentro da SP).
 export async function POST() {
+  const gate = await requireAdminApi();
+  if (gate) return gate;
   try {
     if (!DATABASE_URL) {
       return Response.json({ error: 'DATABASE_URL nao configurado' }, { status: 500 });

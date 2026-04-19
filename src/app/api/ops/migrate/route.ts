@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { requireAdminApi } from '@/lib/guard';
 import { DDL_STATEMENTS, SP_STATEMENTS } from '@/lib/db/migrations';
 
 export const dynamic = 'force-dynamic';
@@ -42,6 +43,8 @@ async function runStatements(
 
 // POST /api/ops/migrate - aplica DDL + SPs da Onda 2 (idempotente)
 export async function POST() {
+  const gate = await requireAdminApi();
+  if (gate) return gate;
   try {
     if (!DATABASE_URL) {
       return Response.json({ error: 'DATABASE_URL nao configurado' }, { status: 500 });
@@ -85,6 +88,8 @@ export async function POST() {
 
 // GET /api/ops/migrate - retorna o estado atual (quais objetos existem)
 export async function GET() {
+  const gate = await requireAdminApi();
+  if (gate) return gate;
   try {
     if (!DATABASE_URL) {
       return Response.json({ error: 'DATABASE_URL nao configurado' }, { status: 500 });

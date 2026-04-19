@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { requireAdminApi } from '@/lib/guard';
 import { type NextRequest } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -379,6 +380,8 @@ CREATE INDEX IF NOT EXISTS idx_consultorias_muni ON fundeb.consultorias(municipa
 // ── GET /api/seed ───────────────────────────────────────────────────────
 
 export async function GET(request: NextRequest) {
+  const gate = await requireAdminApi();
+  if (gate) return gate;
   const searchParams = request.nextUrl.searchParams;
   const force = searchParams.get('force') === 'true';
   const migrate = searchParams.get('migrate');

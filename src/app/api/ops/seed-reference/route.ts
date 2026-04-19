@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { requireAdminApi } from '@/lib/guard';
 import Database from 'better-sqlite3';
 import path from 'path';
 
@@ -324,6 +325,8 @@ const VALID_TABLES = [
 ] as const;
 
 export async function POST(request: Request) {
+  const gate = await requireAdminApi();
+  if (gate) return gate;
   const DATABASE_URL = process.env.DATABASE_URL;
   if (!DATABASE_URL) {
     return Response.json({ error: 'DATABASE_URL not configured' }, { status: 500 });

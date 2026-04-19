@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { requireAdminApi } from '@/lib/guard';
 import catsData from '@/data/fundeb-cats.json';
 
 export const dynamic = 'force-dynamic';
@@ -41,6 +42,8 @@ interface EnrollmentRow {
 // Idempotente: apaga e reinsere enrollments para cada municipio presente no
 // bundle src/data/fundeb-cats.json. Processa em chunks para caber no maxDuration.
 export async function POST() {
+  const gate = await requireAdminApi();
+  if (gate) return gate;
   try {
     if (!DATABASE_URL) {
       return Response.json({ error: 'DATABASE_URL nao configurado' }, { status: 500 });

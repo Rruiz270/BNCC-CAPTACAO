@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { requireAdminApi } from '@/lib/guard';
 import { type NextRequest } from 'next/server';
 import potTotals from '@/data/pot-totals.json';
 

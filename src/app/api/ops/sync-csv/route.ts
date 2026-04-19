@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { requireAdminApi } from '@/lib/guard';
 import { type NextRequest } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -26,6 +27,8 @@ function parseCSVLine(line: string): string[] {
 }
 
 export async function POST(request: NextRequest) {
+  const gate = await requireAdminApi();
+  if (gate) return gate;
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
     async start(controller) {
