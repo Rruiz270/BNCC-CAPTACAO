@@ -1,7 +1,14 @@
-import { Sidebar } from "@/components/sidebar";
-import { Providers } from "@/components/providers";
+import { redirect } from 'next/navigation';
+import { auth } from '@/lib/auth';
+import { Sidebar } from '@/components/sidebar';
+import { Providers } from '@/components/providers';
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  // Defesa em profundidade: proxy.ts já redireciona não-autenticados, mas este
+  // guard evita que código do (app) rode se o proxy passar por algum edge-case.
+  const session = await auth();
+  if (!session?.user) redirect('/login');
+
   return (
     <Providers>
       <div className="flex min-h-screen">
