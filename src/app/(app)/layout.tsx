@@ -9,10 +9,17 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const session = await auth();
   if (!session?.user) redirect('/login');
 
+  const user = session.user as typeof session.user & { role?: string };
+  const userProps = {
+    name: user.name ?? null,
+    email: user.email ?? '',
+    role: user.role ?? 'consultor',
+  };
+
   return (
     <Providers>
       <div className="flex min-h-screen">
-        <Sidebar />
+        <Sidebar user={userProps} />
         <main className="flex-1 ml-64 min-h-screen bg-[var(--bg)]">
           {children}
         </main>

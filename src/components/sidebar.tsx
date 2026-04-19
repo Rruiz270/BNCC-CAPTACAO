@@ -5,6 +5,14 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useConsultoria } from "@/lib/consultoria-context";
 import { IntakeResponseModal } from "@/components/intake-response-modal";
+import { signOutAction } from "@/lib/actions/auth-actions";
+import { isAdmin } from "@/lib/roles";
+
+type SidebarUser = {
+  name: string | null;
+  email: string;
+  role: string;
+};
 
 interface MuniOption {
   id: number;
@@ -91,7 +99,7 @@ function SidebarMunicipalityPicker({ onSelect, creating }: { onSelect: (id: numb
   );
 }
 
-export function Sidebar() {
+export function Sidebar({ user }: { user?: SidebarUser }) {
   const pathname = usePathname();
   const { sessions, activeSession, startSession, switchSession, endSession, loading } = useConsultoria();
   const [showNewSession, setShowNewSession] = useState(false);
@@ -487,8 +495,41 @@ export function Sidebar() {
         </Link>
       </nav>
 
+      {/* User Menu + Logout */}
+      {user && (
+        <div className="px-4 py-3 border-t border-white/10">
+          <div className="flex items-center gap-3 mb-2">
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
+              style={{ background: "linear-gradient(135deg, #0A2463 0%, #00B4D8 100%)" }}
+            >
+              {(user.name ?? user.email)[0]?.toUpperCase() ?? "?"}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-xs font-semibold text-white truncate">
+                {user.name ?? user.email}
+              </div>
+              <div
+                className="text-[10px] uppercase font-semibold"
+                style={{ color: isAdmin(user.role) ? "#48CAE4" : "rgba(255,255,255,0.5)", letterSpacing: "2px" }}
+              >
+                {user.role}
+              </div>
+            </div>
+          </div>
+          <form action={signOutAction}>
+            <button
+              type="submit"
+              className="w-full text-left px-2 py-1.5 rounded text-xs text-white/60 hover:bg-white/10 hover:text-white transition-colors"
+            >
+              ↪ Sair
+            </button>
+          </form>
+        </div>
+      )}
+
       {/* Footer */}
-      <div className="px-6 py-4 border-t border-white/10 text-[10px] text-white/30">
+      <div className="px-6 py-3 border-t border-white/10 text-[10px] text-white/30">
         <div>FUNDEB SP 2026</div>
         <div>645 municipios - 15 categorias</div>
       </div>
