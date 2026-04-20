@@ -173,9 +173,9 @@ export default function StepDiscovery() {
   const cataloged = result?.catalog.cataloged ?? 0;
   const canAdvance = !!result && rowsOk > 0;
   const blockReason = !result
-    ? "Execute o pipeline ETL para liberar o avanco"
+    ? "Execute o pipeline ETL para liberar o avanço"
     : rowsOk === 0
-    ? "Nenhuma linha valida apos Treat — corrija a fonte antes de avancar"
+    ? "Nenhuma linha válida após Treat — corrija a fonte antes de avançar"
     : undefined;
 
   return (
@@ -191,7 +191,7 @@ export default function StepDiscovery() {
               </span>
             </div>
             <p className="text-xs text-emerald-700 ml-4">
-              Responsavel: {intakeResponse.respondentName}
+              Responsável: {intakeResponse.respondentName}
               {intakeResponse.respondentRole && ` (${intakeResponse.respondentRole})`}
             </p>
           </div>
@@ -221,7 +221,7 @@ export default function StepDiscovery() {
             return (
               <div className="border border-[var(--border)] rounded-lg p-4 mb-4">
                 <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--text3)] mb-3">
-                  Comparacao — Secretaria vs INEP Oficial vs FUNDEB
+                  Comparação — Secretaria vs INEP Oficial vs FUNDEB
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm border-collapse">
@@ -231,7 +231,7 @@ export default function StepDiscovery() {
                         <th className="text-right px-3 py-2">Secretaria</th>
                         <th className="text-right px-3 py-2">INEP Oficial</th>
                         <th className="text-right px-3 py-2">FUNDEB Atual</th>
-                        <th className="text-right px-3 py-2">Divergencia</th>
+                        <th className="text-right px-3 py-2">Divergência</th>
                         <th className="text-right px-3 py-2">Impacto R$</th>
                       </tr>
                     </thead>
@@ -271,7 +271,7 @@ export default function StepDiscovery() {
                 }`}>
                   <div className="flex items-center justify-between">
                     <div className="text-xs font-semibold text-[var(--text1)]">
-                      Impacto financeiro estimado das divergencias
+                      Impacto financeiro estimado das divergências
                     </div>
                     <div className={`text-sm font-bold ${
                       totalImpact > 0 ? "text-emerald-700" : totalImpact < 0 ? "text-red-700" : "text-gray-500"
@@ -286,7 +286,7 @@ export default function StepDiscovery() {
 
                 {intakeResponse.data!.observations && (
                   <div className="mt-3 text-xs text-[var(--text2)] bg-[var(--bg)] rounded p-2">
-                    <strong>Observacoes:</strong> {intakeResponse.data!.observations}
+                    <strong>Observações:</strong> {intakeResponse.data!.observations}
                   </div>
                 )}
               </div>
@@ -297,20 +297,20 @@ export default function StepDiscovery() {
 
       <h2 className="text-lg font-bold text-[var(--text1)] mb-2">Discovery — Dados Brutos & ETL</h2>
       <p className="text-sm text-[var(--text3)] mb-6">
-        O pipeline percorre <strong>Extracao → Treat → Catalog</strong> sobre a fonte escolhida e
-        popula o banco bruto (<code>raw.*</code>). O Onda 3 usa dados de demonstracao; Onda 4
-        plugara fontes reais (Censo Escolar, SIOPE, FNDE).
+        O pipeline percorre <strong>Extração → Treat → Catalog</strong> sobre a fonte escolhida e
+        popula o banco bruto (<code>raw.*</code>). O Onda 3 usa dados de demonstração; Onda 4
+        plugará fontes reais (Censo Escolar, SIOPE, FNDE).
       </p>
 
       <div className="space-y-3 mb-6">
-        <PipelineStep n={1} title="Extracao" desc="Insere linhas em raw.imports + raw.import_rows (dedup por sha256)" />
+        <PipelineStep n={1} title="Extração" desc="Insere linhas em raw.imports + raw.import_rows (dedup por sha256)" />
         <PipelineStep n={2} title="Treat" desc="Valida cada linha, marca is_valid e grava errors" />
         <PipelineStep n={3} title="Catalog" desc="Marca cataloged_at e cria linhagem em raw.lineage" />
       </div>
 
       <div className="bg-[var(--bg)] border border-[var(--border)] rounded-lg p-4 mb-4">
         <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--text3)] mb-3">
-          Configuracao do pipeline
+          Configuração do pipeline
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div>
@@ -352,7 +352,7 @@ export default function StepDiscovery() {
         </div>
         {!muniId && (
           <div className="text-xs text-amber-700 mt-2">
-            Aguardando dados do municipio da sessao...
+            Aguardando dados do município da sessão...
           </div>
         )}
       </div>

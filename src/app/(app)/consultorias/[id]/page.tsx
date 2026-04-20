@@ -185,10 +185,10 @@ export default function ConsultoriaDetailPage({ params }: { params: Promise<{ id
   if (error || !resumo) {
     return (
       <div>
-        <PageHeader title="Erro" description="Nao foi possivel carregar a consultoria" />
+        <PageHeader title="Erro" description="Não foi possível carregar a consultoria" />
         <div className="max-w-7xl mx-auto px-8 py-12">
           <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
-            <p className="text-red-700 font-semibold">{error || "Consultoria nao encontrada"}</p>
+            <p className="text-red-700 font-semibold">{error || "Consultoria não encontrada"}</p>
           </div>
         </div>
       </div>
@@ -216,7 +216,7 @@ export default function ConsultoriaDetailPage({ params }: { params: Promise<{ id
           href={`/consultorias/${consultoria.id}/relatorio`}
           className="px-4 py-2 rounded-lg text-sm font-semibold bg-white/10 text-white hover:bg-white/20 transition-colors"
         >
-          Gerar Relatorio
+          Gerar Relatório
         </Link>
         <Link
           href="/consultorias"
@@ -252,7 +252,7 @@ export default function ConsultoriaDetailPage({ params }: { params: Promise<{ id
 
         {/* C. Tabela de Categorias */}
         <div className="bg-white border border-[var(--border)] rounded-xl p-6">
-          <SectionTitle>Categorias FUNDEB - Projecao 2027</SectionTitle>
+          <SectionTitle>Categorias FUNDEB - Projeção 2027</SectionTitle>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -299,11 +299,11 @@ export default function ConsultoriaDetailPage({ params }: { params: Promise<{ id
           </div>
         </div>
 
-        {/* D. Acoes Censo 2026 */}
+        {/* D. Ações Censo 2026 */}
         <div className="bg-white border border-[var(--border)] rounded-xl p-6">
-          <SectionTitle>Acoes para o Censo 2026 (Corrigidos)</SectionTitle>
+          <SectionTitle>Ações para o Censo 2026 (Corrigidos)</SectionTitle>
           {acoesCenso2026.length === 0 ? (
-            <p className="text-sm text-[var(--text3)]">Nenhuma acao curto prazo concluida ainda.</p>
+            <p className="text-sm text-[var(--text3)]">Nenhuma ação de curto prazo concluída ainda.</p>
           ) : (
             <div className="space-y-2">
               {acoesCenso2026.map((a, i) => (
@@ -321,7 +321,7 @@ export default function ConsultoriaDetailPage({ params }: { params: Promise<{ id
         <div className="bg-white border border-[var(--border)] rounded-xl p-6">
           <SectionTitle>Roadmap 2027 (Pendentes)</SectionTitle>
           {roadmap2027.length === 0 ? (
-            <p className="text-sm text-[var(--text3)]">Todas as tarefas medio/longo prazo foram concluidas.</p>
+            <p className="text-sm text-[var(--text3)]">Todas as tarefas de médio/longo prazo foram concluídas.</p>
           ) : (
             <div className="space-y-2">
               {roadmap2027.map((t, i) => (
@@ -397,9 +397,9 @@ export default function ConsultoriaDetailPage({ params }: { params: Promise<{ id
                 <thead>
                   <tr className="border-b border-[var(--border)]">
                     <th className="text-left py-2 px-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">Tipo</th>
-                    <th className="text-left py-2 px-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">Titulo</th>
+                    <th className="text-left py-2 px-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">Título</th>
                     <th className="text-center py-2 px-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">Status</th>
-                    <th className="text-center py-2 px-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">Versao</th>
+                    <th className="text-center py-2 px-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">Versão</th>
                   </tr>
                 </thead>
                 <tbody>

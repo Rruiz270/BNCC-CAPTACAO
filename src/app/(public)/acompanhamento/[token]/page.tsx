@@ -23,7 +23,7 @@ export default function AcompanhamentoPage({ params }: { params: Promise<{ token
   useEffect(() => {
     fetch(`/api/acompanhamento/${token}`)
       .then(r => {
-        if (!r.ok) throw new Error('Token invalido ou expirado')
+        if (!r.ok) throw new Error('Token inválido ou expirado')
         return r.json()
       })
       .then(d => setData(d))
@@ -70,7 +70,7 @@ export default function AcompanhamentoPage({ params }: { params: Promise<{ token
         <div className="max-w-5xl mx-auto">
           <div className="text-[#00B4D8] text-xs font-bold tracking-widest uppercase mb-1">Instituto i10 - Acompanhamento</div>
           <h1 className="text-2xl font-bold">{data.municipio}</h1>
-          <div className="text-white/40 text-xs mt-1">Dashboard de acompanhamento pos-consultoria FUNDEB | Atualizado: {data.lastUpdated}</div>
+          <div className="text-white/40 text-xs mt-1">Dashboard de acompanhamento pós-consultoria FUNDEB | Atualizado: {data.lastUpdated}</div>
         </div>
       </header>
 
@@ -95,13 +95,13 @@ export default function AcompanhamentoPage({ params }: { params: Promise<{ token
                     <div className="text-xs text-white/40">dias restantes</div>
                   </div>
                 </div>
-                <div className="text-xs text-white/30 mt-2">Data referencia: 27/05/2026</div>
+                <div className="text-xs text-white/30 mt-2">Data referência: 27/05/2026</div>
               </div>
               <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-xs text-white/40">BNCC Computacao</div>
-                    <div className="text-sm text-white/70 mt-0.5">Curriculo + CME + SIMEC para VAAR 2027</div>
+                    <div className="text-xs text-white/40">BNCC Computação</div>
+                    <div className="text-sm text-white/70 mt-0.5">Currículo + CME + SIMEC para VAAR 2027</div>
                   </div>
                   <div className="text-right">
                     <div className="text-2xl font-bold text-[#00B4D8]">{bnccDays}</div>
@@ -121,7 +121,7 @@ export default function AcompanhamentoPage({ params }: { params: Promise<{ token
             <div className="text-xl font-bold">{fmt(data.receitaTotal)}</div>
           </div>
           <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
-            <div className="text-xs text-white/40">Potencial Captacao</div>
+            <div className="text-xs text-white/40">Potencial Captação</div>
             <div className="text-xl font-bold text-[#00E5A0]">+{fmt(data.potTotal)}</div>
           </div>
           <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
@@ -130,7 +130,7 @@ export default function AcompanhamentoPage({ params }: { params: Promise<{ token
             <div className="h-1.5 bg-white/10 rounded-full mt-2"><div className="h-full bg-[#00B4D8] rounded-full" style={{width:`${compPct}%`}}/></div>
           </div>
           <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
-            <div className="text-xs text-white/40">Plano de Acao</div>
+            <div className="text-xs text-white/40">Plano de Ação</div>
             <div className="text-xl font-bold text-[#48CAE4]">{planPct}%</div>
             <div className="h-1.5 bg-white/10 rounded-full mt-2"><div className="h-full bg-[#48CAE4] rounded-full" style={{width:`${planPct}%`}}/></div>
           </div>
@@ -138,7 +138,7 @@ export default function AcompanhamentoPage({ params }: { params: Promise<{ token
 
         {/* Compliance by section */}
         <div className="bg-white/5 rounded-2xl p-5 border border-white/10">
-          <h2 className="text-sm font-semibold text-white/80 mb-4">Compliance por Secao</h2>
+          <h2 className="text-sm font-semibold text-white/80 mb-4">Compliance por Seção</h2>
           <div className="space-y-3">
             {data.compliance.map(c => {
               const pct = c.total > 0 ? Math.round((c.done / c.total) * 100) : 0
@@ -163,8 +163,8 @@ export default function AcompanhamentoPage({ params }: { params: Promise<{ token
           if (phaseTasks.length === 0) return null;
           const phaseConfig = {
             curto: { label: 'Curto Prazo — Quick Wins (Censo 27/Mai)', color: 'orange', bg: 'bg-orange-500/10', border: 'border-orange-500/30' },
-            medio: { label: 'Medio Prazo — BNCC Computacao (Agosto 2026)', color: 'blue', bg: 'bg-blue-500/10', border: 'border-blue-500/30' },
-            longo: { label: 'Longo Prazo — EC 135 e Expansao (2027+)', color: 'cyan', bg: 'bg-cyan-500/10', border: 'border-cyan-500/30' },
+            medio: { label: 'Médio Prazo — BNCC Computação (Agosto 2026)', color: 'blue', bg: 'bg-blue-500/10', border: 'border-blue-500/30' },
+            longo: { label: 'Longo Prazo — EC 135 e Expansão (2027+)', color: 'cyan', bg: 'bg-cyan-500/10', border: 'border-cyan-500/30' },
           }[phase];
           return (
             <div key={phase} className={`${phaseConfig.bg} rounded-2xl p-5 border ${phaseConfig.border}`}>

@@ -145,14 +145,14 @@ export default function StepExecucao() {
 
   const canAdvance = dirty.size === 0;
   const blockReason =
-    dirty.size > 0 ? "Salve as alteracoes antes de avancar" : undefined;
+    dirty.size > 0 ? "Salve as alterações antes de avançar" : undefined;
 
   return (
     <StepShell step={step} canAdvance={canAdvance} blockReason={blockReason}>
       <h2 className="text-lg font-bold text-[var(--text1)] mb-2">Acompanhamento semanal</h2>
       <p className="text-sm text-[var(--text3)] mb-4">
-        Acompanhe o progresso das 7 semanas ate o Dia do Censo Escolar (27/Mai/2026). Marque
-        tarefas como concluidas, atualize notas e salve para consolidar.
+        Acompanhe o progresso das 7 semanas até o Dia do Censo Escolar (27/Mai/2026). Marque
+        tarefas como concluídas, atualize notas e salve para consolidar.
       </p>
 
       {error && (
@@ -168,7 +168,7 @@ export default function StepExecucao() {
             Contagem regressiva
           </div>
           <div className="text-3xl font-extrabold mt-1">{diasRestantes} dias</div>
-          <div className="text-xs text-white/60 mt-1">ate 27/05/2026</div>
+          <div className="text-xs text-white/60 mt-1">até 27/05/2026</div>
         </div>
         <div className="border border-[var(--border)] rounded-lg p-3">
           <div className="text-[10px] uppercase text-[var(--text3)]">Progresso curto</div>
@@ -266,7 +266,7 @@ export default function StepExecucao() {
                         </div>
                         <input
                           type="text"
-                          placeholder="Notas / evidencia"
+                          placeholder="Notas / evidência"
                           value={t.notes ?? ""}
                           onChange={(e) => update(t.id, { notes: e.target.value })}
                           className="w-full px-2 py-1 text-[10px] border border-[var(--border)] rounded"

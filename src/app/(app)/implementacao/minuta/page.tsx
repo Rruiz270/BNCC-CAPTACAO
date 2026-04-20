@@ -14,12 +14,12 @@ interface DocumentRecord {
 }
 
 const ARTIGOS = [
-  { num: "Art. 1.o", titulo: "Objeto", resumo: "Aprovacao da inclusao do componente curricular de Computacao no curriculo municipal, em conformidade com a BNCC." },
-  { num: "Art. 2.o", titulo: "Abrangencia", resumo: "Oferta em todas as unidades escolares: Educacao Infantil (integrada), Anos Iniciais (integrado) e Anos Finais (especifico)." },
-  { num: "Art. 3.o", titulo: "Componente Curricular", resumo: "Organizacao em 4 eixos: Pensamento Computacional, Mundo Digital, Cultura Digital e Tecnologia e Sociedade." },
-  { num: "Art. 4.o", titulo: "Carga Horaria", resumo: "Minimo de 1h/semana (Anos Iniciais) e 2h/semana (Anos Finais), com possibilidade de ampliacao." },
-  { num: "Art. 5.o", titulo: "Formacao Docente", resumo: "Programa de formacao continuada com minimo de 32h anuais, acompanhamento pedagogico e materiais didaticos." },
-  { num: "Art. 6.o", titulo: "Vigencia e Comprovacao", resumo: "Implementacao gradual a partir de 2026 com conformidade plena ate o ano letivo de 2027. Registro no SIMEC." },
+  { num: "Art. 1º", titulo: "Objeto", resumo: "Aprovação da inclusão do componente curricular de Computação no currículo municipal, em conformidade com a BNCC." },
+  { num: "Art. 2º", titulo: "Abrangência", resumo: "Oferta em todas as unidades escolares: Educação Infantil (integrada), Anos Iniciais (integrado) e Anos Finais (específico)." },
+  { num: "Art. 3º", titulo: "Componente Curricular", resumo: "Organização em 4 eixos: Pensamento Computacional, Mundo Digital, Cultura Digital e Tecnologia e Sociedade." },
+  { num: "Art. 4º", titulo: "Carga Horária", resumo: "Mínimo de 1h/semana (Anos Iniciais) e 2h/semana (Anos Finais), com possibilidade de ampliação." },
+  { num: "Art. 5º", titulo: "Formação Docente", resumo: "Programa de formação continuada com mínimo de 32h anuais, acompanhamento pedagógico e materiais didáticos." },
+  { num: "Art. 6º", titulo: "Vigência e Comprovação", resumo: "Implementação gradual a partir de 2026 com conformidade plena até o ano letivo de 2027. Registro no SIMEC." },
 ];
 
 export default function MinutaPage() {
@@ -121,7 +121,7 @@ export default function MinutaPage() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     } catch {
-      alert("Nao foi possivel copiar. Selecione o texto manualmente.");
+      alert("Não foi possível copiar. Selecione o texto manualmente.");
     }
   }
 
@@ -134,8 +134,8 @@ export default function MinutaPage() {
   return (
     <div>
       <PageHeader
-        title="Minuta de Resolucao CME"
-        description="Modelo de resolucao para aprovacao do curriculo computacional"
+        title="Minuta de Resolução CME"
+        description="Modelo de resolução para aprovação do currículo computacional"
       />
 
       <div className="max-w-5xl mx-auto px-8 py-8 space-y-8">
@@ -148,14 +148,14 @@ export default function MinutaPage() {
             </div>
             {document && (
               <span className="text-[10px] text-[var(--text3)]">
-                Versao {document.versao} - {document.status}
+                Versão {document.versao} - {document.status}
               </span>
             )}
           </div>
         ) : (
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 text-center">
             <p className="text-amber-800 text-sm font-semibold">Nenhuma consultoria ativa</p>
-            <p className="text-amber-600 text-xs mt-1">Inicie uma consultoria para gerar o documento com dados reais do municipio.</p>
+            <p className="text-amber-600 text-xs mt-1">Inicie uma consultoria para gerar o documento com dados reais do município.</p>
           </div>
         )}
 
@@ -169,13 +169,13 @@ export default function MinutaPage() {
             >
               {loading ? "Gerando..." : "Gerar Documento"}
             </button>
-            <p className="text-xs text-[var(--text3)] mt-2">O documento sera preenchido automaticamente com dados do municipio</p>
+            <p className="text-xs text-[var(--text3)] mt-2">O documento será preenchido automaticamente com dados do município</p>
           </div>
         )}
 
         {/* Article summary cards */}
         <section className="animate-fade-in print:hidden">
-          <h2 className="text-lg font-bold text-[var(--navy)] mb-3">Estrutura da Resolucao</h2>
+          <h2 className="text-lg font-bold text-[var(--navy)] mb-3">Estrutura da Resolução</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {ARTIGOS.map((art) => (
               <div
@@ -247,12 +247,12 @@ export default function MinutaPage() {
           <div className="bg-[var(--cyan)]/5 border border-[var(--cyan)]/20 rounded-xl p-5">
             <h3 className="text-sm font-bold text-[var(--navy)] mb-2">Como utilizar este modelo</h3>
             <ul className="text-xs text-[var(--text2)] space-y-1.5 list-disc list-inside leading-relaxed">
-              <li>O documento e preenchido automaticamente com dados do municipio selecionado na consultoria.</li>
-              <li>Voce pode editar o texto diretamente no campo acima — as alteracoes sao salvas automaticamente.</li>
+              <li>O documento é preenchido automaticamente com dados do município selecionado na consultoria.</li>
+              <li>Você pode editar o texto diretamente no campo acima — as alterações são salvas automaticamente.</li>
               <li>Use &quot;Exportar PDF&quot; para imprimir ou salvar como PDF (Ctrl/Cmd+P).</li>
-              <li>Submeta ao CME com parecer tecnico da Secretaria de Educacao.</li>
-              <li>Apos aprovacao, publique no Diario Oficial do municipio.</li>
-              <li>Registre a resolucao aprovada no SIMEC como comprovacao VAAR.</li>
+              <li>Submeta ao CME com parecer técnico da Secretaria de Educação.</li>
+              <li>Após aprovação, publique no Diário Oficial do município.</li>
+              <li>Registre a resolução aprovada no SIMEC como comprovação VAAR.</li>
             </ul>
           </div>
         </section>

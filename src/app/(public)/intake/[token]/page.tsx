@@ -112,11 +112,11 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
       .then(async (res) => {
         const json = await res.json();
         if (res.status === 404) {
-          showError("Link invalido", "Este link de intake nao foi encontrado. Verifique com o consultor.");
+          showError("Link inválido", "Este link de intake não foi encontrado. Verifique com o consultor.");
         } else if (res.status === 410) {
-          showError("Link expirado", "Este link de intake ja expirou. Solicite um novo link ao consultor.");
+          showError("Link expirado", "Este link de intake já expirou. Solicite um novo link ao consultor.");
         } else if (res.status === 409) {
-          showError("Ja respondido", "Este formulario ja foi preenchido anteriormente.");
+          showError("Já respondido", "Este formulário já foi preenchido anteriormente.");
         } else if (!res.ok) {
           showError("Erro", json.error || "Erro ao carregar dados.");
         } else {
@@ -125,7 +125,7 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
         }
       })
       .catch(() => {
-        showError("Erro", "Nao foi possivel carregar os dados. Tente novamente mais tarde.");
+        showError("Erro", "Não foi possível carregar os dados. Tente novamente mais tarde.");
       });
   }, [token, showError]);
 
@@ -217,7 +217,7 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
       }
       setState("thankyou");
     } catch {
-      alert("Erro de conexao. Tente novamente.");
+      alert("Erro de conexão. Tente novamente.");
       setSubmitting(false);
     }
   }
@@ -228,7 +228,7 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
       <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
         <div className="text-center">
           <div className="w-10 h-10 border-3 border-[var(--border)] border-t-[var(--cyan)] rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-[var(--text2)] text-sm">Carregando dados do municipio...</p>
+          <p className="text-[var(--text2)] text-sm">Carregando dados do município...</p>
         </div>
       </div>
     );
@@ -259,10 +259,10 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
             Obrigado!
           </h2>
           <p className="text-[var(--text2)] max-w-md mx-auto">
-            Seus dados foram enviados ao Instituto i10. Eles serao utilizados para preparar
-            seu diagnostico personalizado FUNDEB 2026.
+            Seus dados foram enviados ao Instituto i10. Eles serão utilizados para preparar
+            seu diagnóstico personalizado FUNDEB 2026.
           </p>
-          <p className="mt-4 text-sm text-[var(--text3)]">Voce pode fechar esta pagina.</p>
+          <p className="mt-4 text-sm text-[var(--text3)]">Você pode fechar esta página.</p>
         </div>
       </div>
     );
@@ -274,10 +274,10 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
 
   const summaryItems = [
     { label: "Receita Total FUNDEB", value: fmtBRL(muni.receitaTotal), sub: "Recursos anuais" },
-    { label: "Contribuicao FUNDEB", value: fmtBRL(muni.contribuicao), sub: "Recolhido ao fundo" },
-    { label: "VAAR", value: muni.vaar && muni.vaar > 0 ? fmtBRL(muni.vaar) : "Nao recebe", sub: muni.vaar && muni.vaar > 0 ? "Complementacao VAAR" : "Sem elegibilidade" },
+    { label: "Contribuição FUNDEB", value: fmtBRL(muni.contribuicao), sub: "Recolhido ao fundo" },
+    { label: "VAAR", value: muni.vaar && muni.vaar > 0 ? fmtBRL(muni.vaar) : "Não recebe", sub: muni.vaar && muni.vaar > 0 ? "Complementação VAAR" : "Sem elegibilidade" },
     { label: "Potencial de Ganho", value: fmtBRL(muni.potTotal), sub: `${(muni.pctPotTotal || 0).toFixed(1)}% da receita atual` },
-    { label: "Matriculas", value: fmtNum(muni.totalMatriculas), sub: "Total registradas" },
+    { label: "Matrículas", value: fmtNum(muni.totalMatriculas), sub: "Total registradas" },
     { label: "Escolas", value: fmtNum(muni.totalEscolas), sub: `${muni.escolasMunicipais || 0} municipais` },
   ];
 
@@ -289,7 +289,7 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
           <div className="text-[var(--cyan)] font-extrabold text-sm tracking-wider uppercase">
             INSTITUTO I10
           </div>
-          <div className="text-sm text-white/60">Diagnostico FUNDEB 2026</div>
+          <div className="text-sm text-white/60">Diagnóstico FUNDEB 2026</div>
         </div>
       </div>
 
@@ -307,7 +307,7 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
           </h1>
           <p className="text-white/70 max-w-xl text-sm font-light">
             Estamos preparando sua consultoria FUNDEB. Por favor, confirme ou corrija os dados abaixo.
-            Seus dados nos ajudarao a identificar oportunidades de captacao.
+            Seus dados nos ajudarão a identificar oportunidades de captação.
           </p>
         </div>
       </div>
@@ -317,8 +317,8 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
         <section className="bg-gradient-to-br from-emerald-50 to-cyan-50 border border-emerald-200 rounded-xl p-7 mt-6">
           <h2 className="text-base font-bold text-[var(--navy)] mb-1">Preview: Oportunidades Identificadas</h2>
           <p className="text-xs text-[var(--text2)] mb-4">
-            Nossa analise preliminar identificou as seguintes oportunidades de captacao FUNDEB para seu municipio.
-            Os dados detalhados serao apresentados na consultoria.
+            Nossa análise preliminar identificou as seguintes oportunidades de captação FUNDEB para seu município.
+            Os dados detalhados serão apresentados na consultoria.
           </p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {summaryItems.map((item, i) => (
@@ -348,8 +348,8 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
 
         {/* Respondent Info */}
         <section className="bg-white border border-[var(--border)] rounded-xl p-7 mt-6">
-          <h2 className="text-base font-bold text-[var(--navy)] mb-1">Dados do Responsavel</h2>
-          <p className="text-xs text-[var(--text2)] mb-4">Informacoes de quem esta preenchendo este formulario</p>
+          <h2 className="text-base font-bold text-[var(--navy)] mb-1">Dados do Responsável</h2>
+          <p className="text-xs text-[var(--text2)] mb-4">Informações de quem está preenchendo este formulário</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex flex-col">
               <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Nome Completo</label>
@@ -362,7 +362,7 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
               />
             </div>
             <div className="flex flex-col">
-              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Cargo / Funcao</label>
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Cargo / Função</label>
               <select
                 value={respRole}
                 onChange={(e) => setRespRole(e.target.value)}
@@ -402,18 +402,18 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
                 value={schoolsTotal}
                 onChange={(e) => setSchoolsTotal(e.target.value)}
                 min="0"
-                placeholder={muni.escolasMunicipais ? `Dados publicos: ${muni.escolasMunicipais}` : "Ex: 14"}
+                placeholder={muni.escolasMunicipais ? `Dados públicos: ${muni.escolasMunicipais}` : "Ex: 14"}
                 className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
               />
             </div>
             <div className="flex flex-col">
-              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Escolas em Area Rural</label>
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Escolas em Área Rural</label>
               <input
                 type="number"
                 value={schoolsRural}
                 onChange={(e) => setSchoolsRural(e.target.value)}
                 min="0"
-                placeholder={muni.escolasRurais ? `Dados publicos: ${muni.escolasRurais}` : "Ex: 3"}
+                placeholder={muni.escolasRurais ? `Dados públicos: ${muni.escolasRurais}` : "Ex: 3"}
                 className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
               />
             </div>
@@ -423,7 +423,7 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
         {/* Educacao Especial e AEE */}
         <section className="bg-white border border-[var(--border)] rounded-xl p-7 mt-6">
           <h2 className="text-base font-bold text-[var(--navy)] mb-1">
-            Educacao Especial e AEE{" "}
+            Educação Especial e AEE{" "}
             <span className="inline-block text-[10px] px-2 py-0.5 rounded-full font-semibold bg-orange-100 text-orange-700">CURTO PRAZO — Impacto no Censo 27/Mai</span>
           </h2>
           <p className="text-xs text-[var(--text2)] mb-4">Dados sobre atendimento educacional especializado na rede</p>
@@ -440,7 +440,7 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
               />
             </div>
             <div className="flex flex-col">
-              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Destes, quantos estao registrados no Educacenso como dupla matricula?</label>
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Destes, quantos estão registrados no Educacenso como dupla matrícula?</label>
               <input
                 type="number"
                 value={alunosDuplaMatricula}
@@ -480,13 +480,13 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
         {/* Escolas de Localizacao Diferenciada */}
         <section className="bg-white border border-[var(--border)] rounded-xl p-7 mt-6">
           <h2 className="text-base font-bold text-[var(--navy)] mb-1">
-            Escolas de Localizacao Diferenciada{" "}
+            Escolas de Localização Diferenciada{" "}
             <span className="inline-block text-[10px] px-2 py-0.5 rounded-full font-semibold bg-orange-100 text-orange-700">CURTO PRAZO — Impacto no Censo 27/Mai</span>
           </h2>
-          <p className="text-xs text-[var(--text2)] mb-4">Escolas e matriculas em areas de localizacao diferenciada</p>
+          <p className="text-xs text-[var(--text2)] mb-4">Escolas e matrículas em áreas de localização diferenciada</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col">
-              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Escolas em area de campo (rural)</label>
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Escolas em área de campo (rural)</label>
               <input
                 type="number"
                 value={escolasCampo}
@@ -549,10 +549,10 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
             Escola Integral{" "}
             <span className="inline-block text-[10px] px-2 py-0.5 rounded-full font-semibold bg-orange-100 text-orange-700">CURTO PRAZO — Impacto no Censo 27/Mai</span>
           </h2>
-          <p className="text-xs text-[var(--text2)] mb-4">Dados sobre oferta de educacao em tempo integral</p>
+          <p className="text-xs text-[var(--text2)] mb-4">Dados sobre oferta de educação em tempo integral</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col">
-              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Quantas escolas oferecem jornada integral (7h+ diarias)?</label>
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Quantas escolas oferecem jornada integral (7h+ diárias)?</label>
               <input
                 type="number"
                 value={escolasIntegral}
@@ -592,13 +592,13 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
         {/* BNCC Computacao */}
         <section className="bg-white border border-[var(--border)] rounded-xl p-7 mt-6">
           <h2 className="text-base font-bold text-[var(--navy)] mb-1">
-            BNCC Computacao{" "}
-            <span className="inline-block text-[10px] px-2 py-0.5 rounded-full font-semibold bg-blue-100 text-blue-700">MEDIO PRAZO — Prazo Agosto 2026</span>
+            BNCC Computação{" "}
+            <span className="inline-block text-[10px] px-2 py-0.5 rounded-full font-semibold bg-blue-100 text-blue-700">MÉDIO PRAZO — Prazo Agosto 2026</span>
           </h2>
-          <p className="text-xs text-[var(--text2)] mb-4">Situacao do curriculo de computacao e infraestrutura tecnologica</p>
+          <p className="text-xs text-[var(--text2)] mb-4">Situação do currículo de computação e infraestrutura tecnológica</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col">
-              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">O curriculo municipal ja inclui competencias de computacao?</label>
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">O currículo municipal já inclui competências de computação?</label>
               <select
                 value={curriculoComputacao}
                 onChange={(e) => setCurriculoComputacao(e.target.value)}
@@ -611,7 +611,7 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
               </select>
             </div>
             <div className="flex flex-col">
-              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">O curriculo foi aprovado pelo CME?</label>
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">O currículo foi aprovado pelo CME?</label>
               <select
                 value={curriculoAprovadoCme}
                 onChange={(e) => setCurriculoAprovadoCme(e.target.value)}
@@ -624,7 +624,7 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
               </select>
             </div>
             <div className="flex flex-col">
-              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">O curriculo esta registrado no SIMEC?</label>
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">O currículo está registrado no SIMEC?</label>
               <select
                 value={curriculoSimec}
                 onChange={(e) => setCurriculoSimec(e.target.value)}
@@ -636,7 +636,7 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
               </select>
             </div>
             <div className="flex flex-col">
-              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">A rede possui laboratorios de informatica?</label>
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">A rede possui laboratórios de informática?</label>
               <select
                 value={laboratoriosInformatica}
                 onChange={(e) => setLaboratoriosInformatica(e.target.value)}
@@ -649,7 +649,7 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
               </select>
             </div>
             <div className="flex flex-col">
-              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">A rede possui programa de formacao docente em tecnologia?</label>
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">A rede possui programa de formação docente em tecnologia?</label>
               <select
                 value={formacaoDocente}
                 onChange={(e) => setFormacaoDocente(e.target.value)}
@@ -668,9 +668,9 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
         <section className="bg-white border border-[var(--border)] rounded-xl p-7 mt-6">
           <h2 className="text-base font-bold text-[var(--navy)] mb-1">
             Infraestrutura{" "}
-            <span className="inline-block text-[10px] px-2 py-0.5 rounded-full font-semibold bg-blue-100 text-blue-700">MEDIO PRAZO</span>
+            <span className="inline-block text-[10px] px-2 py-0.5 rounded-full font-semibold bg-blue-100 text-blue-700">MÉDIO PRAZO</span>
           </h2>
-          <p className="text-xs text-[var(--text2)] mb-4">Infraestrutura tecnologica e fisica da rede escolar</p>
+          <p className="text-xs text-[var(--text2)] mb-4">Infraestrutura tecnológica e física da rede escolar</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col">
               <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Percentual de escolas com internet banda larga</label>
@@ -720,19 +720,19 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
 
         {/* Enrollment Table */}
         <section className="bg-white border border-[var(--border)] rounded-xl p-7 mt-6">
-          <h2 className="text-base font-bold text-[var(--navy)] mb-1">Matriculas por Categoria</h2>
+          <h2 className="text-base font-bold text-[var(--navy)] mb-1">Matrículas por Categoria</h2>
           <p className="text-xs text-[var(--text2)] mb-4">
-            A coluna &quot;Dados Publicos&quot; mostra os numeros do Censo/FNDE. Na coluna &quot;Numero Real&quot;,
-            informe os dados atuais da rede. A diferenca e calculada automaticamente.
+            A coluna &quot;Dados Públicos&quot; mostra os números do Censo/FNDE. Na coluna &quot;Número Real&quot;,
+            informe os dados atuais da rede. A diferença é calculada automaticamente.
           </p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="bg-[var(--navy)] text-white text-xs uppercase">
                   <th className="text-left px-3 py-2.5 font-semibold tracking-wider rounded-tl-lg">Categoria</th>
-                  <th className="text-right px-3 py-2.5 font-semibold tracking-wider">Dados Publicos</th>
-                  <th className="text-right px-3 py-2.5 font-semibold tracking-wider">Numero Real</th>
-                  <th className="text-right px-3 py-2.5 font-semibold tracking-wider rounded-tr-lg">Diferenca</th>
+                  <th className="text-right px-3 py-2.5 font-semibold tracking-wider">Dados Públicos</th>
+                  <th className="text-right px-3 py-2.5 font-semibold tracking-wider">Número Real</th>
+                  <th className="text-right px-3 py-2.5 font-semibold tracking-wider rounded-tr-lg">Diferença</th>
                 </tr>
               </thead>
               <tbody>
@@ -788,8 +788,8 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
 
         {/* Observations */}
         <section className="bg-white border border-[var(--border)] rounded-xl p-7 mt-6">
-          <h2 className="text-base font-bold text-[var(--navy)] mb-1">Observacoes</h2>
-          <p className="text-xs text-[var(--text2)] mb-4">Informacoes adicionais que considerar relevantes para a consultoria</p>
+          <h2 className="text-base font-bold text-[var(--navy)] mb-1">Observações</h2>
+          <p className="text-xs text-[var(--text2)] mb-4">Informações adicionais que considerar relevantes para a consultoria</p>
           <textarea
             value={observations}
             onChange={(e) => setObservations(e.target.value)}
@@ -800,8 +800,8 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
 
         {/* Summary */}
         <section className="bg-white border border-[var(--border)] rounded-xl p-7 mt-6">
-          <h2 className="text-base font-bold text-[var(--navy)] mb-1">Resumo do Municipio</h2>
-          <p className="text-xs text-[var(--text2)] mb-4">Dados publicos de referencia (somente leitura)</p>
+          <h2 className="text-base font-bold text-[var(--navy)] mb-1">Resumo do Município</h2>
+          <p className="text-xs text-[var(--text2)] mb-4">Dados públicos de referência (somente leitura)</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {summaryItems.map((item) => (
               <div key={item.label} className="bg-[var(--bg)] rounded-lg p-4">
@@ -827,7 +827,7 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
 
       {/* Footer */}
       <div className="text-center py-6 text-xs text-[var(--text3)] border-t border-[var(--border)] mt-10">
-        Instituto i10 — Diagnostico FUNDEB 2026 — Dados protegidos e confidenciais
+        Instituto i10 — Diagnóstico FUNDEB 2026 — Dados protegidos e confidenciais
       </div>
     </div>
   );

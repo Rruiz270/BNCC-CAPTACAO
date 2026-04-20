@@ -42,7 +42,7 @@ function SidebarMunicipalityPicker({ onSelect, creating }: { onSelect: (id: numb
 
   return (
     <div className="mt-3 p-2 bg-white/5 rounded-lg">
-      <div className="text-[10px] text-white/50 mb-1.5">Selecione o municipio:</div>
+      <div className="text-[10px] text-white/50 mb-1.5">Selecione o município:</div>
 
       {selected ? (
         <div className="flex items-center gap-2 mb-2">
@@ -60,7 +60,7 @@ function SidebarMunicipalityPicker({ onSelect, creating }: { onSelect: (id: numb
         <>
           <input
             type="text"
-            placeholder="Buscar municipio..."
+            placeholder="Buscar município..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             autoFocus
@@ -81,7 +81,7 @@ function SidebarMunicipalityPicker({ onSelect, creating }: { onSelect: (id: numb
             )}
             {filtered.length > 50 && (
               <div className="px-2 py-1 text-[10px] text-white/30 text-center">
-                +{filtered.length - 50} municipios. Refine a busca.
+                +{filtered.length - 50} municípios. Refine a busca.
               </div>
             )}
           </div>
@@ -93,7 +93,7 @@ function SidebarMunicipalityPicker({ onSelect, creating }: { onSelect: (id: numb
         disabled={!selected || creating}
         className="w-full mt-2 py-2 rounded-lg text-xs font-semibold transition-colors disabled:opacity-30 disabled:cursor-not-allowed bg-[#00B4D8] text-white hover:bg-[#00B4D8]/80"
       >
-        {creating ? "Criando sessao..." : "Iniciar Consultoria"}
+        {creating ? "Criando sessão..." : "Iniciar Consultoria"}
       </button>
     </div>
   );
@@ -213,7 +213,7 @@ export function Sidebar({ user }: { user?: SidebarUser }) {
                     >
                       <div className="flex items-center justify-between gap-2 mb-1.5">
                         <span className={`text-xs truncate ${isCurrentSession ? "text-white font-semibold" : "text-white/70"}`}>
-                          {s.municipality?.nome ?? `Sessao #${s.id}`}
+                          {s.municipality?.nome ?? `Sessão #${s.id}`}
                         </span>
                         {isCurrentSession && (
                           <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-[#00E5A0]/20 text-[#00E5A0] font-bold uppercase shrink-0">
@@ -376,7 +376,7 @@ export function Sidebar({ user }: { user?: SidebarUser }) {
         {/* GESTAO */}
         <div className="pt-4 pb-1 px-3">
           <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">
-            Gestao
+            Gestão
           </span>
         </div>
         <Link
@@ -404,7 +404,7 @@ export function Sidebar({ user }: { user?: SidebarUser }) {
               : "text-white/60 hover:bg-white/8 hover:text-white/90"
           }`}
         >
-          BNCC Computacao
+          BNCC Computação
         </Link>
         <Link
           href="/comparativo"
@@ -424,7 +424,7 @@ export function Sidebar({ user }: { user?: SidebarUser }) {
               : "text-white/60 hover:bg-white/8 hover:text-white/90"
           }`}
         >
-          Captacao
+          Captação
         </Link>
         <Link
           href="/catalogo"
@@ -434,7 +434,7 @@ export function Sidebar({ user }: { user?: SidebarUser }) {
               : "text-white/60 hover:bg-white/8 hover:text-white/90"
           }`}
         >
-          Catalogo i10
+          Catálogo i10
         </Link>
         <Link
           href="/projecao"
@@ -444,7 +444,7 @@ export function Sidebar({ user }: { user?: SidebarUser }) {
               : "text-white/60 hover:bg-white/8 hover:text-white/90"
           }`}
         >
-          Projecao Financeira
+          Projeção Financeira
         </Link>
         <Link
           href="/calculadora-ec135"
@@ -464,7 +464,7 @@ export function Sidebar({ user }: { user?: SidebarUser }) {
               : "text-white/60 hover:bg-white/8 hover:text-white/90"
           }`}
         >
-          Gerar Relatorio
+          Gerar Relatório
         </Link>
 
         {/* ADMIN */}
@@ -481,7 +481,7 @@ export function Sidebar({ user }: { user?: SidebarUser }) {
               : "text-white/60 hover:bg-white/8 hover:text-white/90"
           }`}
         >
-          Historico Consultorias
+          Histórico Consultorias
         </Link>
         <Link
           href="/importar"
@@ -531,7 +531,7 @@ export function Sidebar({ user }: { user?: SidebarUser }) {
       {/* Footer */}
       <div className="px-6 py-3 border-t border-white/10 text-[10px] text-white/30">
         <div>FUNDEB SP 2026</div>
-        <div>645 municipios - 15 categorias</div>
+        <div>645 municípios - 15 categorias</div>
       </div>
 
       {/* Intake Response Modal */}

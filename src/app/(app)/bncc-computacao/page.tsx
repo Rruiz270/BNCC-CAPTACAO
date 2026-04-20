@@ -45,29 +45,29 @@ function buildInitialPhases(): Phase[] {
     {
       id: "curto",
       label: "CURTO PRAZO",
-      deadline: "ate Maio 2026",
+      deadline: "até Maio 2026",
       color: "#EA580C",
       bgColor: "rgba(234,88,12,0.06)",
       borderColor: "rgba(234,88,12,0.25)",
       items: [
-        { id: "c1", text: "Formar comissao municipal para BNCC Computacao", checked: false },
-        { id: "c2", text: "Realizar diagnostico da situacao atual de infraestrutura digital", checked: false },
-        { id: "c3", text: "Mapear competencias docentes em tecnologia educacional", checked: false },
+        { id: "c1", text: "Formar comissão municipal para BNCC Computação", checked: false },
+        { id: "c2", text: "Realizar diagnóstico da situação atual de infraestrutura digital", checked: false },
+        { id: "c3", text: "Mapear competências docentes em tecnologia educacional", checked: false },
       ],
     },
     {
       id: "medio",
-      label: "MEDIO PRAZO",
-      deadline: "ate Agosto 2026",
+      label: "MÉDIO PRAZO",
+      deadline: "até Agosto 2026",
       color: "#0A2463",
       bgColor: "rgba(10,36,99,0.04)",
       borderColor: "rgba(10,36,99,0.18)",
       items: [
-        { id: "m1", text: "Atualizar curriculo municipal com competencias de computacao (3 eixos: Cultura Digital, Mundo Digital, Pensamento Computacional)", checked: false },
-        { id: "m2", text: "Aprovar atualizacao no CME (Conselho Municipal de Educacao)", checked: false },
-        { id: "m3", text: "Registrar curriculo atualizado no SIMEC", checked: false },
-        { id: "m4", text: "Regulamentar uso pedagogico de dispositivos digitais nas escolas", checked: false },
-        { id: "m5", text: "Iniciar formacao docente em computacao educacional", checked: false },
+        { id: "m1", text: "Atualizar currículo municipal com competências de computação (3 eixos: Cultura Digital, Mundo Digital, Pensamento Computacional)", checked: false },
+        { id: "m2", text: "Aprovar atualização no CME (Conselho Municipal de Educação)", checked: false },
+        { id: "m3", text: "Registrar currículo atualizado no SIMEC", checked: false },
+        { id: "m4", text: "Regulamentar uso pedagógico de dispositivos digitais nas escolas", checked: false },
+        { id: "m5", text: "Iniciar formação docente em computação educacional", checked: false },
       ],
     },
     {
@@ -78,10 +78,10 @@ function buildInitialPhases(): Phase[] {
       bgColor: "rgba(0,180,216,0.05)",
       borderColor: "rgba(0,180,216,0.20)",
       items: [
-        { id: "l1", text: "Implementar laboratorios de informatica/robotica", checked: false },
-        { id: "l2", text: "Estabelecer parcerias publico-privadas para tecnologia educacional", checked: false },
+        { id: "l1", text: "Implementar laboratórios de informática/robótica", checked: false },
+        { id: "l2", text: "Estabelecer parcerias público-privadas para tecnologia educacional", checked: false },
         { id: "l3", text: "Monitorar indicadores de aprendizagem digital", checked: false },
-        { id: "l4", text: "Integrar computacao em avaliacoes municipais", checked: false },
+        { id: "l4", text: "Integrar computação em avaliações municipais", checked: false },
       ],
     },
   ];
@@ -90,7 +90,7 @@ function buildInitialPhases(): Phase[] {
 const EIXOS = [
   {
     title: "Cultura Digital",
-    description: "Cidadania, etica, seguranca digital",
+    description: "Cidadania, ética, segurança digital",
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
@@ -108,7 +108,7 @@ const EIXOS = [
   },
   {
     title: "Pensamento Computacional",
-    description: "Algoritmos, abstracao, decomposicao, reconhecimento de padroes",
+    description: "Algoritmos, abstração, decomposição, reconhecimento de padrões",
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z" />
@@ -119,9 +119,9 @@ const EIXOS = [
 
 const LEGAL_REFS = [
   {
-    title: "BNCC Computacao",
-    ref: "Resolucao CNE/CP no 1/2024",
-    description: "Estabelece as competencias de computacao na educacao basica.",
+    title: "BNCC Computação",
+    ref: "Resolução CNE/CP nº 1/2024",
+    description: "Estabelece as competências de computação na educação básica.",
   },
   {
     title: "EC 108/2020",
@@ -130,7 +130,7 @@ const LEGAL_REFS = [
   },
   {
     title: "Lei 14.113/2020",
-    ref: "Regulamentacao do FUNDEB",
+    ref: "Regulamentação do FUNDEB",
     description: "Regulamenta o FUNDEB, incluindo VAAT e VAAR.",
   },
   {
@@ -220,8 +220,8 @@ export default function BnccComputacaoPage() {
     <div>
       <PageHeader
         label="Compliance"
-        title="BNCC Computacao"
-        description="Preparacao municipal para as competencias de computacao na educacao basica"
+        title="BNCC Computação"
+        description="Preparação municipal para as competências de computação na educação básica"
       />
 
       <div className="max-w-7xl mx-auto px-8 py-6 space-y-6">
@@ -234,7 +234,7 @@ export default function BnccComputacaoPage() {
               Nenhuma consultoria ativa
             </p>
             <p className="text-amber-600 text-xs mt-1">
-              Inicie uma consultoria na sidebar para ver os dados financeiros do municipio.
+              Inicie uma consultoria na sidebar para ver os dados financeiros do município.
             </p>
           </div>
         ) : (
@@ -281,7 +281,7 @@ export default function BnccComputacaoPage() {
                   {daysUntilDeadline} dias
                 </div>
                 <div className="text-xs text-[var(--text2)]">
-                  para o prazo BNCC Computacao (Agosto 2026)
+                  para o prazo BNCC Computação (Agosto 2026)
                 </div>
               </div>
             </div>
@@ -310,7 +310,7 @@ export default function BnccComputacaoPage() {
                   Impacto
                 </div>
                 <div className="text-sm font-bold text-[#0A2463]">
-                  Municipios que nao cumprirem perdem o VAAR em 2027
+                  Municípios que não cumprirem perdem o VAAR em 2027
                 </div>
                 <div className="text-xs text-red-500 mt-0.5">
                   Perda direta de recursos do FUNDEB
@@ -333,7 +333,7 @@ export default function BnccComputacaoPage() {
                 {overallProgress}%
               </div>
               <div className="text-xs text-[var(--text2)] mt-0.5">
-                {totalDone} de {totalItems} itens concluidos
+                {totalDone} de {totalItems} itens concluídos
               </div>
             </div>
             <svg
@@ -442,7 +442,7 @@ export default function BnccComputacaoPage() {
             Os 3 Eixos Estruturantes
           </h2>
           <p className="text-xs text-[var(--text3)] mb-5">
-            A BNCC Computacao organiza as competencias em tres eixos complementares
+            A BNCC Computação organiza as competências em três eixos complementares
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {EIXOS.map((eixo) => (
@@ -472,13 +472,13 @@ export default function BnccComputacaoPage() {
             Impacto Financeiro
           </h2>
           <p className="text-xs text-[var(--text3)] mb-5">
-            Simulacao do impacto financeiro em caso de nao cumprimento
+            Simulação do impacto financeiro em caso de não cumprimento
           </p>
 
           {!activeSession ? (
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
               <p className="text-sm text-gray-500">
-                Inicie uma consultoria para calcular o impacto financeiro do municipio.
+                Inicie uma consultoria para calcular o impacto financeiro do município.
               </p>
             </div>
           ) : loadingMuni ? (
@@ -506,7 +506,7 @@ export default function BnccComputacaoPage() {
               {/* Loss if non-compliant */}
               <div className="border border-red-200 bg-red-50 rounded-xl p-4">
                 <div className="text-[10px] font-semibold uppercase tracking-wider text-red-400">
-                  Se nao cumprir
+                  Se não cumprir
                 </div>
                 <div className="text-2xl font-extrabold text-red-600 mt-1">
                   {vaarAmount != null
@@ -530,10 +530,10 @@ export default function BnccComputacaoPage() {
         {/* ============================================================ */}
         <div className="bg-white border border-[var(--border)] rounded-xl p-6">
           <h2 className="text-sm font-bold text-[#0A2463] mb-1">
-            Fundamentacao Legal
+            Fundamentação Legal
           </h2>
           <p className="text-xs text-[var(--text3)] mb-5">
-            Base normativa para as condicionalidades de computacao no FUNDEB
+            Base normativa para as condicionalidades de computação no FUNDEB
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {LEGAL_REFS.map((ref) => (

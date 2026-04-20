@@ -67,7 +67,7 @@ export default function CompliancePage() {
         {!activeSession ? (
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 text-center">
             <p className="text-amber-800 text-sm font-semibold">Nenhuma consultoria ativa</p>
-            <p className="text-amber-600 text-xs mt-1">Inicie uma consultoria na sidebar para acompanhar o compliance do municipio.</p>
+            <p className="text-amber-600 text-xs mt-1">Inicie uma consultoria na sidebar para acompanhar o compliance do município.</p>
           </div>
         ) : (
           <div className="bg-[#00B4D8]/5 border border-[#00B4D8]/20 rounded-lg px-4 py-2.5 flex items-center gap-2 text-sm">
@@ -87,7 +87,7 @@ export default function CompliancePage() {
                 {loading ? "..." : `${overallProgress}%`}
               </div>
               <div className="text-xs text-[var(--text2)] mt-0.5">
-                {totalDone} de {totalItems} itens concluidos
+                {totalDone} de {totalItems} itens concluídos
               </div>
             </div>
             <div className="text-3xl opacity-40">
@@ -149,7 +149,7 @@ export default function CompliancePage() {
 
                 {/* Item Count */}
                 <div className="text-xs text-[var(--text3)] mb-3">
-                  {sp ? `${sp.done} de ` : ""}{totalCount} {totalCount === 1 ? "item" : "itens"}{sp ? " concluidos" : " para verificar"}
+                  {sp ? `${sp.done} de ` : ""}{totalCount} {totalCount === 1 ? "item" : "itens"}{sp ? " concluídos" : " para verificar"}
                 </div>
 
                 {/* Progress Bar */}

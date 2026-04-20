@@ -99,7 +99,7 @@ export default function RelatorioPage({ params }: { params: Promise<{ id: string
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-[var(--text3)] animate-pulse-slow">Gerando relatorio...</div>
+        <div className="text-[var(--text3)] animate-pulse-slow">Gerando relatório...</div>
       </div>
     );
   }
@@ -143,7 +143,7 @@ export default function RelatorioPage({ params }: { params: Promise<{ id: string
           <div className="flex items-start justify-between">
             <div>
               <div className="text-[#00B4D8] text-xs font-bold uppercase tracking-[0.2em] mb-1">Instituto i10</div>
-              <h1 className="text-2xl font-bold">Relatorio de Consultoria FUNDEB</h1>
+              <h1 className="text-2xl font-bold">Relatório de Consultoria FUNDEB</h1>
               <div className="text-white/60 text-sm mt-2">{municipio.nome} - SP</div>
               <div className="text-white/40 text-xs mt-1">
                 IBGE: {municipio.codigoIbge || "-"} | {fmtDate(consultoria.startDate)}
@@ -167,7 +167,7 @@ export default function RelatorioPage({ params }: { params: Promise<{ id: string
               <div className="border border-gray-200 rounded-lg p-4">
                 <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Receita Atual</div>
                 <div className="text-xl font-bold text-[#0A2463]">{fmtCurrency(receitaBase)}</div>
-                <div className="text-xs text-gray-500">{fmtNumber(municipio.totalMatriculas)} matriculas</div>
+                <div className="text-xs text-gray-500">{fmtNumber(municipio.totalMatriculas)} matrículas</div>
               </div>
               <div className="border border-gray-200 rounded-lg p-4">
                 <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Receita Projetada 2027</div>
@@ -183,13 +183,13 @@ export default function RelatorioPage({ params }: { params: Promise<{ id: string
                 <div className="text-xl font-bold" style={{ color: compliancePct >= 80 ? "#00C88A" : compliancePct >= 50 ? "#E8A838" : "#D4553A" }}>
                   {compliancePct}%
                 </div>
-                <div className="text-xs text-gray-500">{compliance.done} de {compliance.total} itens concluidos</div>
+                <div className="text-xs text-gray-500">{compliance.done} de {compliance.total} itens concluídos</div>
               </div>
               <div className="border border-gray-200 rounded-lg p-4">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Plano de Acao</div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">Plano de Ação</div>
                 <div className="text-xs text-gray-600 space-y-1">
                   <div>Curto: {resumo.plano.curto?.done ?? 0}/{resumo.plano.curto?.total ?? 0}</div>
-                  <div>Medio: {resumo.plano.medio?.done ?? 0}/{resumo.plano.medio?.total ?? 0}</div>
+                  <div>Médio: {resumo.plano.medio?.done ?? 0}/{resumo.plano.medio?.total ?? 0}</div>
                   <div>Longo: {resumo.plano.longo?.done ?? 0}/{resumo.plano.longo?.total ?? 0}</div>
                 </div>
               </div>
@@ -199,7 +199,7 @@ export default function RelatorioPage({ params }: { params: Promise<{ id: string
           {/* SECAO 2: TABELA DE CATEGORIAS */}
           <section className="break-before-auto">
             <h2 className="text-lg font-bold text-[#0A2463] border-b-2 border-[#0A2463] pb-1 mb-4">
-              2. Categorias FUNDEB - Projecao de Receita
+              2. Categorias FUNDEB - Projeção de Receita
             </h2>
             <table className="w-full text-xs border-collapse">
               <thead>
@@ -245,10 +245,10 @@ export default function RelatorioPage({ params }: { params: Promise<{ id: string
           {/* SECAO 3: CORRECOES CENSO 2026 */}
           <section>
             <h2 className="text-lg font-bold text-[#0A2463] border-b-2 border-[#0A2463] pb-1 mb-4">
-              3. Correcoes Realizadas para o Censo 2026
+              3. Correções Realizadas para o Censo 2026
             </h2>
             {acoesCenso2026.length === 0 ? (
-              <p className="text-gray-500 italic">Nenhuma acao de curto prazo concluida nesta consultoria.</p>
+              <p className="text-gray-500 italic">Nenhuma ação de curto prazo concluída nesta consultoria.</p>
             ) : (
               <ul className="space-y-2">
                 {acoesCenso2026.map((a, i) => (
@@ -265,17 +265,17 @@ export default function RelatorioPage({ params }: { params: Promise<{ id: string
           {/* SECAO 4: PLANO DE ACAO 2027 */}
           <section>
             <h2 className="text-lg font-bold text-[#0A2463] border-b-2 border-[#0A2463] pb-1 mb-4">
-              4. Plano de Acao - Captacoes 2027
+              4. Plano de Ação - Captações 2027
             </h2>
             {roadmap2027.length === 0 ? (
-              <p className="text-gray-500 italic">Todas as tarefas de medio e longo prazo foram concluidas.</p>
+              <p className="text-gray-500 italic">Todas as tarefas de médio e longo prazo foram concluídas.</p>
             ) : (
               <table className="w-full text-xs border-collapse">
                 <thead>
                   <tr className="bg-gray-50">
                     <th className="text-left py-2 px-2 border border-gray-200 font-semibold">#</th>
                     <th className="text-left py-2 px-2 border border-gray-200 font-semibold">Tarefa</th>
-                    <th className="text-left py-2 px-2 border border-gray-200 font-semibold">Descricao</th>
+                    <th className="text-left py-2 px-2 border border-gray-200 font-semibold">Descrição</th>
                     <th className="text-center py-2 px-2 border border-gray-200 font-semibold">Prazo</th>
                   </tr>
                 </thead>
@@ -338,7 +338,7 @@ export default function RelatorioPage({ params }: { params: Promise<{ id: string
             <div className="flex items-end justify-between text-[10px] text-gray-400">
               <div>
                 <div className="text-xs font-bold text-[#0A2463] mb-1">Instituto i10 - Plataforma FUNDEB 2026</div>
-                <div>Relatorio gerado automaticamente em {fmtDate(new Date().toISOString())}</div>
+                <div>Relatório gerado automaticamente em {fmtDate(new Date().toISOString())}</div>
                 {snapshot && (
                   <div className="mt-1">
                     Snapshot: <span className="font-mono">{snapshot.hash.slice(0, 24)}</span>
@@ -355,10 +355,10 @@ export default function RelatorioPage({ params }: { params: Promise<{ id: string
             {/* Signature line */}
             <div className="mt-10 grid grid-cols-2 gap-16">
               <div className="border-t border-gray-400 pt-2 text-center text-xs text-gray-500">
-                Consultor Responsavel
+                Consultor Responsável
               </div>
               <div className="border-t border-gray-400 pt-2 text-center text-xs text-gray-500">
-                Secretario(a) Municipal de Educacao
+                Secretário(a) Municipal de Educação
               </div>
             </div>
           </footer>

@@ -18,20 +18,20 @@ const DOC_DEFS: Array<{
   {
     tipo: "minuta_cme",
     label: "Minuta CME",
-    desc: "Resolucao do Conselho Municipal de Educacao para BNCC Computacao",
+    desc: "Resolução do Conselho Municipal de Educação para BNCC Computação",
     obrigatorio: true,
     link: "/implementacao/minuta",
   },
   {
     tipo: "decreto",
     label: "Decreto Municipal",
-    desc: "Decreto de regulamentacao FUNDEB",
+    desc: "Decreto de regulamentação FUNDEB",
     link: "/implementacao/curriculo",
   },
   {
     tipo: "resolucao",
-    label: "Resolucao SME",
-    desc: "Resolucao da Secretaria Municipal de Educacao",
+    label: "Resolução SME",
+    desc: "Resolução da Secretaria Municipal de Educação",
     link: "/implementacao/simec",
   },
 ];
@@ -141,18 +141,18 @@ export default function StepDocumentos() {
 
   const hasMinuta = docs.minuta_cme != null;
   const canAdvance = hasMinuta;
-  const blockReason = !hasMinuta ? "Gere ao menos a Minuta CME para avancar" : undefined;
+  const blockReason = !hasMinuta ? "Gere ao menos a Minuta CME para avançar" : undefined;
 
   return (
     <StepShell step={step} canAdvance={canAdvance} blockReason={blockReason}>
       <h2 className="text-lg font-bold text-[var(--text1)] mb-2">Documentos oficiais</h2>
       <p className="text-sm text-[var(--text3)] mb-4">
-        Gere a Minuta CME (BNCC Computacao), o Decreto e a Resolucao via{" "}
-        <code>fundeb.sp_gerar_minuta</code>. A minuta CME e obrigatoria para avancar.
+        Gere a Minuta CME (BNCC Computação), o Decreto e a Resolução via{" "}
+        <code>fundeb.sp_gerar_minuta</code>. A minuta CME é obrigatória para avançar.
       </p>
 
       {!muniId && (
-        <div className="text-xs text-gray-400 mb-4">Carregando dados do municipio...</div>
+        <div className="text-xs text-gray-400 mb-4">Carregando dados do município...</div>
       )}
 
       {error && (
@@ -180,8 +180,8 @@ export default function StepDocumentos() {
       {saving && <div className="mt-3 text-[10px] text-[#00B4D8]">salvando progresso...</div>}
 
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mt-4 text-xs text-yellow-800">
-        <strong>Atencao:</strong> documentos sao criados como <code>rascunho</code>. Publicacao
-        ocorre apos aprovacao do coordenador.
+        <strong>Atenção:</strong> documentos são criados como <code>rascunho</code>. Publicação
+        ocorre após aprovação do coordenador.
       </div>
     </StepShell>
   );
@@ -213,7 +213,7 @@ function DocCard({
           <div className="text-sm font-semibold text-[var(--text1)]">{tipo}</div>
           {obrigatorio && (
             <span className="text-[10px] uppercase font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded">
-              Obrigatorio
+              Obrigatório
             </span>
           )}
           {doc && (
