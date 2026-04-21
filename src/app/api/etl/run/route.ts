@@ -1,5 +1,5 @@
 import { neon } from '@neondatabase/serverless';
-import { requireAdminApi } from '@/lib/guard';
+import { requireAuthApi } from '@/lib/guard';
 import { type NextRequest } from 'next/server';
 import { runPipeline, type EtlSource, type ExtractInput } from '@/lib/etl/pipeline';
 
@@ -27,7 +27,7 @@ const VALID_SOURCES: readonly EtlSource[] = [
 //   metadata?: Record<string, unknown>
 // }
 export async function POST(req: NextRequest) {
-  const gate = await requireAdminApi();
+  const gate = await requireAuthApi();
   if (gate) return gate;
   try {
     if (!DATABASE_URL) {
