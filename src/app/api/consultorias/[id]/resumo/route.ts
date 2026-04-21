@@ -1,5 +1,12 @@
 import { neon } from '@neondatabase/serverless';
 import { type NextRequest } from 'next/server';
+import { getUser } from '@/lib/session';
+import {
+  ensureOwnershipColumns,
+  fetchOwner,
+  fetchOwnerWithName,
+  canViewConsultoriaDetail,
+} from '@/lib/lead-ownership';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,7 +18,21 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   const consultoriaId = parseInt(id);
 
   try {
+    const user = await getUser();
+    if (!user) return Response.json({ error: 'UNAUTHORIZED' }, { status: 401 });
+
     const sql = neon(DATABASE_URL);
+
+    await ensureOwnershipColumns(sql);
+    const owner = await fetchOwner(sql, consultoriaId);
+    if (!owner) return Response.json({ error: 'Consultoria nao encontrada' }, { status: 404 });
+    if (!canViewConsultoriaDetail(user, owner)) {
+      const ownerInfo = await fetchOwnerWithName(sql, owner.assignedConsultorId);
+      return Response.json(
+        { error: 'FORBIDDEN', message: 'Lead esta com outro consultor', owner: ownerInfo },
+        { status: 403 },
+      );
+    }
 
     // 1. Consultoria + Municipality (including T1-T6 and new columns)
     const cRows = await sql`

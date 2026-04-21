@@ -147,20 +147,34 @@ function formatCurrencyFull(value: number): string {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0, maximumFractionDigits: 0 });
 }
 
+interface ForbiddenOwner {
+  id: string;
+  name: string | null;
+  email: string | null;
+}
+
 export default function ConsultoriaDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [resumo, setResumo] = useState<Resumo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [forbiddenOwner, setForbiddenOwner] = useState<ForbiddenOwner | null | undefined>(undefined);
 
   useEffect(() => {
     fetch(`/api/consultorias/${id}/resumo`)
-      .then((r) => {
+      .then(async (r) => {
+        if (r.status === 403) {
+          const data = await r.json().catch(() => ({}));
+          setForbiddenOwner(data.owner ?? null);
+          throw new Error("FORBIDDEN");
+        }
         if (!r.ok) throw new Error("Falha ao carregar dados");
         return r.json();
       })
       .then(setResumo)
-      .catch((err) => setError(err.message))
+      .catch((err) => {
+        if (err.message !== "FORBIDDEN") setError(err.message);
+      })
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -176,6 +190,30 @@ export default function ConsultoriaDetailPage({ params }: { params: Promise<{ id
                 <div className="h-7 w-32 bg-gray-200 rounded" />
               </div>
             ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (forbiddenOwner !== undefined) {
+    const ownerName = forbiddenOwner?.name || forbiddenOwner?.email || "outro consultor";
+    return (
+      <div>
+        <PageHeader title="Lead atribuido" description="Este lead esta com outro consultor" />
+        <div className="max-w-2xl mx-auto px-8 py-12">
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-8 text-center">
+            <div className="text-5xl mb-4 opacity-40">&#x1f512;</div>
+            <h2 className="text-lg font-bold text-amber-900 mb-2">Este lead esta com {ownerName}</h2>
+            <p className="text-sm text-amber-800 mb-6">
+              Apenas o responsavel atual ou um admin/gestor pode ver os detalhes. Voce pode ver o pool de leads disponiveis.
+            </p>
+            <Link
+              href="/consultorias?view=pool"
+              className="inline-block px-5 py-2.5 rounded-lg text-sm font-semibold bg-[var(--navy)] text-white hover:bg-[var(--navy)]/80 transition-colors"
+            >
+              Ver Pool de Leads
+            </Link>
           </div>
         </div>
       </div>

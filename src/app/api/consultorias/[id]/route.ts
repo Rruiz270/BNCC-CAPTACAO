@@ -1,5 +1,12 @@
 import { neon } from '@neondatabase/serverless';
 import { type NextRequest } from 'next/server';
+import { getUser } from '@/lib/session';
+import {
+  ensureOwnershipColumns,
+  fetchOwner,
+  fetchOwnerWithName,
+  canViewConsultoriaDetail,
+} from '@/lib/lead-ownership';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,15 +15,32 @@ const DATABASE_URL = process.env.DATABASE_URL!;
 // GET /api/consultorias/[id]
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const consultoriaId = parseInt(id);
   try {
+    const user = await getUser();
+    if (!user) return Response.json({ error: 'UNAUTHORIZED' }, { status: 401 });
+
     const sql = neon(DATABASE_URL);
+    await ensureOwnershipColumns(sql);
+
+    const owner = await fetchOwner(sql, consultoriaId);
+    if (!owner) return Response.json({ error: 'Not found' }, { status: 404 });
+
+    if (!canViewConsultoriaDetail(user, owner)) {
+      const ownerInfo = await fetchOwnerWithName(sql, owner.assignedConsultorId);
+      return Response.json(
+        { error: 'FORBIDDEN', message: 'Lead esta com outro consultor', owner: ownerInfo },
+        { status: 403 },
+      );
+    }
+
     const rows = await sql`
       SELECT c.*, m.nome, m.total_matriculas, m.receita_total, m.recursos_receber,
              m.total_escolas, m.escolas_municipais, m.total_docentes,
              m.codigo_ibge, m.pct_internet, m.pct_biblioteca
       FROM fundeb.consultorias c
       JOIN fundeb.municipalities m ON m.id = c.municipality_id
-      WHERE c.id = ${parseInt(id)}
+      WHERE c.id = ${consultoriaId}
     `;
 
     if (rows.length === 0) {
@@ -24,6 +48,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     }
 
     const row = rows[0];
+    const ownerWithName = await fetchOwnerWithName(sql, owner.assignedConsultorId);
     return Response.json({
       id: row.id,
       municipalityId: row.municipality_id,
@@ -34,6 +59,8 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
       consultantName: row.consultant_name,
       secretaryName: row.secretary_name,
       annotations: row.annotations,
+      assignedConsultor: ownerWithName,
+      assignedAt: row.assigned_at ?? null,
       municipality: {
         id: row.municipality_id,
         nome: row.nome,

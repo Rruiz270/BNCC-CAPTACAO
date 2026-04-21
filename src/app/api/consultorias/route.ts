@@ -1,6 +1,9 @@
 import { neon } from '@neondatabase/serverless';
 import { type NextRequest } from 'next/server';
 import { COMPLIANCE_SECTIONS, ACTION_PLAN_WEEKS, MEDIUM_TERM_TASKS, LONG_TERM_TASKS } from '@/lib/constants';
+import { ensureOwnershipColumns } from '@/lib/lead-ownership';
+import { getUser } from '@/lib/session';
+import { isAdmin } from '@/lib/roles';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,23 +46,48 @@ async function ensureTable(sql: any) {
   for (const m of migrations) {
     try { await sql.query(m); } catch { /* column may already exist */ }
   }
+  await ensureOwnershipColumns(sql);
 }
 
-// GET /api/consultorias - list sessions with municipality data
-export async function GET() {
+// GET /api/consultorias?view=mine|pool|all - list sessions with municipality data
+export async function GET(request: NextRequest) {
   try {
+    const user = await getUser();
+    if (!user) return Response.json({ error: 'UNAUTHORIZED' }, { status: 401 });
+
     const sql = neon(DATABASE_URL);
     await ensureTable(sql);
 
-    const rows = await sql`
+    const { searchParams } = new URL(request.url);
+    const viewParam = (searchParams.get('view') ?? '').toLowerCase();
+    const requestedView: 'mine' | 'pool' | 'all' =
+      viewParam === 'pool' ? 'pool'
+      : viewParam === 'all' ? 'all'
+      : 'mine';
+
+    // Consultor não pode pedir view=all — força mine
+    const view = !isAdmin(user.role) && requestedView === 'all' ? 'mine' : requestedView;
+
+    const baseSelect = `
       SELECT c.id, c.municipality_id, c.status, c.start_date, c.end_date, c.notes, c.created_at,
+             c.assigned_consultor_id, c.assigned_at,
+             u.display_name AS consultor_display_name, u.name AS consultor_name, u.email AS consultor_email,
              m.nome, m.total_matriculas, m.receita_total, m.recursos_receber,
              m.total_escolas, m.escolas_municipais, m.total_docentes,
              m.codigo_ibge, m.pct_internet, m.pct_biblioteca
       FROM fundeb.consultorias c
+      LEFT JOIN crm.users u ON u.id = c.assigned_consultor_id
       JOIN fundeb.municipalities m ON m.id = c.municipality_id
-      ORDER BY c.created_at DESC
     `;
+
+    let rows: Array<Record<string, unknown>>;
+    if (view === 'mine') {
+      rows = await sql.query(`${baseSelect} WHERE c.assigned_consultor_id = $1 ORDER BY c.created_at DESC`, [user.id]);
+    } else if (view === 'pool') {
+      rows = await sql.query(`${baseSelect} WHERE c.assigned_consultor_id IS NULL ORDER BY c.created_at DESC`, []);
+    } else {
+      rows = await sql.query(`${baseSelect} ORDER BY c.created_at DESC`, []);
+    }
 
     // Get progress for each session
     const sessions = await Promise.all(rows.map(async (row: Record<string, unknown>) => {
@@ -81,6 +109,15 @@ export async function GET() {
       const actTotal = parseInt(actionResult[0]?.total as string) || 0;
       const actDone = parseInt(actionResult[0]?.done as string) || 0;
 
+      const assignedId = row.assigned_consultor_id as string | null;
+      const assignedConsultor = assignedId
+        ? {
+            id: assignedId,
+            name: (row.consultor_display_name ?? row.consultor_name ?? null) as string | null,
+            email: (row.consultor_email ?? null) as string | null,
+          }
+        : null;
+
       return {
         id: row.id,
         municipalityId: muniId,
@@ -88,6 +125,9 @@ export async function GET() {
         startDate: row.start_date,
         endDate: row.end_date,
         notes: row.notes,
+        assignedConsultor,
+        assignedAt: row.assigned_at ?? null,
+        isMine: assignedId === user.id,
         municipality: {
           id: muniId,
           nome: row.nome,
@@ -104,7 +144,11 @@ export async function GET() {
       };
     }));
 
-    return Response.json({ sessions });
+    return Response.json({
+      sessions,
+      view,
+      viewer: { id: user.id, role: user.role, isAdmin: isAdmin(user.role) },
+    });
   } catch (e: unknown) {
     const errMsg = e instanceof Error ? e.message : String(e);
     return Response.json({ error: errMsg }, { status: 500 });
