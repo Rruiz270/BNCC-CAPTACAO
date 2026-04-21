@@ -1,7 +1,7 @@
 import { neon } from '@neondatabase/serverless';
 import { type NextRequest } from 'next/server';
 import { COMPLIANCE_SECTIONS, ACTION_PLAN_WEEKS, MEDIUM_TERM_TASKS, LONG_TERM_TASKS } from '@/lib/constants';
-import { ensureOwnershipColumns } from '@/lib/lead-ownership';
+import { ensureOwnershipColumns, auditLeadEvent } from '@/lib/lead-ownership';
 import { getUser } from '@/lib/session';
 import { isAdmin } from '@/lib/roles';
 
@@ -158,6 +158,9 @@ export async function GET(request: NextRequest) {
 // POST /api/consultorias - create session + seed compliance and action plans
 export async function POST(request: NextRequest) {
   try {
+    const user = await getUser();
+    if (!user) return Response.json({ error: 'UNAUTHORIZED' }, { status: 401 });
+
     const sql = neon(DATABASE_URL);
     await ensureTable(sql);
     const body = await request.json();
@@ -167,13 +170,24 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: 'municipalityId required' }, { status: 400 });
     }
 
-    // Create consultoria session
+    // Create consultoria ja atribuida ao criador (ownership inicial).
+    // Admin/gestor tambem recebe como dono por padrao; pode transferir depois.
     const result = await sql`
-      INSERT INTO fundeb.consultorias (municipality_id, status)
-      VALUES (${municipalityId}, 'active')
-      RETURNING id, municipality_id, status, start_date, end_date, notes
+      INSERT INTO fundeb.consultorias
+        (municipality_id, status, assigned_consultor_id, assigned_at)
+      VALUES (${municipalityId}, 'active', ${user.id}, NOW())
+      RETURNING id, municipality_id, status, start_date, end_date, notes, assigned_consultor_id, assigned_at
     `;
     const session = result[0];
+
+    await auditLeadEvent(sql, {
+      actor: user,
+      action: 'consultoria.claim',
+      consultoriaId: Number(session.id),
+      beforeOwnerId: null,
+      afterOwnerId: user.id,
+      reason: 'created',
+    });
 
     // Check if compliance items already exist for this municipality
     const existingCompliance = await sql`
@@ -237,6 +251,12 @@ export async function POST(request: NextRequest) {
         startDate: session.start_date,
         endDate: session.end_date,
         notes: session.notes,
+        assignedConsultor: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        },
+        assignedAt: session.assigned_at,
       },
     });
   } catch (e: unknown) {
