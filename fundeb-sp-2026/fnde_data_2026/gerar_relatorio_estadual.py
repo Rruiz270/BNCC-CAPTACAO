@@ -626,6 +626,19 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
 .cta .email {{ color: #4fd1c5; font-weight: 700; font-size: 10pt; }}
 
 .page-footer {{ text-align: center; font-size: 7.5pt; color: #a0aec0; margin-top: 2rem; padding-top: 0.5rem; border-top: 1px solid #e2e8f0; }}
+
+.ctx {{ border-radius: 8px; padding: 0.75rem 1rem; margin: 0.5rem 0 0.75rem; font-size: 8.5pt; line-height: 1.6; }}
+.ctx-sit {{ background: #f7fafc; border-left: 4px solid #a0aec0; }}
+.ctx-pot {{ background: #ebf8ff; border-left: 4px solid #2b6cb0; }}
+.ctx-acao {{ border-left: 4px solid #38a169; padding: 0.5rem 1rem; }}
+.ctx-curto {{ background: #f0fff4; }}
+.ctx-medio {{ background: #fffff0; }}
+.ctx-longo {{ background: #fff5f5; }}
+.ctx strong {{ font-size: 8pt; text-transform: uppercase; letter-spacing: 0.3px; }}
+.ctx .tag-prazo {{ display: inline-block; border-radius: 3px; padding: 0.1rem 0.5rem; font-size: 7pt; font-weight: 700; color: white; margin-left: 0.3rem; }}
+.tag-curto {{ background: #38a169; }}
+.tag-medio {{ background: #d69e2e; }}
+.tag-longo {{ background: #e53e3e; }}
 </style>
 </head>
 <body>
@@ -675,22 +688,42 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
         {"Potencial estimado: " + fmt(pot['t5']['total']) + "/ano se cumprir as 5 condicionalidades MEC." if not pot['recebe_vaar'] else "Valor atual: " + fmt(pot['t5']['atual']) + "/ano. Potencial adicional: " + fmt(pot['t5']['total']) + "."}
     </div>
 
-    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 2 / 6</div>
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 2 / 7</div>
 </div>
 
-<!-- PAGE 3: DETALHAMENTO T1-T4 -->
+<!-- PAGE 3: DETALHAMENTO T1-T3 -->
 <div class="page">
     <h2>Detalhamento por Alavanca</h2>
 
     <h3>T1 — Expansão VAAF: {len(pot['t1']['items'])} Categorias Não Captadas</h3>
-    <p style="font-size:9pt;color:#718096;margin-bottom:0.5rem">Cada categoria sem matrículas representa receita FUNDEB perdida. Simulação com 10 e 50 alunos novos:</p>
+    <div class="ctx ctx-sit">
+        <strong>Situação Atual:</strong> {f"A rede estadual de {nome_estado} opera em {pot['cats_ativas']} das {pot['cats_total']} categorias possíveis. Nenhuma categoria está completamente zerada, o que indica uma cobertura mínima em todas as etapas (EM, EF, EJA, Ed. Especial, Ed. Profissional)." if pot['cats_faltantes'] == 0 else f"A rede estadual de {nome_estado} opera em apenas {pot['cats_ativas']} das {pot['cats_total']} categorias possíveis. Existem {pot['cats_faltantes']} categorias com ZERO matrículas — cada uma representa receita FUNDEB que o estado contribui mas não recebe de volta."}
+    </div>
+    <div class="ctx ctx-pot">
+        <strong>Potencial Não Captado: {fmt(pot['t1']['total'])}</strong><br>
+        {"Mesmo com todas as categorias ativas, há oportunidade de expandir as que têm pouquíssimas matrículas. Categorias com menos de 100 alunos podem ser ampliadas com custo operacional baixo." if pot['cats_faltantes'] == 0 else f"Cada categoria nova aberta com apenas 10 alunos já gera receita imediata. Com 50 alunos por categoria, o ganho total estimado é de {fmt(pot['t1']['total'])}/ano."}
+    </div>
+    <div class="ctx ctx-acao ctx-curto">
+        <strong>Como Captar</strong> <span class="tag-prazo tag-curto">CURTO PRAZO</span><br>
+        Identificar categorias sub-representadas no Educacenso. Abrir turmas ou formalizar parcerias conveniadas antes do Censo Escolar (28/mai/2026). Bastam 10 matrículas por categoria para iniciar a captação.
+    </div>
     <table>
         <tr><th>Categoria Faltante</th><th class="right">VAAF/Aluno</th><th class="right">Ganho +10</th><th class="right">Ganho +50</th></tr>
         {t1_rows}
     </table>
 
     <h3>T2 — Conversão Parcial → Integral</h3>
-    <p style="font-size:9pt;color:#718096;margin-bottom:0.5rem">Converter alunos de jornada parcial para integral aumenta o fator VAAF:</p>
+    <div class="ctx ctx-sit">
+        <strong>Situação Atual:</strong> A rede estadual de {nome_estado} mantém {fmt_n(inep.get('em_integral_est',0))} alunos em tempo integral no Ensino Médio ({pot['t6']['pct_integral']:.1f}% do total). Isso significa que {100 - pot['t6']['pct_integral']:.1f}% dos estudantes do EM estão em jornada parcial (meio período). No Ensino Fundamental estadual, a situação é semelhante. A média do Nordeste já supera 20% de integral — {nome_estado} está significativamente abaixo.
+    </div>
+    <div class="ctx ctx-pot">
+        <strong>Potencial Não Captado: {fmt(pot['t2']['total'])}</strong><br>
+        Cada aluno convertido de EM Parcial (fator 1,25) para EM Integral (fator 1,52) gera +R$ 1.610/aluno-ano. No Ensino Fundamental, a conversão parcial→integral gera até +R$ 2.981/aluno-ano. Este é o maior potencial de captação da rede estadual.
+    </div>
+    <div class="ctx ctx-acao ctx-medio">
+        <strong>Como Captar</strong> <span class="tag-prazo tag-medio">MÉDIO PRAZO</span><br>
+        Aderir ao PETI (Programa Escola em Tempo Integral) do MEC, que oferece R$ 1.693/aluno de fomento federal. Ampliar jornada escolar para 7+ horas diárias com atividades complementares. Priorizar escolas com infraestrutura já adequada. O registro no Educacenso como "integral" ativa automaticamente o fator mais alto no FUNDEB do ano seguinte.
+    </div>
     <table>
         <tr><th>De (Parcial)</th><th>Para (Integral)</th><th class="right">Alunos</th><th class="right">Dif./Aluno</th><th class="right">Ganho Total</th></tr>
         {t2_rows}
@@ -698,26 +731,58 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
     <p class="bold" style="margin-top:0.3rem">Subtotal T2 &nbsp; <span class="accent">{fmt(pot['t2']['total'])}</span></p>
 
     <h3>T3 — AEE Dupla Matrícula (Educação Especial)</h3>
-    <p style="font-size:9pt;color:#718096;margin-bottom:0.5rem">Aluno de Ed. Especial com AEE = dupla contagem no FUNDEB (fator 1,40 adicional):</p>
+    <div class="ctx ctx-sit">
+        <strong>Situação Atual:</strong> A rede estadual reporta {fmt_n(sum(i['alunos'] for i in pot['t3']['items']))} alunos em Educação Especial (classes comuns) distribuídos entre Ensino Médio, Fundamental e Infantil. Porém, para que esses alunos gerem a "dupla matrícula" no FUNDEB, é necessário que cada um tenha: (1) laudo médico registrado, (2) atendimento AEE efetivo em sala de recursos multifuncionais, e (3) registro correto no Educacenso como aluno AEE. Muitos estados reportam o aluno na classe comum, mas NÃO registram o AEE — perdendo o fator adicional de 1,40.
+    </div>
+    <div class="ctx ctx-pot">
+        <strong>Potencial Não Captado: {fmt(pot['t3']['total'])}</strong><br>
+        Cada aluno PcD com AEE registrado gera uma segunda contagem de {fmt(round(VAAF_MIN * 1.40))}/ano ALÉM da matrícula regular. Não é necessário matricular novos alunos — basta regularizar o registro dos que já existem na rede.
+    </div>
+    <div class="ctx ctx-acao ctx-curto">
+        <strong>Como Captar</strong> <span class="tag-prazo tag-curto">CURTO PRAZO</span><br>
+        Realizar busca ativa de alunos PcD sem laudo ou sem AEE registrado. Equipar salas de recursos multifuncionais. Garantir que o Educacenso registre TANTO a matrícula regular QUANTO o atendimento AEE para cada aluno elegível. Prazo: antes de 28/mai/2026 (Censo Escolar).
+    </div>
     <table>
         <tr><th>Categoria</th><th class="right">Alunos Ed. Esp.</th><th class="right">VAAF AEE/Aluno</th><th class="right">Ganho Adicional</th></tr>
         {t3_rows}
     </table>
     <p class="bold" style="margin-top:0.3rem">Subtotal T3 &nbsp; <span class="accent">{fmt(pot['t3']['total'])}</span></p>
 
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 3 / 7</div>
+</div>
+
+<!-- PAGE 4: T4 -->
+<div class="page">
     <h3>T4 — Reclassificação de Localidade</h3>
+    <div class="ctx ctx-sit">
+        <strong>Situação Atual:</strong> A rede estadual de {nome_estado} reporta {fmt_n(pot['t4']['mat_urbanas'])} matrículas classificadas como "urbanas" e {fmt_n(sum(c.get('Campo',0) for c in cats.values()))} como "campo" (rural). No FUNDEB, escolas em área rural recebem automaticamente +15% sobre o fator de ponderação, e escolas em terras indígenas ou quilombolas recebem +40%. Muitas escolas estaduais localizadas em perímetros rurais, distritos ou próximas a comunidades tradicionais estão classificadas incorretamente como urbanas no Educacenso — deixando de captar esses multiplicadores.
+    </div>
+    <div class="ctx ctx-pot">
+        <strong>Potencial Não Captado: {fmt(pot['t4']['total'])}</strong><br>
+        Se apenas 10% das matrículas urbanas forem corretamente reclassificadas como "campo", o ganho é de {fmt(pot['t4']['campo'])}/ano. Se 5% forem reclassificadas como indígena/quilombola, o ganho adicional é de {fmt(pot['t4']['ind'])}/ano.
+    </div>
+    <div class="ctx ctx-acao ctx-curto">
+        <strong>Como Captar</strong> <span class="tag-prazo tag-curto">CURTO PRAZO</span><br>
+        Auditar a classificação de localidade de cada escola estadual no Educacenso. Cruzar com dados do IBGE (setores censitários rurais) e da FUNAI/Fundação Palmares (terras indígenas e quilombolas). Corrigir classificações incorretas antes do Censo Escolar 2026. Não requer nenhum investimento — apenas correção cadastral.
+    </div>
     <table>
         <tr><td>Matrículas urbanas</td><td class="right bold">{fmt_n(pot['t4']['mat_urbanas'])}</td><td>Tem matrículas campo</td><td class="right bold">{"Sim" if pot['t4']['tem_campo'] else "Não"}</td></tr>
         <tr><td>Ganho se 10% reclassificadas como Campo (+15%)</td><td colspan="3" class="right bold accent">{fmt(pot['t4']['campo'])}</td></tr>
         <tr><td>Ganho se 5% reclassificadas como Ind/Quilomb (+40%)</td><td colspan="3" class="right bold accent">{fmt(pot['t4']['ind'])}</td></tr>
     </table>
 
-    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 3 / 6</div>
-</div>
-
-<!-- PAGE 4: T5-T6 -->
-<div class="page">
     <h3>T5 — Complementação Federal (VAAR + VAAT)</h3>
+    <div class="ctx ctx-sit">
+        <strong>Situação Atual:</strong> {"A rede estadual de " + nome_estado + " NÃO recebe complementação VAAR atualmente. Isso significa que o estado não cumpre (ou não registrou) as 5 condicionalidades exigidas pelo MEC: (I) seleção de diretores por mérito, (II) participação mínima de 80% no SAEB, (III) redução de desigualdades, (IV) ICMS Educacional — exclusiva de estados, (V) implementação da BNCC incluindo BNCC Computação. São R$ 7,5 bilhões disponíveis nacionalmente que " + nome_estado + " não está acessando." if not recebe_vaar else "A rede estadual de " + nome_estado + " JÁ recebe complementação VAAR no valor de " + fmt(vaar_atual) + "/ano. Porém, há potencial de ampliar esse valor otimizando os indicadores de atendimento e aprendizagem que determinam o coeficiente de distribuição."}
+    </div>
+    <div class="ctx ctx-pot">
+        <strong>Potencial Não Captado: {fmt(pot['t5']['total'])}</strong><br>
+        {"Com base na mediana nacional de R$ 710/aluno VAAR e " + fmt_n(pot['total_mat_est']) + " matrículas estaduais, o potencial estimado é de " + fmt(pot['t5']['potencial']) + "/ano. Este recurso vem integralmente da União — não sai do caixa do estado." if not recebe_vaar else "Potencial adicional de " + fmt(pot['t5']['total']) + "/ano com melhoria nos indicadores de resultado."}
+    </div>
+    <div class="ctx ctx-acao {"ctx-medio" if not recebe_vaar else "ctx-curto"}">
+        <strong>Como Captar</strong> <span class="tag-prazo {"tag-medio" if not recebe_vaar else "tag-curto"}">{"MÉDIO PRAZO" if not recebe_vaar else "CURTO PRAZO"}</span><br>
+        {"Registrar as 5 condicionalidades no SIMEC (módulo VAAR/FUNDEB). Atenção especial à Condicionalidade IV (ICMS Educacional), que é EXCLUSIVA de redes estaduais. Implementar BNCC Computação (Cond. V) com os 3 eixos: Pensamento Computacional, Mundo Digital e Cultura Digital. Garantir participação mínima de 80% dos alunos no SAEB. Prazo habitual: agosto-setembro do ano corrente." if not recebe_vaar else "Melhorar indicadores SAEB, ampliar participação dos alunos nas avaliações, e garantir que a Cond. IV (ICMS Educacional) e Cond. V (BNCC Computação) estejam plenamente atendidas para maximizar o coeficiente VAAR."}
+    </div>
     <div class="t5-grid">
         <div>
             <div class="t5-item"><span class="t5-label">VAAR atual</span><span class="t5-val {vaar_class}">{fmt(vaar_atual) if recebe_vaar else "Não recebe"}</span></div>
@@ -729,7 +794,23 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
         </div>
     </div>
 
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 4 / 7</div>
+</div>
+
+<!-- PAGE 5: T6 -->
+<div class="page">
     <h3>T6 — EC 135/2024 + BNCC Computação</h3>
+    <div class="ctx ctx-sit">
+        <strong>Situação Atual:</strong> A Emenda Constitucional 135/2024 determina que 4% da receita FUNDEB de cada ente DEVE ser destinada obrigatoriamente à criação de NOVAS vagas em tempo integral. Para a rede estadual de {nome_estado}, isso equivale a {fmt(pot['t6']['pct4'])}/ano. Atualmente, apenas {pot['t6']['pct_integral']:.1f}% dos alunos do EM estão em integral ({fmt_n(inep.get('em_integral_est',0))} alunos). A meta do PNE é 50%. Além disso, a BNCC Computação tornou-se obrigatória em 2026 — é uma das condicionalidades (V) do VAAR.
+    </div>
+    <div class="ctx ctx-pot">
+        <strong>Potencial Não Captado: {fmt(pot['t6']['total'])}</strong><br>
+        Os 4% obrigatórios ({fmt(pot['t6']['pct4'])}) permitem criar aproximadamente {fmt_n(pot['t6']['novas_vagas'])} novas vagas integrais. Cada vaga nova conta com o fator integral (1,52 para EM) no FUNDEB do ano seguinte + R$ 1.693/aluno do PETI federal. Se o estado NÃO expandir integral, esses recursos ficam sem destinação legal e podem gerar problemas na prestação de contas.
+    </div>
+    <div class="ctx ctx-acao ctx-medio">
+        <strong>Como Captar</strong> <span class="tag-prazo tag-medio">MÉDIO PRAZO</span><br>
+        Aderir ao PETI (Programa Escola em Tempo Integral) do MEC. Selecionar escolas com infraestrutura para jornada ampliada (refeitório, espaço para atividades). Implementar BNCC Computação em todas as escolas estaduais — é obrigatório e vinculado ao recebimento do VAAR. Registrar expansão no Educacenso e comprovar no SIMEC.
+    </div>
     <div class="t5-grid">
         <div>
             <div class="t5-item"><span class="t5-label">4% FUNDEB (obrigatório p/ integral)</span><span class="t5-val accent">{fmt(pot['t6']['pct4'])}</span></div>
@@ -741,10 +822,10 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
         </div>
     </div>
 
-    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 4 / 6</div>
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 5 / 7</div>
 </div>
 
-<!-- PAGE 5: COMPARAÇÃO + RECOMENDAÇÕES -->
+<!-- PAGE 6: COMPARAÇÃO + RECOMENDAÇÕES -->
 <div class="page">
     <h2>Comparação com Estados da Região Sul</h2>
     <p style="font-size:9pt;color:#718096;margin-bottom:0.5rem">Redes estaduais da mesma região:</p>
@@ -784,10 +865,10 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
         </ul>
     </div>
 
-    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 5 / 6</div>
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 6 / 7</div>
 </div>
 
-<!-- PAGE 6: CTA -->
+<!-- PAGE 7: CTA -->
 <div class="page">
     <div class="cta">
         <h3>O Instituto i10 pode implementar este plano para a Rede Estadual de {nome_estado}</h3>
@@ -802,7 +883,7 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
         <div class="email">contato@institutoi10.org.br</div>
     </div>
 
-    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 6 / 6</div>
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 7 / 7</div>
 </div>
 
 </body></html>"""

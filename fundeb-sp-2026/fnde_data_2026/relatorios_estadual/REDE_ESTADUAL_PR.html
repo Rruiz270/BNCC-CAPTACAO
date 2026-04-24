@@ -71,6 +71,19 @@ td { padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }
 .cta .email { color: #4fd1c5; font-weight: 700; font-size: 10pt; }
 
 .page-footer { text-align: center; font-size: 7.5pt; color: #a0aec0; margin-top: 2rem; padding-top: 0.5rem; border-top: 1px solid #e2e8f0; }
+
+.ctx { border-radius: 8px; padding: 0.75rem 1rem; margin: 0.5rem 0 0.75rem; font-size: 8.5pt; line-height: 1.6; }
+.ctx-sit { background: #f7fafc; border-left: 4px solid #a0aec0; }
+.ctx-pot { background: #ebf8ff; border-left: 4px solid #2b6cb0; }
+.ctx-acao { border-left: 4px solid #38a169; padding: 0.5rem 1rem; }
+.ctx-curto { background: #f0fff4; }
+.ctx-medio { background: #fffff0; }
+.ctx-longo { background: #fff5f5; }
+.ctx strong { font-size: 8pt; text-transform: uppercase; letter-spacing: 0.3px; }
+.ctx .tag-prazo { display: inline-block; border-radius: 3px; padding: 0.1rem 0.5rem; font-size: 7pt; font-weight: 700; color: white; margin-left: 0.3rem; }
+.tag-curto { background: #38a169; }
+.tag-medio { background: #d69e2e; }
+.tag-longo { background: #e53e3e; }
 </style>
 </head>
 <body>
@@ -150,22 +163,42 @@ td { padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }
         Valor atual: R$ 620,7M/ano. Potencial adicional: R$ 194,7M.
     </div>
 
-    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 2 / 6</div>
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 2 / 7</div>
 </div>
 
-<!-- PAGE 3: DETALHAMENTO T1-T4 -->
+<!-- PAGE 3: DETALHAMENTO T1-T3 -->
 <div class="page">
     <h2>Detalhamento por Alavanca</h2>
 
     <h3>T1 — Expansão VAAF: 0 Categorias Não Captadas</h3>
-    <p style="font-size:9pt;color:#718096;margin-bottom:0.5rem">Cada categoria sem matrículas representa receita FUNDEB perdida. Simulação com 10 e 50 alunos novos:</p>
+    <div class="ctx ctx-sit">
+        <strong>Situação Atual:</strong> A rede estadual de Paraná opera em 11 das 11 categorias possíveis. Nenhuma categoria está completamente zerada, o que indica uma cobertura mínima em todas as etapas (EM, EF, EJA, Ed. Especial, Ed. Profissional).
+    </div>
+    <div class="ctx ctx-pot">
+        <strong>Potencial Não Captado: R$ 0</strong><br>
+        Mesmo com todas as categorias ativas, há oportunidade de expandir as que têm pouquíssimas matrículas. Categorias com menos de 100 alunos podem ser ampliadas com custo operacional baixo.
+    </div>
+    <div class="ctx ctx-acao ctx-curto">
+        <strong>Como Captar</strong> <span class="tag-prazo tag-curto">CURTO PRAZO</span><br>
+        Identificar categorias sub-representadas no Educacenso. Abrir turmas ou formalizar parcerias conveniadas antes do Censo Escolar (28/mai/2026). Bastam 10 matrículas por categoria para iniciar a captação.
+    </div>
     <table>
         <tr><th>Categoria Faltante</th><th class="right">VAAF/Aluno</th><th class="right">Ganho +10</th><th class="right">Ganho +50</th></tr>
         
     </table>
 
     <h3>T2 — Conversão Parcial → Integral</h3>
-    <p style="font-size:9pt;color:#718096;margin-bottom:0.5rem">Converter alunos de jornada parcial para integral aumenta o fator VAAF:</p>
+    <div class="ctx ctx-sit">
+        <strong>Situação Atual:</strong> A rede estadual de Paraná mantém 34.804 alunos em tempo integral no Ensino Médio (10.0% do total). Isso significa que 90.0% dos estudantes do EM estão em jornada parcial (meio período). No Ensino Fundamental estadual, a situação é semelhante. A média do Nordeste já supera 20% de integral — Paraná está significativamente abaixo.
+    </div>
+    <div class="ctx ctx-pot">
+        <strong>Potencial Não Captado: R$ 1.718,0M</strong><br>
+        Cada aluno convertido de EM Parcial (fator 1,25) para EM Integral (fator 1,52) gera +R$ 1.610/aluno-ano. No Ensino Fundamental, a conversão parcial→integral gera até +R$ 2.981/aluno-ano. Este é o maior potencial de captação da rede estadual.
+    </div>
+    <div class="ctx ctx-acao ctx-medio">
+        <strong>Como Captar</strong> <span class="tag-prazo tag-medio">MÉDIO PRAZO</span><br>
+        Aderir ao PETI (Programa Escola em Tempo Integral) do MEC, que oferece R$ 1.693/aluno de fomento federal. Ampliar jornada escolar para 7+ horas diárias com atividades complementares. Priorizar escolas com infraestrutura já adequada. O registro no Educacenso como "integral" ativa automaticamente o fator mais alto no FUNDEB do ano seguinte.
+    </div>
     <table>
         <tr><th>De (Parcial)</th><th>Para (Integral)</th><th class="right">Alunos</th><th class="right">Dif./Aluno</th><th class="right">Ganho Total</th></tr>
         
@@ -194,7 +227,17 @@ td { padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }
     <p class="bold" style="margin-top:0.3rem">Subtotal T2 &nbsp; <span class="accent">R$ 1.718,0M</span></p>
 
     <h3>T3 — AEE Dupla Matrícula (Educação Especial)</h3>
-    <p style="font-size:9pt;color:#718096;margin-bottom:0.5rem">Aluno de Ed. Especial com AEE = dupla contagem no FUNDEB (fator 1,40 adicional):</p>
+    <div class="ctx ctx-sit">
+        <strong>Situação Atual:</strong> A rede estadual reporta 97.394 alunos em Educação Especial (classes comuns) distribuídos entre Ensino Médio, Fundamental e Infantil. Porém, para que esses alunos gerem a "dupla matrícula" no FUNDEB, é necessário que cada um tenha: (1) laudo médico registrado, (2) atendimento AEE efetivo em sala de recursos multifuncionais, e (3) registro correto no Educacenso como aluno AEE. Muitos estados reportam o aluno na classe comum, mas NÃO registram o AEE — perdendo o fator adicional de 1,40.
+    </div>
+    <div class="ctx ctx-pot">
+        <strong>Potencial Não Captado: R$ 813,0M</strong><br>
+        Cada aluno PcD com AEE registrado gera uma segunda contagem de R$ 8.348/ano ALÉM da matrícula regular. Não é necessário matricular novos alunos — basta regularizar o registro dos que já existem na rede.
+    </div>
+    <div class="ctx ctx-acao ctx-curto">
+        <strong>Como Captar</strong> <span class="tag-prazo tag-curto">CURTO PRAZO</span><br>
+        Realizar busca ativa de alunos PcD sem laudo ou sem AEE registrado. Equipar salas de recursos multifuncionais. Garantir que o Educacenso registre TANTO a matrícula regular QUANTO o atendimento AEE para cada aluno elegível. Prazo: antes de 28/mai/2026 (Censo Escolar).
+    </div>
     <table>
         <tr><th>Categoria</th><th class="right">Alunos Ed. Esp.</th><th class="right">VAAF AEE/Aluno</th><th class="right">Ganho Adicional</th></tr>
         
@@ -219,19 +262,41 @@ td { padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }
     </table>
     <p class="bold" style="margin-top:0.3rem">Subtotal T3 &nbsp; <span class="accent">R$ 813,0M</span></p>
 
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 3 / 7</div>
+</div>
+
+<!-- PAGE 4: T4 -->
+<div class="page">
     <h3>T4 — Reclassificação de Localidade</h3>
+    <div class="ctx ctx-sit">
+        <strong>Situação Atual:</strong> A rede estadual de Paraná reporta 1.100.409 matrículas classificadas como "urbanas" e 42.818 como "campo" (rural). No FUNDEB, escolas em área rural recebem automaticamente +15% sobre o fator de ponderação, e escolas em terras indígenas ou quilombolas recebem +40%. Muitas escolas estaduais localizadas em perímetros rurais, distritos ou próximas a comunidades tradicionais estão classificadas incorretamente como urbanas no Educacenso — deixando de captar esses multiplicadores.
+    </div>
+    <div class="ctx ctx-pot">
+        <strong>Potencial Não Captado: R$ 296,8M</strong><br>
+        Se apenas 10% das matrículas urbanas forem corretamente reclassificadas como "campo", o ganho é de R$ 127,2M/ano. Se 5% forem reclassificadas como indígena/quilombola, o ganho adicional é de R$ 169,6M/ano.
+    </div>
+    <div class="ctx ctx-acao ctx-curto">
+        <strong>Como Captar</strong> <span class="tag-prazo tag-curto">CURTO PRAZO</span><br>
+        Auditar a classificação de localidade de cada escola estadual no Educacenso. Cruzar com dados do IBGE (setores censitários rurais) e da FUNAI/Fundação Palmares (terras indígenas e quilombolas). Corrigir classificações incorretas antes do Censo Escolar 2026. Não requer nenhum investimento — apenas correção cadastral.
+    </div>
     <table>
         <tr><td>Matrículas urbanas</td><td class="right bold">1.100.409</td><td>Tem matrículas campo</td><td class="right bold">Sim</td></tr>
         <tr><td>Ganho se 10% reclassificadas como Campo (+15%)</td><td colspan="3" class="right bold accent">R$ 127,2M</td></tr>
         <tr><td>Ganho se 5% reclassificadas como Ind/Quilomb (+40%)</td><td colspan="3" class="right bold accent">R$ 169,6M</td></tr>
     </table>
 
-    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 3 / 6</div>
-</div>
-
-<!-- PAGE 4: T5-T6 -->
-<div class="page">
     <h3>T5 — Complementação Federal (VAAR + VAAT)</h3>
+    <div class="ctx ctx-sit">
+        <strong>Situação Atual:</strong> A rede estadual de Paraná JÁ recebe complementação VAAR no valor de R$ 620,7M/ano. Porém, há potencial de ampliar esse valor otimizando os indicadores de atendimento e aprendizagem que determinam o coeficiente de distribuição.
+    </div>
+    <div class="ctx ctx-pot">
+        <strong>Potencial Não Captado: R$ 194,7M</strong><br>
+        Potencial adicional de R$ 194,7M/ano com melhoria nos indicadores de resultado.
+    </div>
+    <div class="ctx ctx-acao ctx-curto">
+        <strong>Como Captar</strong> <span class="tag-prazo tag-curto">CURTO PRAZO</span><br>
+        Melhorar indicadores SAEB, ampliar participação dos alunos nas avaliações, e garantir que a Cond. IV (ICMS Educacional) e Cond. V (BNCC Computação) estejam plenamente atendidas para maximizar o coeficiente VAAR.
+    </div>
     <div class="t5-grid">
         <div>
             <div class="t5-item"><span class="t5-label">VAAR atual</span><span class="t5-val ">R$ 620,7M</span></div>
@@ -243,7 +308,23 @@ td { padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }
         </div>
     </div>
 
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 4 / 7</div>
+</div>
+
+<!-- PAGE 5: T6 -->
+<div class="page">
     <h3>T6 — EC 135/2024 + BNCC Computação</h3>
+    <div class="ctx ctx-sit">
+        <strong>Situação Atual:</strong> A Emenda Constitucional 135/2024 determina que 4% da receita FUNDEB de cada ente DEVE ser destinada obrigatoriamente à criação de NOVAS vagas em tempo integral. Para a rede estadual de Paraná, isso equivale a R$ 353,9M/ano. Atualmente, apenas 10.0% dos alunos do EM estão em integral (34.804 alunos). A meta do PNE é 50%. Além disso, a BNCC Computação tornou-se obrigatória em 2026 — é uma das condicionalidades (V) do VAAR.
+    </div>
+    <div class="ctx ctx-pot">
+        <strong>Potencial Não Captado: R$ 353,9M</strong><br>
+        Os 4% obrigatórios (R$ 353,9M) permitem criar aproximadamente 39.047 novas vagas integrais. Cada vaga nova conta com o fator integral (1,52 para EM) no FUNDEB do ano seguinte + R$ 1.693/aluno do PETI federal. Se o estado NÃO expandir integral, esses recursos ficam sem destinação legal e podem gerar problemas na prestação de contas.
+    </div>
+    <div class="ctx ctx-acao ctx-medio">
+        <strong>Como Captar</strong> <span class="tag-prazo tag-medio">MÉDIO PRAZO</span><br>
+        Aderir ao PETI (Programa Escola em Tempo Integral) do MEC. Selecionar escolas com infraestrutura para jornada ampliada (refeitório, espaço para atividades). Implementar BNCC Computação em todas as escolas estaduais — é obrigatório e vinculado ao recebimento do VAAR. Registrar expansão no Educacenso e comprovar no SIMEC.
+    </div>
     <div class="t5-grid">
         <div>
             <div class="t5-item"><span class="t5-label">4% FUNDEB (obrigatório p/ integral)</span><span class="t5-val accent">R$ 353,9M</span></div>
@@ -255,10 +336,10 @@ td { padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }
         </div>
     </div>
 
-    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 4 / 6</div>
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 5 / 7</div>
 </div>
 
-<!-- PAGE 5: COMPARAÇÃO + RECOMENDAÇÕES -->
+<!-- PAGE 6: COMPARAÇÃO + RECOMENDAÇÕES -->
 <div class="page">
     <h2>Comparação com Estados da Região Sul</h2>
     <p style="font-size:9pt;color:#718096;margin-bottom:0.5rem">Redes estaduais da mesma região:</p>
@@ -343,10 +424,10 @@ td { padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }
         </ul>
     </div>
 
-    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 5 / 6</div>
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 6 / 7</div>
 </div>
 
-<!-- PAGE 6: CTA -->
+<!-- PAGE 7: CTA -->
 <div class="page">
     <div class="cta">
         <h3>O Instituto i10 pode implementar este plano para a Rede Estadual de Paraná</h3>
@@ -361,7 +442,7 @@ td { padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }
         <div class="email">contato@institutoi10.org.br</div>
     </div>
 
-    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 6 / 6</div>
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 7 / 7</div>
 </div>
 
 </body></html>
