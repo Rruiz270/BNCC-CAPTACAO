@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FUNDEB Estadual 2026 — Regras de Captação | SC &amp; PR</title>
+    <style>
+        :root {
+            --primary: #1a365d;
+            --secondary: #2b6cb0;
+            --accent: #ed8936;
+            --success: #38a169;
+            --danger: #e53e3e;
+            --warning: #d69e2e;
+            --bg: #f7fafc;
+            --card-bg: #ffffff;
+            --text: #2d3748;
+            --text-light: #718096;
+            --border: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        .header h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .header .subtitle { font-size: 1.1rem; opacity: 0.9; }
+        .header .badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        .alert {
+            background: linear-gradient(135deg, #fff5f5, #fed7d7);
+            border-left: 4px solid var(--danger);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 0 8px 8px 0;
+        }
+        .alert-warning {
+            background: linear-gradient(135deg, #fffff0, #fefcbf);
+            border-left-color: var(--warning);
+        }
+        .alert-info {
+            background: linear-gradient(135deg, #ebf8ff, #bee3f8);
+            border-left-color: var(--secondary);
+        }
+        .alert strong { color: var(--danger); }
+        .alert-warning strong { color: var(--warning); }
+        .alert-info strong { color: var(--secondary); }
+
+        .section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+        }
+        .section h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--secondary);
+        }
+        .section h3 {
+            color: var(--secondary);
+            font-size: 1.15rem;
+            margin: 1.5rem 0 0.75rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+        th {
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        tr:nth-child(even) { background: #f7fafc; }
+        tr:hover { background: #edf2f7; }
+
+        .factor-high { color: var(--success); font-weight: 700; }
+        .factor-base { color: var(--text); }
+        .factor-boost { color: var(--accent); font-weight: 700; }
+
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, var(--secondary), var(--accent));
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+            padding: 1rem 1.5rem;
+            background: #f7fafc;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.4rem;
+            top: 1.2rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--secondary);
+            border: 2px solid white;
+        }
+        .timeline-item.urgent::before { background: var(--danger); }
+        .timeline-item.active::before { background: var(--success); }
+        .timeline-item .date {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 0.95rem;
+        }
+        .timeline-item.urgent .date { color: var(--danger); }
+        .timeline-item .desc { color: var(--text-light); margin-top: 0.3rem; }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+        }
+        .card h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        .card .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+        .card .label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 0.3rem;
+        }
+        .tag-state { background: #c6f6d5; color: #22543d; }
+        .tag-muni { background: #bee3f8; color: #2a4365; }
+        .tag-shared { background: #fefcbf; color: #744210; }
+        .tag-api { background: #e9d8fd; color: #44337a; }
+        .tag-csv { background: #fed7d7; color: #742a2a; }
+        .tag-web { background: #feebc8; color: #7b341e; }
+
+        .opp-card {
+            border-left: 4px solid var(--success);
+            padding: 1.2rem;
+            margin: 1rem 0;
+            background: #f0fff4;
+            border-radius: 0 8px 8px 0;
+        }
+        .opp-card.medium { border-left-color: var(--warning); background: #fffff0; }
+        .opp-card.low { border-left-color: var(--text-light); background: #f7fafc; }
+        .opp-card h4 { margin-bottom: 0.5rem; color: var(--primary); }
+
+        .system-card {
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            transition: border-color 0.2s;
+        }
+        .system-card:hover { border-color: var(--secondary); }
+        .system-card h4 {
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        .system-card .url {
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: var(--secondary);
+            background: #edf2f7;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            display: inline-block;
+            margin: 0.3rem 0;
+            word-break: break-all;
+        }
+        .system-card ul {
+            margin: 0.5rem 0 0 1.2rem;
+            font-size: 0.9rem;
+        }
+        .system-card li { margin-bottom: 0.3rem; }
+
+        .comparison-table th.pr { background: #2b6cb0; }
+        .comparison-table th.sc { background: #38a169; }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+
+        .toc {
+            background: #edf2f7;
+            border-radius: 10px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+        }
+        .toc h3 { color: var(--primary); margin-bottom: 0.75rem; }
+        .toc ol { margin-left: 1.2rem; }
+        .toc li { margin-bottom: 0.4rem; }
+        .toc a { color: var(--secondary); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #ebf8ff, #e6fffa);
+            border: 2px solid var(--secondary);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>FUNDEB Estadual 2026</h1>
+    <p class="subtitle">Regras de Captacao, Prazos e Oportunidades para Redes Estaduais</p>
+    <span class="badge">Foco: Santa Catarina &amp; Parana</span>
+</div>
+
+<div class="container">
+
+    <div class="alert">
+        <strong>PRAZO CRITICO:</strong> O Censo Escolar 2026 (data de referencia: 28 de maio de 2026) define as matriculas que contarao para o FUNDEB 2027. Restam apenas <strong>34 dias</strong> para garantir que todas as categorias estejam registradas.
+    </div>
+
+    <div class="toc">
+        <h3>Indice</h3>
+        <ol>
+            <li><a href="#diferenca">Diferenca: FUNDEB Municipal vs Estadual</a></li>
+            <li><a href="#categorias">Categorias de Matricula da Rede Estadual</a></li>
+            <li><a href="#fatores">Fatores de Ponderacao Completos 2026</a></li>
+            <li><a href="#oportunidades">6 Camadas de Captacao (T1-T6) - Nivel Estadual</a></li>
+            <li><a href="#condicionalidades">Condicionalidades VAAR</a></li>
+            <li><a href="#prazos">Cronograma e Prazos Criticos</a></li>
+            <li><a href="#prsc">Comparativo: Parana vs Santa Catarina</a></li>
+            <li><a href="#sistemas">Sistemas e Fontes de Dados para Scraping</a></li>
+            <li><a href="#roteiro">Roteiro de Scraping</a></li>
+        </ol>
+    </div>
+
+    <!-- SEÇÃO 1: DIFERENÇA MUNICIPAL VS ESTADUAL -->
+    <div class="section" id="diferenca">
+        <h2>1. Diferenca: FUNDEB Municipal vs Estadual</h2>
+
+        <div class="alert-info alert">
+            <strong>Ponto-chave:</strong> No nivel municipal, analisamos 15 categorias focadas em Educacao Infantil e Ensino Fundamental. No nivel estadual, o foco muda para <strong>Ensino Medio, EJA, Educacao Profissional Tecnica</strong> e Ensino Fundamental (anos finais compartilhados).
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Etapa</th>
+                    <th>Competencia</th>
+                    <th>Responsavel Principal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Creche (0-3 anos)</td>
+                    <td><span class="tag tag-muni">MUNICIPAL</span></td>
+                    <td>Exclusiva do municipio</td>
+                </tr>
+                <tr>
+                    <td>Pre-Escola (4-5 anos)</td>
+                    <td><span class="tag tag-muni">MUNICIPAL</span></td>
+                    <td>Exclusiva do municipio</td>
+                </tr>
+                <tr>
+                    <td>Ensino Fundamental - Anos Iniciais (1-5)</td>
+                    <td><span class="tag tag-shared">COMPARTILHADO</span></td>
+                    <td>Municipio (principal) / Estado (residual)</td>
+                </tr>
+                <tr>
+                    <td>Ensino Fundamental - Anos Finais (6-9)</td>
+                    <td><span class="tag tag-shared">COMPARTILHADO</span></td>
+                    <td>Estado (principal em muitos estados) / Municipio</td>
+                </tr>
+                <tr>
+                    <td>Ensino Medio - Parcial</td>
+                    <td><span class="tag tag-state">ESTADUAL</span></td>
+                    <td>Exclusiva da rede estadual (~83% das matriculas)</td>
+                </tr>
+                <tr>
+                    <td>Ensino Medio - Integral</td>
+                    <td><span class="tag tag-state">ESTADUAL</span></td>
+                    <td>Exclusiva da rede estadual</td>
+                </tr>
+                <tr>
+                    <td>Educacao Profissional Tecnica</td>
+                    <td><span class="tag tag-state">ESTADUAL</span></td>
+                    <td>Rede estadual (principal ofertante)</td>
+                </tr>
+                <tr>
+                    <td>EJA - Ensino Medio</td>
+                    <td><span class="tag tag-state">ESTADUAL</span></td>
+                    <td>Rede estadual</td>
+                </tr>
+                <tr>
+                    <td>EJA - Ensino Fundamental</td>
+                    <td><span class="tag tag-shared">COMPARTILHADO</span></td>
+                    <td>Municipio e Estado</td>
+                </tr>
+                <tr>
+                    <td>Educacao Especial</td>
+                    <td><span class="tag tag-shared">COMPARTILHADO</span></td>
+                    <td>Nas etapas de competencia de cada rede</td>
+                </tr>
+                <tr>
+                    <td>Educacao Bilingue de Surdos</td>
+                    <td><span class="tag tag-shared">COMPARTILHADO</span></td>
+                    <td>Nas etapas de competencia de cada rede</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="highlight-box">
+            <strong>Regra fundamental do FUNDEB estadual:</strong> O estado contribui com 20% de impostos estaduais (ICMS, IPVA, ITCMD) + transferencias (FPE, IPI-Exp, LC 87/96) para o Fundo no ambito de cada UF. O retorno e proporcional ao numero de matriculas ponderadas na rede estadual. <strong>Se o estado nao maximiza categorias com fatores mais altos, esta "devolvendo" dinheiro aos municipios sem captar o potencial maximo.</strong>
+        </div>
+    </div>
+
+    <!-- SEÇÃO 2: CATEGORIAS -->
+    <div class="section" id="categorias">
+        <h2>2. Categorias de Matricula Relevantes para a Rede Estadual</h2>
+
+        <h3>Categorias Primarias (Competencia Estadual)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Categoria</th>
+                    <th>Fator VAAF</th>
+                    <th>Fator VAAT</th>
+                    <th>Impacto</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Ensino Medio Integral</strong></td>
+                    <td class="factor-high">1,52</td>
+                    <td class="factor-high">1,52</td>
+                    <td>Maior fator do EM. Oportunidade principal.</td>
+                </tr>
+                <tr>
+                    <td>Ensino Medio Parcial</td>
+                    <td class="factor-base">1,25</td>
+                    <td class="factor-base">1,25</td>
+                    <td>Base atual da maioria das matriculas</td>
+                </tr>
+                <tr>
+                    <td><strong>EM Integrado a Ed. Profissional</strong></td>
+                    <td class="factor-high">1,35</td>
+                    <td class="factor-high">1,35</td>
+                    <td>Dupla matricula: aluno conta 2x</td>
+                </tr>
+                <tr>
+                    <td><strong>Itinerario Formacao Tecnica e Profissional</strong></td>
+                    <td class="factor-high">1,35</td>
+                    <td class="factor-high">1,35</td>
+                    <td>Segunda matricula adicional ao EM</td>
+                </tr>
+                <tr>
+                    <td>EJA - Ensino Medio</td>
+                    <td class="factor-base">1,00</td>
+                    <td class="factor-base">1,00</td>
+                    <td>Subaproveitada em muitos estados</td>
+                </tr>
+                <tr>
+                    <td>EJA Medio Integrado Ed. Profissional</td>
+                    <td class="factor-high">1,35</td>
+                    <td class="factor-high">1,35</td>
+                    <td>EJA + tecnico = maior captacao</td>
+                </tr>
+                <tr>
+                    <td>Ens. Fundamental Integral (compartilhado)</td>
+                    <td class="factor-high">1,50</td>
+                    <td class="factor-high">1,50</td>
+                    <td>Onde a rede estadual ainda tem matriculas</td>
+                </tr>
+                <tr>
+                    <td>Anos Finais Fundamental Parcial</td>
+                    <td class="factor-base">1,10</td>
+                    <td class="factor-base">1,10</td>
+                    <td>Base da rede estadual no fundamental</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Multiplicadores por Localidade (aplicados sobre os fatores acima)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Localidade</th>
+                    <th>Multiplicador</th>
+                    <th>Exemplo: EM Integral (1,52)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Urbano</td>
+                    <td>1,00 (base)</td>
+                    <td>R$ 9.063 / aluno-ano</td>
+                </tr>
+                <tr>
+                    <td><strong>Campo (Rural)</strong></td>
+                    <td class="factor-boost">x 1,15 (+15%)</td>
+                    <td class="factor-boost">R$ 10.423 / aluno-ano</td>
+                </tr>
+                <tr>
+                    <td><strong>Indigena</strong></td>
+                    <td class="factor-boost">x 1,40 (+40%)</td>
+                    <td class="factor-boost">R$ 12.689 / aluno-ano</td>
+                </tr>
+                <tr>
+                    <td><strong>Quilombola</strong></td>
+                    <td class="factor-boost">x 1,40 (+40%)</td>
+                    <td class="factor-boost">R$ 12.689 / aluno-ano</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Atendimento Educacional Especializado (AEE) - Dupla Matricula</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tipo AEE</th>
+                    <th>Fator Adicional</th>
+                    <th>Observacao</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>AEE - Ensino Medio</td>
+                    <td class="factor-high">+1,40</td>
+                    <td>Cada aluno com laudo + AEE = dupla contagem no FUNDEB</td>
+                </tr>
+                <tr>
+                    <td>AEE - Fundamental</td>
+                    <td class="factor-high">+1,40</td>
+                    <td>Aluno ja matriculado + atendimento especializado</td>
+                </tr>
+                <tr>
+                    <td>AEE - Diferentes etapas</td>
+                    <td class="factor-high">+1,40</td>
+                    <td>Abrange todas as etapas da educacao basica</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- SEÇÃO 3: FATORES COMPLETOS -->
+    <div class="section" id="fatores">
+        <h2>3. Tabela Completa de Fatores de Ponderacao 2026</h2>
+        <p style="color: var(--text-light); margin-bottom: 1rem;">Resolucao CIF n. 5/2024 (vigente para 2026) | VAAF Minimo Nacional: R$ 5.962,79</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Categoria</th>
+                    <th>FP VAAF</th>
+                    <th>FP VAAT</th>
+                    <th>R$/aluno-ano (VAAF)</th>
+                    <th>Rede</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="background: #f0fff4;">
+                    <td colspan="5"><strong>ENSINO MEDIO (Competencia Estadual)</strong></td>
+                </tr>
+                <tr>
+                    <td>Ensino Medio Integral</td>
+                    <td class="factor-high">1,52</td>
+                    <td>1,52</td>
+                    <td>R$ 9.063</td>
+                    <td><span class="tag tag-state">ESTADO</span></td>
+                </tr>
+                <tr>
+                    <td>Ensino Medio Integral Campo</td>
+                    <td class="factor-boost">1,75</td>
+                    <td>1,75</td>
+                    <td>R$ 10.423</td>
+                    <td><span class="tag tag-state">ESTADO</span></td>
+                </tr>
+                <tr>
+                    <td>Ensino Medio Integral Indigena/Quilombola</td>
+                    <td class="factor-boost">2,13</td>
+                    <td>2,13</td>
+                    <td>R$ 12.689</td>
+                    <td><span class="tag tag-state">ESTADO</span></td>
+                </tr>
+                <tr>
+                    <td>Ensino Medio Parcial</td>
+                    <td>1,25</td>
+                    <td>1,25</td>
+                    <td>R$ 7.453</td>
+                    <td><span class="tag tag-state">ESTADO</span></td>
+                </tr>
+                <tr>
+                    <td>Ensino Medio Parcial Campo</td>
+                    <td class="factor-boost">1,44</td>
+                    <td>1,44</td>
+                    <td>R$ 8.571</td>
+                    <td><span class="tag tag-state">ESTADO</span></td>
+                </tr>
+                <tr>
+                    <td>Ensino Medio Parcial Indigena/Quilombola</td>
+                    <td class="factor-boost">1,75</td>
+                    <td>1,75</td>
+                    <td>R$ 10.435</td>
+                    <td><span class="tag tag-state">ESTADO</span></td>
+                </tr>
+
+                <tr style="background: #f0fff4;">
+                    <td colspan="5"><strong>EDUCACAO PROFISSIONAL TECNICA (Competencia Estadual)</strong></td>
+                </tr>
+                <tr>
+                    <td>EM Integrado a Ed. Profissional</td>
+                    <td class="factor-high">1,35</td>
+                    <td>1,35</td>
+                    <td>R$ 8.050</td>
+                    <td><span class="tag tag-state">ESTADO</span></td>
+                </tr>
+                <tr>
+                    <td>Itinerario de Formacao Tecnica (2a matricula)</td>
+                    <td class="factor-high">1,35</td>
+                    <td>1,35</td>
+                    <td>R$ 8.050</td>
+                    <td><span class="tag tag-state">ESTADO</span></td>
+                </tr>
+                <tr>
+                    <td>EJA Medio Integrado a Ed. Profissional</td>
+                    <td class="factor-high">1,35</td>
+                    <td>1,35</td>
+                    <td>R$ 8.050</td>
+                    <td><span class="tag tag-state">ESTADO</span></td>
+                </tr>
+                <tr>
+                    <td>Itinerario Formacao Tecnica Sistema S</td>
+                    <td class="factor-high">1,35</td>
+                    <td>1,35</td>
+                    <td>R$ 8.050</td>
+                    <td><span class="tag tag-state">ESTADO</span></td>
+                </tr>
+
+                <tr style="background: #fffff0;">
+                    <td colspan="5"><strong>EJA - EDUCACAO DE JOVENS E ADULTOS</strong></td>
+                </tr>
+                <tr>
+                    <td>EJA Fundamental</td>
+                    <td>1,00</td>
+                    <td>1,00</td>
+                    <td>R$ 5.963</td>
+                    <td><span class="tag tag-shared">COMPART.</span></td>
+                </tr>
+                <tr>
+                    <td>EJA Medio</td>
+                    <td>1,00</td>
+                    <td>1,00</td>
+                    <td>R$ 5.963</td>
+                    <td><span class="tag tag-state">ESTADO</span></td>
+                </tr>
+                <tr>
+                    <td>EJA Fundamental/Medio Campo</td>
+                    <td class="factor-boost">1,15</td>
+                    <td>1,15</td>
+                    <td>R$ 6.857</td>
+                    <td><span class="tag tag-shared">COMPART.</span></td>
+                </tr>
+                <tr>
+                    <td>EJA Fundamental/Medio Indigena/Quilombola</td>
+                    <td class="factor-boost">1,40</td>
+                    <td>1,40</td>
+                    <td>R$ 8.348</td>
+                    <td><span class="tag tag-shared">COMPART.</span></td>
+                </tr>
+
+                <tr style="background: #fff5f5;">
+                    <td colspan="5"><strong>ENSINO FUNDAMENTAL (Compartilhado Estado/Municipio)</strong></td>
+                </tr>
+                <tr>
+                    <td>Ensino Fundamental Integral</td>
+                    <td class="factor-high">1,50</td>
+                    <td>1,50</td>
+                    <td>R$ 8.944</td>
+                    <td><span class="tag tag-shared">COMPART.</span></td>
+                </tr>
+                <tr>
+                    <td>Anos Iniciais Parcial (1-5)</td>
+                    <td>1,00</td>
+                    <td>1,00</td>
+                    <td>R$ 5.963</td>
+                    <td><span class="tag tag-muni">MUNICIPAL</span></td>
+                </tr>
+                <tr>
+                    <td>Anos Finais Parcial (6-9)</td>
+                    <td>1,10</td>
+                    <td>1,10</td>
+                    <td>R$ 6.559</td>
+                    <td><span class="tag tag-shared">COMPART.</span></td>
+                </tr>
+
+                <tr style="background: #ebf8ff;">
+                    <td colspan="5"><strong>EDUCACAO ESPECIAL / AEE / BILINGUE DE SURDOS</strong></td>
+                </tr>
+                <tr>
+                    <td>Educacao Especial - Medio</td>
+                    <td class="factor-high">1,40</td>
+                    <td>1,40</td>
+                    <td>R$ 8.348</td>
+                    <td><span class="tag tag-state">ESTADO</span></td>
+                </tr>
+                <tr>
+                    <td>Educacao Especial - EJA Medio</td>
+                    <td class="factor-high">1,40</td>
+                    <td>1,40</td>
+                    <td>R$ 8.348</td>
+                    <td><span class="tag tag-state">ESTADO</span></td>
+                </tr>
+                <tr>
+                    <td>AEE (dupla matricula - qualquer etapa)</td>
+                    <td class="factor-high">+1,40</td>
+                    <td>+1,40</td>
+                    <td>+ R$ 8.348</td>
+                    <td><span class="tag tag-shared">COMPART.</span></td>
+                </tr>
+                <tr>
+                    <td>Educacao Bilingue de Surdos - Medio</td>
+                    <td class="factor-high">1,40</td>
+                    <td>1,40</td>
+                    <td>R$ 8.348</td>
+                    <td><span class="tag tag-state">ESTADO</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- SEÇÃO 4: OPORTUNIDADES -->
+    <div class="section" id="oportunidades">
+        <h2>4. As 6 Camadas de Captacao — Nivel Estadual (T1-T6)</h2>
+
+        <div class="opp-card">
+            <h4>T1 — Expansao de Categorias com Zero Matriculas (VAAF)</h4>
+            <p><strong>O que e:</strong> Abrir novas categorias de matricula que atualmente tem 0 alunos na rede estadual. Exemplo: criar turmas de Ensino Medio Integral em escolas que so oferecem parcial.</p>
+            <p><strong>Categorias-alvo para estados:</strong></p>
+            <ul>
+                <li>Ensino Medio Integral (fator 1,52 vs 1,25 parcial = +21,6% por aluno)</li>
+                <li>EJA Medio (fator 1,00 — muitos estados nao oferecem)</li>
+                <li>Educacao Profissional Tecnica articulada ao EM (fator 1,35)</li>
+                <li>Educacao Especial nas etapas estaduais (fator 1,40)</li>
+                <li>Educacao Bilingue de Surdos (fator 1,40)</li>
+            </ul>
+            <p><strong>Como calcular:</strong> Para cada categoria com 0 matriculas, simular 10-50 alunos x VAAF x fator = potencial anual</p>
+        </div>
+
+        <div class="opp-card">
+            <h4>T2 — Conversao Parcial → Integral (Jornada)</h4>
+            <p><strong>O que e:</strong> Converter alunos de meio periodo (parcial) para tempo integral (7+ horas/dia).</p>
+            <p><strong>Impacto por aluno:</strong></p>
+            <ul>
+                <li>EM Parcial (1,25) → EM Integral (1,52) = <strong>+R$ 1.610/aluno-ano</strong></li>
+                <li>Fund. Parcial (1,00/1,10) → Fund. Integral (1,50) = <strong>+R$ 2.385 a R$ 2.981/aluno-ano</strong></li>
+            </ul>
+            <p><strong>Contexto SC &amp; PR:</strong> SC tem apenas 7,57% de alunos em integral e PR tem 8,72%. A media do Nordeste ja supera 20%. Enorme gap de captacao.</p>
+        </div>
+
+        <div class="opp-card">
+            <h4>T3 — Dupla Matricula AEE (Educacao Especial)</h4>
+            <p><strong>O que e:</strong> Todo aluno com necessidades especiais que recebe atendimento educacional especializado (AEE) conta <strong>duas vezes</strong> no FUNDEB: uma vez na matricula regular + uma vez no AEE (fator adicional 1,40).</p>
+            <p><strong>Impacto:</strong> Cada aluno com AEE registrado = +R$ 8.348/ano para a rede</p>
+            <p><strong>Acao:</strong> Nao requer novos alunos. Basta garantir que todos os alunos com deficiencia tenham laudo + atendimento AEE registrado no Educacenso.</p>
+        </div>
+
+        <div class="opp-card">
+            <h4>T4 — Reclassificacao de Localidade (Campo / Indigena / Quilombola)</h4>
+            <p><strong>O que e:</strong> Escolas incorretamente classificadas como urbanas que deveriam ser "campo" (rural), "indigena" ou "quilombola" recebem multiplicadores automaticos.</p>
+            <ul>
+                <li>Campo: +15% sobre todos os fatores</li>
+                <li>Indigena: +40% sobre todos os fatores</li>
+                <li>Quilombola: +40% sobre todos os fatores</li>
+            </ul>
+            <p><strong>Relevancia SC &amp; PR:</strong></p>
+            <ul>
+                <li>PR: 533 escolas do campo na rede estadual + comunidades indigenas (Kaingang, Guarani) + quilombolas</li>
+                <li>SC: comunidades indigenas (Xokleng, Kaingang, Guarani) + quilombolas no litoral</li>
+            </ul>
+        </div>
+
+        <div class="opp-card medium">
+            <h4>T5 — Complementacao VAAR (Valor Aluno Ano por Resultado)</h4>
+            <p><strong>O que e:</strong> R$ 7,5 bilhoes distribuidos pela Uniao com base em resultados educacionais e cumprimento de 5 condicionalidades.</p>
+            <p><strong>Status PR &amp; SC:</strong></p>
+            <ul>
+                <li><strong>Parana:</strong> <span style="color: var(--success); font-weight: 700;">ELEGIVEL</span> — uma das 9 redes estaduais que recebem VAAR em 2026</li>
+                <li><strong>Santa Catarina:</strong> <span style="color: var(--danger); font-weight: 700;">NAO ELEGIVEL</span> — nao esta na lista de redes estaduais beneficiadas</li>
+            </ul>
+            <p><strong>Condicionalidades:</strong> Ver secao detalhada abaixo</p>
+        </div>
+
+        <div class="opp-card medium">
+            <h4>T6 — EC 135/2024 (4% para Expansao de Tempo Integral + BNCC Computacao)</h4>
+            <p><strong>O que e:</strong> 4% dos recursos do FUNDEB devem ser destinados obrigatoriamente a criacao de novas vagas em tempo integral.</p>
+            <p><strong>Requisitos:</strong></p>
+            <ul>
+                <li>Comprovacao de expansao real de matriculas integrais</li>
+                <li>Implementacao da BNCC Computacao (Pensamento Computacional, Mundo Digital, Cultura Digital)</li>
+                <li>Sem expansao = recurso obrigatorio fica sem destinacao e pode gerar problema de prestacao de contas</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SEÇÃO 5: CONDICIONALIDADES VAAR -->
+    <div class="section" id="condicionalidades">
+        <h2>5. Condicionalidades VAAR — Detalhamento</h2>
+
+        <div class="alert-warning alert">
+            <strong>ATENCAO:</strong> O prazo para registro das condicionalidades no SIMEC encerrou em 15/09/2025 (prorrogado do prazo original de 31/08/2025). Porem, a <strong>aferecao dos resultados e continua</strong> e as condicionalidades sao avaliadas para o ciclo 2025-2026.
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Cond.</th>
+                    <th>Descricao</th>
+                    <th>Criterio 2026</th>
+                    <th>Sistema de Registro</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>I</strong></td>
+                    <td>Selecao de diretores por criterios tecnicos de merito e desempenho</td>
+                    <td>&gt;50% dos gestores escolares selecionados por criterios tecnicos</td>
+                    <td>SIMEC - Modulo VAAR</td>
+                </tr>
+                <tr>
+                    <td><strong>II</strong></td>
+                    <td>Participacao minima no SAEB</td>
+                    <td>Taxa minima de 80% dos alunos participando nas avaliacoes do SAEB</td>
+                    <td>INEP (automatico)</td>
+                </tr>
+                <tr>
+                    <td><strong>III</strong></td>
+                    <td>Reducao de desigualdades de aprendizagem</td>
+                    <td>Nao ampliacao de desigualdades entre grupos raciais e socioeconomicos</td>
+                    <td>INEP (automatico)</td>
+                </tr>
+                <tr>
+                    <td><strong>IV</strong></td>
+                    <td>ICMS Educacional</td>
+                    <td><strong>EXCLUSIVA para redes ESTADUAIS:</strong> Criterios de distribuicao do ICMS vinculados a educacao</td>
+                    <td>SIMEC - Modulo VAAR</td>
+                </tr>
+                <tr>
+                    <td><strong>V</strong></td>
+                    <td>Implementacao BNCC</td>
+                    <td>Curriculo alinhado a BNCC, incluindo BNCC Computacao (obrigatoria a partir de 2026)</td>
+                    <td>SIMEC - Modulo VAAR</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="highlight-box">
+            <strong>Condicionalidade IV — Exclusiva de Estados:</strong> Somente redes estaduais preenchem esta condicionalidade. Refere-se a como o estado distribui a parcela educacional do ICMS entre seus municipios. E um instrumento para incentivar politicas educacionais no nivel estadual.
+        </div>
+    </div>
+
+    <!-- SEÇÃO 6: CRONOGRAMA -->
+    <div class="section" id="prazos">
+        <h2>6. Cronograma e Prazos Criticos — 2026</h2>
+
+        <div class="timeline">
+            <div class="timeline-item active">
+                <div class="date">JAN 2026 — Inicio dos repasses</div>
+                <div class="desc">Primeira parcela da complementacao VAAF, VAAT e VAAR distribuida. Inicio do exercicio FUNDEB 2026 baseado no Censo Escolar 2025.</div>
+            </div>
+            <div class="timeline-item active">
+                <div class="date">30 JAN 2026 — Prazo SIOPE</div>
+                <div class="desc">Prazo final para estados e municipios transmitirem dados do SIOPE referentes ao exercicio 2025 (receitas e despesas em educacao).</div>
+            </div>
+            <div class="timeline-item active">
+                <div class="date">MAR 2026 — Aprovacao metodologia VAAR</div>
+                <div class="desc">CIF aprovou metodologia de afericao das condicionalidades do VAAR. Indicadores de Atendimento e Aprendizagem publicados.</div>
+            </div>
+            <div class="timeline-item urgent">
+                <div class="date">28 MAI 2026 — DIA DO CENSO ESCOLAR (CRITICO!)</div>
+                <div class="desc"><strong>Data de referencia do Censo Escolar 2026.</strong> Toda matricula existente nesta data = conta para o FUNDEB 2027. Novas categorias de ensino, reclassificacoes, turmas de integral devem estar ATIVAS ate esta data. Restam 34 dias.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="date">JUL 2026 — Fechamento Educacenso 1a Etapa</div>
+                <div class="desc">Prazo para finalizacao da coleta de dados da 1a etapa (Matricula Inicial) no sistema Educacenso. Ultima chance de corrigir dados de matriculas.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="date">AGO 2026 — Prazo SICONFI/VAAT</div>
+                <div class="desc">Prazo para regularizar pendencias de dados contabeis no SICONFI e SIOPE para habilitacao a complementacao VAAT do exercicio 2027. Entes que nao enviam = perdem complementacao.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="date">SET 2026 — Prazo VAAR Condicionalidades</div>
+                <div class="desc">Prazo estimado para registro das condicionalidades do VAAR no SIMEC para o ciclo 2026-2027.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="date">DEZ 2026 — Publicacao Censo Final</div>
+                <div class="desc">INEP publica resultados finais do Censo Escolar 2026. Coeficientes de distribuicao calculados para 2027. Portaria Interministerial define estimativas do FUNDEB 2027.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="date">JAN-DEZ 2027 — Repasses FUNDEB 2027</div>
+                <div class="desc">Recursos fluem mensalmente baseados no Censo 2026. Todo o trabalho de 2026 gera receita em 2027.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEÇÃO 7: COMPARATIVO PR vs SC -->
+    <div class="section" id="prsc">
+        <h2>7. Comparativo: Parana vs Santa Catarina</h2>
+
+        <div class="grid-2">
+            <div class="card" style="border-top: 4px solid #2b6cb0;">
+                <h4>PARANA</h4>
+                <div class="value">2.088</div>
+                <div class="label">escolas na rede estadual</div>
+                <ul style="margin-top: 1rem; font-size: 0.9rem;">
+                    <li>1+ milhao de estudantes</li>
+                    <li>412 escolas de tempo integral (8,72%)</li>
+                    <li>533 escolas do campo</li>
+                    <li>345 Colegios Civico-Militares</li>
+                    <li>777 escolas com Ed. Profissional (45+ cursos tecnicos)</li>
+                    <li><strong style="color: var(--success);">Recebe VAAR</strong> (uma das 9 redes estaduais)</li>
+                    <li>Nao recebe VAAF nem VAAT (estado rico)</li>
+                </ul>
+            </div>
+            <div class="card" style="border-top: 4px solid #38a169;">
+                <h4>SANTA CATARINA</h4>
+                <div class="value">~1.100</div>
+                <div class="label">escolas na rede estadual (estimativa)</div>
+                <ul style="margin-top: 1rem; font-size: 0.9rem;">
+                    <li>~600 mil estudantes</li>
+                    <li>~7,57% em tempo integral</li>
+                    <li>Comunidades indigenas (Xokleng, Kaingang, Guarani)</li>
+                    <li>Comunidades quilombolas no litoral</li>
+                    <li>Educacao Profissional em expansao</li>
+                    <li><strong style="color: var(--danger);">Nao recebe VAAR</strong> (rede estadual)</li>
+                    <li>Nao recebe VAAF nem VAAT</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>Oportunidades Especificas por Estado</h3>
+
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Oportunidade</th>
+                    <th class="pr">PR — Potencial</th>
+                    <th class="sc">SC — Potencial</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>T1 — Expansao categorias</td>
+                    <td>Verificar categorias com 0 matriculas na rede estadual (EM integral, EJA, Bilingue)</td>
+                    <td>Verificar categorias com 0 matriculas na rede estadual</td>
+                </tr>
+                <tr>
+                    <td>T2 — Conversao integral</td>
+                    <td><strong>ALTO:</strong> 91,28% dos alunos ainda em parcial. Converter para integral = +R$ 1.610/aluno</td>
+                    <td><strong>ALTO:</strong> 92,43% dos alunos ainda em parcial. Gap maior que PR</td>
+                </tr>
+                <tr>
+                    <td>T3 — AEE dupla matricula</td>
+                    <td>Verificar % de alunos PcD com AEE registrado vs total PcD</td>
+                    <td>Verificar % de alunos PcD com AEE registrado vs total PcD</td>
+                </tr>
+                <tr>
+                    <td>T4 — Reclassificacao</td>
+                    <td><strong>ALTO:</strong> 533 escolas do campo + comunidades indigenas (Kaingang, Guarani)</td>
+                    <td><strong>MEDIO:</strong> Comunidades indigenas (Terra Indigena Ibirama-Laklano) + quilombolas</td>
+                </tr>
+                <tr>
+                    <td>T5 — VAAR</td>
+                    <td><strong>JA RECEBE:</strong> Maximizar resultados nas condicionalidades para aumentar valor</td>
+                    <td><strong>NAO RECEBE:</strong> Identificar quais condicionalidades nao foram atendidas</td>
+                </tr>
+                <tr>
+                    <td>T6 — EC 135 (4% integral)</td>
+                    <td>Verificar se os 4% estao sendo executados para expansao real</td>
+                    <td>Verificar se os 4% estao sendo executados para expansao real</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- SEÇÃO 8: SISTEMAS -->
+    <div class="section" id="sistemas">
+        <h2>8. Sistemas e Fontes de Dados para Scraping</h2>
+
+        <p style="margin-bottom: 1.5rem; color: var(--text-light);">Abaixo, os 7 sistemas que contem os dados necessarios para gerar relatorios de potencial de captacao estadual, similares aos que ja produzimos para municipios.</p>
+
+        <div class="system-card">
+            <h4>1. FNDE — Dados Abertos FUNDEB 2026 <span class="tag tag-csv">CSV/XLSX</span></h4>
+            <div class="url">https://www.gov.br/fnde/pt-br/acesso-a-informacao/acoes-e-programas/financiamento/fundeb/2026</div>
+            <ul>
+                <li><strong>01_receita_total_fundeb.xlsx</strong> — Receita total por ente federado (inclui redes estaduais de PR e SC)</li>
+                <li><strong>06_redes_beneficiadas_vaar.xlsx</strong> — Quais redes recebem VAAR, coeficientes e valores</li>
+                <li><strong>09_fatores_ponderacao.xlsx</strong> — Tabela completa de fatores (ja temos localmente)</li>
+                <li><strong>03_vaat_vaat_min_complementacao.xlsx</strong> — VAAT por ente</li>
+                <li><strong>08_memoria_calculo_vaat.xlsx</strong> — Memoria de calculo detalhada</li>
+                <li><strong>12_ponderador_nse.csv</strong> — Nivel socioeconomico por rede</li>
+                <li>Formatos: PDF, CSV, XLSX</li>
+            </ul>
+            <p style="margin-top: 0.5rem;"><strong>Scraping:</strong> Download direto dos arquivos. Nao precisa de API — sao downloads publicos.</p>
+        </div>
+
+        <div class="system-card">
+            <h4>2. SICONFI — API do Tesouro Nacional <span class="tag tag-api">REST API</span></h4>
+            <div class="url">https://apidatalake.tesouro.gov.br/docs/siconfi/</div>
+            <ul>
+                <li><strong>GET /rreo</strong> — Relatorio Resumido da Execucao Orcamentaria (receitas/despesas educacao)</li>
+                <li><strong>GET /dca</strong> — Declaracao de Contas Anuais</li>
+                <li><strong>GET /entes</strong> — Lista de entes federados com codigos IBGE</li>
+                <li>Parametros: <code>an_exercicio</code>, <code>id_ente</code> (IBGE), <code>nr_periodo</code></li>
+                <li>Codigos IBGE: <strong>PR = 41</strong>, <strong>SC = 42</strong></li>
+                <li>Rate limit: 1 request/segundo</li>
+            </ul>
+            <p style="margin-top: 0.5rem;"><strong>Dados obtidos:</strong> Receita de impostos estaduais (ICMS, IPVA, ITCMD), contribuicao ao FUNDEB, receita do FUNDEB, gastos com MDE. Permite calcular contribuicao vs retorno.</p>
+        </div>
+
+        <div class="system-card">
+            <h4>3. INEP — Microdados Censo Escolar <span class="tag tag-csv">CSV/ZIP</span></h4>
+            <div class="url">https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/microdados/censo-escolar</div>
+            <ul>
+                <li><strong>Microdados de Matricula</strong> — Cada aluno individualmente, com etapa, modalidade, localidade, turno, rede</li>
+                <li><strong>Microdados de Escola</strong> — Infraestrutura, localizacao, classificacao (urbana/rural/indigena)</li>
+                <li><strong>Microdados de Turma</strong> — Horarios, tipo de atendimento</li>
+                <li><strong>Sinopse Estatistica</strong> — Resumos tabulados por UF, rede, etapa</li>
+                <li>Ultimo disponivel: Censo 2024 (publicado 2025). Censo 2025 publicado em 2026.</li>
+                <li>Filtro: <code>CO_UF = 41</code> (PR) ou <code>CO_UF = 42</code> (SC), <code>TP_DEPENDENCIA = 2</code> (rede estadual)</li>
+            </ul>
+            <p style="margin-top: 0.5rem;"><strong>Dados obtidos:</strong> Total de matriculas por categoria exata, por localidade, por jornada. E a fonte primaria para calcular T1-T4.</p>
+        </div>
+
+        <div class="system-card">
+            <h4>4. SIOPE — Demonstrativos Financeiros Educacao <span class="tag tag-web">WEB</span></h4>
+            <div class="url">https://www.fnde.gov.br/siope/demonstrativoFundefMunicipal.do</div>
+            <div class="url">https://www.gov.br/fnde/pt-br/assuntos/sistemas/siope</div>
+            <ul>
+                <li><strong>Demonstrativo FUNDEB</strong> — Receita recebida, aplicacao por categoria (folha 70%, demais MDE)</li>
+                <li><strong>Demonstrativo Funcao Educacao</strong> — Orcamento completo da educacao estadual</li>
+                <li><strong>Relatorios Estaduais</strong> — Acesso publico sem senha</li>
+                <li>Disponivel para consulta por UF e exercicio</li>
+            </ul>
+            <p style="margin-top: 0.5rem;"><strong>Dados obtidos:</strong> Quanto o estado recebeu de FUNDEB, quanto aplicou, se cumpriu os 70% em folha, quanto sobrou. Complementa o SICONFI.</p>
+        </div>
+
+        <div class="system-card">
+            <h4>5. QEdu — Dados Educacionais Agregados <span class="tag tag-web">WEB</span></h4>
+            <div class="url">https://qedu.org.br/uf/41-parana</div>
+            <div class="url">https://qedu.org.br/uf/42-santa-catarina</div>
+            <ul>
+                <li>Matriculas por etapa, rede, modalidade</li>
+                <li>Indicadores de qualidade (IDEB, SAEB)</li>
+                <li>Dados de infraestrutura escolar</li>
+                <li>Educacao profissional e tecnica</li>
+                <li>Filtros por dependencia administrativa (rede estadual)</li>
+            </ul>
+            <p style="margin-top: 0.5rem;"><strong>Dados obtidos:</strong> Visao rapida de matriculas agregadas. Util para validacao cruzada dos microdados do INEP.</p>
+        </div>
+
+        <div class="system-card">
+            <h4>6. SIMEC — Modulo VAAR/FUNDEB <span class="tag tag-web">WEB (autenticado)</span></h4>
+            <div class="url">https://simec.mec.gov.br/</div>
+            <ul>
+                <li>Registro das condicionalidades do VAAR</li>
+                <li>Status de habilitacao de cada rede</li>
+                <li>Condicionalidade IV (ICMS Educacional) — exclusiva de estados</li>
+                <li><strong>Acesso restrito:</strong> Requer credenciais de secretaria de educacao</li>
+            </ul>
+            <p style="margin-top: 0.5rem;"><strong>Alternativa:</strong> Dados de habilitacao/inabilitacao publicados no portal do FNDE em CSV/XLSX (download publico).</p>
+        </div>
+
+        <div class="system-card">
+            <h4>7. Portais Estaduais de Transparencia <span class="tag tag-web">WEB</span></h4>
+            <div class="url">https://receitas.fecam.org.br/estado/FUNDEB/informacoes (SC - FECAM)</div>
+            <div class="url">https://www.educacao.pr.gov.br/ (PR - SEED)</div>
+            <ul>
+                <li>SC/FECAM: Portal de Transferencias Constitucionais com dados FUNDEB</li>
+                <li>PR/SEED: Consulta da Rede de Ensino com dados cadastrais de escolas</li>
+                <li>Dados de repasse FUNDEB por municipio e estado</li>
+                <li>SC/SEF: <code>www.sef.sc.gov.br</code> — dados fiscais</li>
+            </ul>
+            <p style="margin-top: 0.5rem;"><strong>Dados obtidos:</strong> Valores repassados ao estado pelo FUNDEB, detalhamento por fonte. Visao complementar local.</p>
+        </div>
+    </div>
+
+    <!-- SEÇÃO 9: ROTEIRO DE SCRAPING -->
+    <div class="section" id="roteiro">
+        <h2>9. Roteiro de Scraping — Ordem de Execucao</h2>
+
+        <div class="alert-info alert">
+            <strong>Estrategia:</strong> Replicar a mesma analise T1-T6 dos municipios, mas agora para as <strong>redes estaduais</strong> de PR e SC. Os dados vem de fontes diferentes porque as redes estaduais sao reportadas separadamente das municipais.
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Etapa</th>
+                    <th>Fonte</th>
+                    <th>Dados a Extrair</th>
+                    <th>Formato</th>
+                    <th>Prioridade</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>1</strong></td>
+                    <td>FNDE (01_receita_total)</td>
+                    <td>Receita total FUNDEB da rede estadual PR e SC: contribuicao, retorno, ganho/perda</td>
+                    <td><span class="tag tag-csv">XLSX</span></td>
+                    <td style="color: var(--danger); font-weight: 700;">ALTA</td>
+                </tr>
+                <tr>
+                    <td><strong>2</strong></td>
+                    <td>INEP Microdados</td>
+                    <td>Matriculas da rede estadual por: etapa, modalidade, jornada (integral/parcial), localidade (urbano/campo/indigena/quilombola), AEE</td>
+                    <td><span class="tag tag-csv">CSV/ZIP</span></td>
+                    <td style="color: var(--danger); font-weight: 700;">ALTA</td>
+                </tr>
+                <tr>
+                    <td><strong>3</strong></td>
+                    <td>SICONFI API</td>
+                    <td>RREO do estado: receita impostos (ICMS, IPVA, ITCMD), contribuicao ao FUNDEB, receita FUNDEB</td>
+                    <td><span class="tag tag-api">JSON</span></td>
+                    <td style="color: var(--danger); font-weight: 700;">ALTA</td>
+                </tr>
+                <tr>
+                    <td><strong>4</strong></td>
+                    <td>FNDE (06_redes_beneficiadas_vaar)</td>
+                    <td>Status VAAR de PR e SC, coeficientes, valores recebidos</td>
+                    <td><span class="tag tag-csv">XLSX</span></td>
+                    <td style="color: var(--warning); font-weight: 700;">MEDIA</td>
+                </tr>
+                <tr>
+                    <td><strong>5</strong></td>
+                    <td>SIOPE</td>
+                    <td>Demonstrativo FUNDEB estadual: aplicacao 70% folha, gastos MDE, superavit/deficit</td>
+                    <td><span class="tag tag-web">HTML</span></td>
+                    <td style="color: var(--warning); font-weight: 700;">MEDIA</td>
+                </tr>
+                <tr>
+                    <td><strong>6</strong></td>
+                    <td>QEdu / INEP Sinopse</td>
+                    <td>Validacao cruzada: totais de matriculas por etapa e rede</td>
+                    <td><span class="tag tag-web">HTML</span></td>
+                    <td>BAIXA</td>
+                </tr>
+                <tr>
+                    <td><strong>7</strong></td>
+                    <td>Portais Estaduais</td>
+                    <td>Dados complementares de transparencia fiscal e educacional</td>
+                    <td><span class="tag tag-web">HTML</span></td>
+                    <td>BAIXA</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Calculo do Potencial de Captacao (Formulas)</h3>
+
+        <div class="highlight-box">
+            <p><strong>T1 (Novas categorias):</strong> <code>SUM( categorias_com_0_matriculas ) x N_alunos_simulados x VAAF_min x fator_ponderacao x multiplicador_localidade</code></p>
+            <p><strong>T2 (Conversao integral):</strong> <code>N_alunos_parciais x (fator_integral - fator_parcial) x VAAF_min</code></p>
+            <p><strong>T3 (AEE):</strong> <code>(N_alunos_PcD - N_alunos_com_AEE) x 1.40 x VAAF_min</code></p>
+            <p><strong>T4 (Reclassificacao):</strong> <code>N_alunos_reclassificaveis x fator_atual x (multiplicador_novo - 1.00) x VAAF_min</code></p>
+            <p><strong>T5 (VAAR):</strong> <code>N_matriculas_totais x valor_VAAR_por_aluno</code> (se nao recebe, estimar com mediana nacional)</p>
+            <p><strong>T6 (EC 135):</strong> <code>receita_FUNDEB_estadual x 0.04</code></p>
+        </div>
+    </div>
+
+    <!-- RESUMO EXECUTIVO -->
+    <div class="section" style="background: linear-gradient(135deg, #1a365d, #2b6cb0); color: white; border: none;">
+        <h2 style="color: white; border-bottom-color: rgba(255,255,255,0.3);">Resumo Executivo</h2>
+        <div class="grid-2">
+            <div>
+                <h3 style="color: #fbd38d;">Diferenca-chave vs Municipal</h3>
+                <ul>
+                    <li>Foco muda de Educacao Infantil para <strong>Ensino Medio + Profissional</strong></li>
+                    <li>Estado contribui mais (impostos maiores) mas pode receber menos se nao otimiza matriculas</li>
+                    <li>Condicionalidade IV do VAAR e exclusiva de estados</li>
+                    <li>Conversao parcial→integral tem potencial enorme (PR e SC &lt;9% integral)</li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="color: #fbd38d;">Proximos Passos</h3>
+                <ol>
+                    <li>Executar scraping das 7 fontes (prioridade: FNDE + INEP + SICONFI)</li>
+                    <li>Consolidar dados em banco SQLite (modelo: fundeb_estadual_2026.db)</li>
+                    <li>Calcular potencial T1-T6 para cada rede estadual</li>
+                    <li>Gerar relatorios PDF/HTML por estado (PR e SC primeiro)</li>
+                    <li>Expandir para demais estados</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Documento gerado em 24/04/2026 | Fontes: FNDE, MEC, INEP, Tesouro Nacional, QEdu</p>
+        <p>Base legal: Lei 14.113/2020 (Novo FUNDEB), EC 108/2020, EC 135/2024, Resolucao CIF 5/2024, Portaria Interministerial MEC/MF 14/2025</p>
+        <p style="margin-top: 0.5rem;">
+            <a href="https://www.gov.br/fnde/pt-br/acesso-a-informacao/acoes-e-programas/financiamento/fundeb/2026" style="color: var(--secondary);">Portal FUNDEB 2026</a> |
+            <a href="https://apidatalake.tesouro.gov.br/docs/siconfi/" style="color: var(--secondary);">API SICONFI</a> |
+            <a href="https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/microdados/censo-escolar" style="color: var(--secondary);">Microdados INEP</a>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

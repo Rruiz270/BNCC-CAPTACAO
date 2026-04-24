@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<style>
+@page { size: A4; margin: 1.5cm 2cm; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; color: #2d3748; font-size: 10pt; line-height: 1.5; }
+
+.cover { background: linear-gradient(135deg, #1a365d, #2b6cb0); color: white; min-height: 100vh; padding: 3rem 2.5rem; page-break-after: always; display: flex; flex-direction: column; justify-content: space-between; }
+.cover .brand { color: #4fd1c5; font-size: 14pt; font-weight: 700; margin-bottom: 2rem; }
+.cover .subtitle { font-size: 10pt; color: rgba(255,255,255,0.8); margin-bottom: 3rem; }
+.cover .entity { font-size: 28pt; font-weight: 800; margin-bottom: 0.5rem; }
+.cover .entity-sub { font-size: 10pt; color: rgba(255,255,255,0.7); margin-bottom: 4rem; }
+.cover .big-number { font-size: 48pt; font-weight: 800; color: #48bb78; margin-bottom: 0.5rem; }
+.cover .big-label { font-size: 11pt; color: rgba(255,255,255,0.8); margin-bottom: 2rem; }
+.cover .pct-badge { display: inline-block; border: 2px solid #4fd1c5; color: #4fd1c5; padding: 0.5rem 2rem; border-radius: 8px; font-size: 14pt; font-weight: 700; }
+.cover .footer { font-size: 8pt; color: rgba(255,255,255,0.5); margin-top: 2rem; }
+.cover .footer .brand-small { color: #4fd1c5; font-weight: 700; }
+
+.page { page-break-before: always; padding-top: 0.5rem; }
+h2 { font-size: 16pt; color: #1a365d; margin-bottom: 1rem; }
+h3 { font-size: 12pt; color: #2b6cb0; margin: 1.5rem 0 0.5rem; }
+
+.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-bottom: 1.5rem; }
+.metric { border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.75rem; text-align: center; }
+.metric .label { font-size: 7pt; text-transform: uppercase; color: #718096; letter-spacing: 0.5px; }
+.metric .value { font-size: 16pt; font-weight: 700; color: #1a365d; }
+.metric .value.accent { color: #2b6cb0; }
+.metric .value.red { color: #e53e3e; }
+.metric .value.green { color: #38a169; }
+
+.tier-row { display: flex; align-items: center; margin: 0.4rem 0; }
+.tier-label { width: 100px; font-size: 9pt; font-weight: 600; color: #4a5568; }
+.tier-bar-bg { flex: 1; height: 20px; background: #edf2f7; border-radius: 4px; overflow: hidden; margin: 0 0.5rem; }
+.tier-bar { height: 100%; background: linear-gradient(90deg, #4fd1c5, #2b6cb0); border-radius: 4px; }
+.tier-value { width: 100px; text-align: right; font-size: 9pt; font-weight: 700; color: #1a365d; }
+.tier-total { font-size: 14pt; font-weight: 800; color: #2b6cb0; margin-top: 0.75rem; }
+
+.alert { border: 1.5px solid #e53e3e; border-radius: 8px; padding: 0.75rem 1rem; margin-top: 1rem; font-size: 9pt; color: #4a5568; }
+.alert strong { color: #e53e3e; }
+
+table { width: 100%; border-collapse: collapse; margin: 0.5rem 0; font-size: 9pt; }
+th { text-transform: uppercase; font-size: 7.5pt; letter-spacing: 0.5px; color: #718096; border-bottom: 2px solid #e2e8f0; padding: 0.4rem 0.5rem; text-align: left; }
+td { padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }
+.right { text-align: right; }
+.bold { font-weight: 700; }
+.accent { color: #2b6cb0; }
+.red { color: #e53e3e; }
+.green { color: #38a169; }
+
+.t5-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 0.5rem 0; }
+.t5-item { display: flex; justify-content: space-between; font-size: 9pt; padding: 0.2rem 0; }
+.t5-label { color: #718096; }
+.t5-val { font-weight: 700; }
+
+.rec-item { border-left: 3px solid #e2e8f0; padding: 0.5rem 0.75rem; margin: 0.5rem 0; }
+.rec-prio { display: inline-block; border: 1.5px solid; border-radius: 3px; padding: 0.1rem 0.4rem; font-size: 7pt; font-weight: 700; margin-right: 0.3rem; }
+.rec-tier { display: inline-block; background: #edf2f7; border-radius: 3px; padding: 0.1rem 0.4rem; font-size: 7pt; font-weight: 600; color: #4a5568; margin-right: 0.3rem; }
+.rec-desc { font-size: 8.5pt; color: #718096; margin-top: 0.2rem; }
+
+.phase { border-left: 3px solid #4fd1c5; padding: 0.5rem 0.75rem; margin: 0.75rem 0; }
+.phase .phase-title { display: inline-block; background: #e6fffa; color: #234e52; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 9pt; font-weight: 600; margin-bottom: 0.3rem; }
+.phase li { font-size: 9pt; margin: 0.2rem 0; margin-left: 1rem; }
+
+.cta { background: linear-gradient(135deg, #1a365d, #2b6cb0); color: white; border-radius: 12px; padding: 1.5rem 2rem; text-align: center; margin-top: 2rem; }
+.cta h3 { color: #4fd1c5; font-size: 12pt; margin-bottom: 0.3rem; }
+.cta p { font-size: 9pt; color: rgba(255,255,255,0.8); margin-bottom: 1rem; }
+.cta .services { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+.cta .svc { border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; padding: 0.3rem 0.75rem; font-size: 8pt; }
+.cta .email { color: #4fd1c5; font-weight: 700; font-size: 10pt; }
+
+.page-footer { text-align: center; font-size: 7.5pt; color: #a0aec0; margin-top: 2rem; padding-top: 0.5rem; border-top: 1px solid #e2e8f0; }
+</style>
+</head>
+<body>
+
+<!-- PAGE 1: COVER -->
+<div class="cover">
+    <div>
+        <div class="brand">INSTITUTO i10</div>
+        <div class="subtitle">Diagnóstico FUNDEB 2026 · Potencial Máximo de Captação · REDE ESTADUAL</div>
+        <div class="entity">REDE ESTADUAL — PARANÁ</div>
+        <div class="entity-sub">1.148.067 matrículas na rede estadual</div>
+    </div>
+    <div>
+        <div class="big-number">R$ 3.376,4M</div>
+        <div class="big-label">em recursos FUNDEB que a Rede Estadual de Paraná não está captando</div>
+        <div><span class="pct-badge">+38.2% sobre a receita atual</span></div>
+    </div>
+    <div class="footer">
+        <span class="brand-small">Instituto i10</span> — Orquestrando o Futuro da Educação Pública<br>
+        Relatório gerado em 24/04/2026 · Dados: MEC/FNDE FUNDEB 2026 (parâmetros definitivos) + INEP Censo 2024
+    </div>
+</div>
+
+<!-- PAGE 2: RESUMO EXECUTIVO -->
+<div class="page">
+    <h2>Resumo Executivo</h2>
+    <div class="metrics">
+        <div class="metric"><div class="label">Receita FUNDEB Atual</div><div class="value">R$ 8.847,5M</div></div>
+        <div class="metric"><div class="label">Potencial Não Captado</div><div class="value accent">R$ 3.376,4M</div></div>
+        <div class="metric"><div class="label">Ganho Percentual</div><div class="value green">+38.2%</div></div>
+        <div class="metric"><div class="label">Complementação VAAR</div><div class="value ">Recebe</div></div>
+    </div>
+    <div class="metrics">
+        <div class="metric"><div class="label">Matrículas Rede Estadual</div><div class="value">1.148.067</div></div>
+        <div class="metric"><div class="label">Categorias Ativas</div><div class="value">11 / 11</div></div>
+        <div class="metric"><div class="label">Categorias Faltantes</div><div class="value red">0</div></div>
+        <div class="metric"><div class="label">% Ensino Médio Integral</div><div class="value">10.0%</div></div>
+    </div>
+
+    <h3>Decomposição do Potencial por Alavanca</h3>
+    
+        <div class="tier-row">
+            <span class="tier-label">T1 VAAF</span>
+            <div class="tier-bar-bg"><div class="tier-bar" style="width:0.0%"></div></div>
+            <span class="tier-value">R$ 0</span>
+        </div>
+        <div class="tier-row">
+            <span class="tier-label">T2 Integral</span>
+            <div class="tier-bar-bg"><div class="tier-bar" style="width:100.0%"></div></div>
+            <span class="tier-value">R$ 1.718,0M</span>
+        </div>
+        <div class="tier-row">
+            <span class="tier-label">T3 AEE</span>
+            <div class="tier-bar-bg"><div class="tier-bar" style="width:47.32519550750466%"></div></div>
+            <span class="tier-value">R$ 813,0M</span>
+        </div>
+        <div class="tier-row">
+            <span class="tier-label">T4 Localidade</span>
+            <div class="tier-bar-bg"><div class="tier-bar" style="width:17.276614541743555%"></div></div>
+            <span class="tier-value">R$ 296,8M</span>
+        </div>
+        <div class="tier-row">
+            <span class="tier-label">T5 VAAR</span>
+            <div class="tier-bar-bg"><div class="tier-bar" style="width:11.334648699584521%"></div></div>
+            <span class="tier-value">R$ 194,7M</span>
+        </div>
+        <div class="tier-row">
+            <span class="tier-label">T6 EC 135</span>
+            <div class="tier-bar-bg"><div class="tier-bar" style="width:20.599832598766792%"></div></div>
+            <span class="tier-value">R$ 353,9M</span>
+        </div>
+    <div class="tier-total">TOTAL &nbsp; R$ 3.376,4M</div>
+
+    <div class="alert">
+        <strong>ALERTA CRÍTICO:</strong> A Rede Estadual de Paraná recebe complementação VAAR
+        (R$ 7,5 bilhões disponíveis nacionalmente).
+        Valor atual: R$ 620,7M/ano. Potencial adicional: R$ 194,7M.
+    </div>
+
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 2 / 6</div>
+</div>
+
+<!-- PAGE 3: DETALHAMENTO T1-T4 -->
+<div class="page">
+    <h2>Detalhamento por Alavanca</h2>
+
+    <h3>T1 — Expansão VAAF: 0 Categorias Não Captadas</h3>
+    <p style="font-size:9pt;color:#718096;margin-bottom:0.5rem">Cada categoria sem matrículas representa receita FUNDEB perdida. Simulação com 10 e 50 alunos novos:</p>
+    <table>
+        <tr><th>Categoria Faltante</th><th class="right">VAAF/Aluno</th><th class="right">Ganho +10</th><th class="right">Ganho +50</th></tr>
+        
+    </table>
+
+    <h3>T2 — Conversão Parcial → Integral</h3>
+    <p style="font-size:9pt;color:#718096;margin-bottom:0.5rem">Converter alunos de jornada parcial para integral aumenta o fator VAAF:</p>
+    <table>
+        <tr><th>De (Parcial)</th><th>Para (Integral)</th><th class="right">Alunos</th><th class="right">Dif./Aluno</th><th class="right">Ganho Total</th></tr>
+        
+        <tr>
+            <td>EM Parcial</td>
+            <td class="accent">EM Integral</td>
+            <td class="right">312.671</td>
+            <td class="right accent">+R$ 1.610</td>
+            <td class="right bold accent">R$ 503,4M</td>
+        </tr>
+        <tr>
+            <td>Ens. Fund. Anos Finais</td>
+            <td class="accent">Ens. Fund. Integral</td>
+            <td class="right">505.294</td>
+            <td class="right accent">+R$ 2.385</td>
+            <td class="right bold accent">R$ 1.205,2M</td>
+        </tr>
+        <tr>
+            <td>Ens. Fund. Anos Iniciais</td>
+            <td class="accent">Ens. Fund. Integral</td>
+            <td class="right">3.155</td>
+            <td class="right accent">+R$ 2.981</td>
+            <td class="right bold accent">R$ 9,4M</td>
+        </tr>
+    </table>
+    <p class="bold" style="margin-top:0.3rem">Subtotal T2 &nbsp; <span class="accent">R$ 1.718,0M</span></p>
+
+    <h3>T3 — AEE Dupla Matrícula (Educação Especial)</h3>
+    <p style="font-size:9pt;color:#718096;margin-bottom:0.5rem">Aluno de Ed. Especial com AEE = dupla contagem no FUNDEB (fator 1,40 adicional):</p>
+    <table>
+        <tr><th>Categoria</th><th class="right">Alunos Ed. Esp.</th><th class="right">VAAF AEE/Aluno</th><th class="right">Ganho Adicional</th></tr>
+        
+        <tr>
+            <td>Ed. Especial EM</td>
+            <td class="right">17.432</td>
+            <td class="right">R$ 8.348</td>
+            <td class="right bold accent">R$ 145,5M</td>
+        </tr>
+        <tr>
+            <td>Ed. Especial EF</td>
+            <td class="right">62.074</td>
+            <td class="right">R$ 8.348</td>
+            <td class="right bold accent">R$ 518,2M</td>
+        </tr>
+        <tr>
+            <td>Ed. Especial EI</td>
+            <td class="right">17.888</td>
+            <td class="right">R$ 8.348</td>
+            <td class="right bold accent">R$ 149,3M</td>
+        </tr>
+    </table>
+    <p class="bold" style="margin-top:0.3rem">Subtotal T3 &nbsp; <span class="accent">R$ 813,0M</span></p>
+
+    <h3>T4 — Reclassificação de Localidade</h3>
+    <table>
+        <tr><td>Matrículas urbanas</td><td class="right bold">1.100.409</td><td>Tem matrículas campo</td><td class="right bold">Sim</td></tr>
+        <tr><td>Ganho se 10% reclassificadas como Campo (+15%)</td><td colspan="3" class="right bold accent">R$ 127,2M</td></tr>
+        <tr><td>Ganho se 5% reclassificadas como Ind/Quilomb (+40%)</td><td colspan="3" class="right bold accent">R$ 169,6M</td></tr>
+    </table>
+
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 3 / 6</div>
+</div>
+
+<!-- PAGE 4: T5-T6 -->
+<div class="page">
+    <h3>T5 — Complementação Federal (VAAR + VAAT)</h3>
+    <div class="t5-grid">
+        <div>
+            <div class="t5-item"><span class="t5-label">VAAR atual</span><span class="t5-val ">R$ 620,7M</span></div>
+            <div class="t5-item"><span class="t5-label">VAAR potencial</span><span class="t5-val accent">R$ 815,4M</span></div>
+        </div>
+        <div>
+            <div class="t5-item"><span class="t5-label">VAAT atual</span><span class="t5-val">Não recebe</span></div>
+            <div class="t5-item"><span class="t5-label">VAAT potencial</span><span class="t5-val accent">R$ 574,0M</span></div>
+        </div>
+    </div>
+
+    <h3>T6 — EC 135/2024 + BNCC Computação</h3>
+    <div class="t5-grid">
+        <div>
+            <div class="t5-item"><span class="t5-label">4% FUNDEB (obrigatório p/ integral)</span><span class="t5-val accent">R$ 353,9M</span></div>
+            <div class="t5-item"><span class="t5-label">Novas vagas possíveis com 4%</span><span class="t5-val accent">~39.047 alunos</span></div>
+        </div>
+        <div>
+            <div class="t5-item"><span class="t5-label">Tempo integral atual</span><span class="t5-val">34.804 (10.0%)</span></div>
+            <div class="t5-item"><span class="t5-label">PETI fomento federal/aluno</span><span class="t5-val">R$ 1.693</span></div>
+        </div>
+    </div>
+
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 4 / 6</div>
+</div>
+
+<!-- PAGE 5: COMPARAÇÃO + RECOMENDAÇÕES -->
+<div class="page">
+    <h2>Comparação com Estados da Região Sul</h2>
+    <p style="font-size:9pt;color:#718096;margin-bottom:0.5rem">Redes estaduais da mesma região:</p>
+    <table>
+        <tr><th>Rede Estadual</th><th class="right">Matrículas</th><th class="right">Receita FUNDEB</th></tr>
+        
+        <tr style="font-weight:700;">
+            <td>REDE ESTADUAL PR (você)</td>
+            <td class="right">912.166</td>
+            <td class="right">R$ 8.847,5M</td>
+        </tr>
+        <tr style="">
+            <td>REDE ESTADUAL RS</td>
+            <td class="right">694.664</td>
+            <td class="right">R$ 6.394,8M</td>
+        </tr>
+        <tr style="">
+            <td>REDE ESTADUAL SC</td>
+            <td class="right">535.084</td>
+            <td class="right">R$ 4.925,6M</td>
+        </tr>
+    </table>
+
+    <h2 style="margin-top:1.5rem">Recomendações Priorizadas</h2>
+    
+        <div class="rec-item">
+            <span class="rec-prio" style="border-color:#e53e3e;color:#e53e3e">ALTO</span>
+            <span class="rec-tier">T2</span>
+            <strong>Converter Parcial → Integral no Ensino Médio</strong>
+            <p class="rec-desc">312.671 alunos do EM em jornada parcial. Converter = ganho de R$ 1.718,0M/ano. EC 135 exige 4% para novas vagas integrais.</p>
+        </div>
+        <div class="rec-item">
+            <span class="rec-prio" style="border-color:#e53e3e;color:#e53e3e">ALTO</span>
+            <span class="rec-tier">T3</span>
+            <strong>Maximizar AEE (Dupla Matrícula)</strong>
+            <p class="rec-desc">97.394 alunos Ed. Especial. Se todos tiverem AEE = ganho de R$ 813,0M/ano.</p>
+        </div>
+        <div class="rec-item">
+            <span class="rec-prio" style="border-color:#e53e3e;color:#e53e3e">ALTO</span>
+            <span class="rec-tier">T6</span>
+            <strong>Implementar BNCC Computação + Expandir Integral</strong>
+            <p class="rec-desc">Obrigatório 2026. Condicionalidade V do VAAR. 4% FUNDEB = R$ 353,9M para expansão integral.</p>
+        </div>
+        <div class="rec-item">
+            <span class="rec-prio" style="border-color:#d69e2e;color:#d69e2e">MEDIO</span>
+            <span class="rec-tier">T4</span>
+            <strong>Reclassificar Escolas (Campo/Indígena/Quilombola)</strong>
+            <p class="rec-desc">Escolas rurais ou em terras indígenas com classificação incorreta. Potencial: R$ 296,8M/ano.</p>
+        </div>
+        <div class="rec-item">
+            <span class="rec-prio" style="border-color:#d69e2e;color:#d69e2e">MEDIO</span>
+            <span class="rec-tier">T5</span>
+            <strong>Maximizar VAAR</strong>
+            <p class="rec-desc">Já recebe VAAR (R$ 620,7M). Potencial adicional: R$ 194,7M/ano otimizando indicadores.</p>
+        </div>
+
+    <h2 style="margin-top:1.5rem">Plano de Ação Sugerido</h2>
+    <div class="phase">
+        <div class="phase-title">Fase 1 · Curto Prazo (0–6 meses)</div>
+        <ul>
+            <li>Mapear categorias não captadas e planejar abertura de vagas</li>
+            <li>Busca ativa de alunos PcD para registro AEE (dupla matrícula)</li>
+            <li>Iniciar compliance das 5 condicionalidades VAAR (incluindo Cond. IV exclusiva estadual)</li>
+            <li>Implementar BNCC Computação (obrigatório 2026) em todas as escolas estaduais</li>
+        </ul>
+    </div>
+    <div class="phase">
+        <div class="phase-title">Fase 2 · Médio Prazo (6–12 meses)</div>
+        <ul>
+            <li>Converter 314.452 alunos do EM de parcial para integral</li>
+            <li>Adesão ao PETI (Programa Escola em Tempo Integral) para escolas estaduais</li>
+            <li>Reclassificação de escolas rurais e em terras indígenas/quilombolas</li>
+            <li>Expandir oferta de Educação Profissional Técnica integrada ao EM</li>
+        </ul>
+    </div>
+    <div class="phase">
+        <div class="phase-title">Fase 3 · Longo Prazo (12–24 meses)</div>
+        <ul>
+            <li>Monitoramento contínuo do Censo Escolar</li>
+            <li>Dashboard de acompanhamento de indicadores VAAR</li>
+            <li>Ampliar tempo integral de 10.0% para meta PNE 50%</li>
+        </ul>
+    </div>
+
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 5 / 6</div>
+</div>
+
+<!-- PAGE 6: CTA -->
+<div class="page">
+    <div class="cta">
+        <h3>O Instituto i10 pode implementar este plano para a Rede Estadual de Paraná</h3>
+        <p>Tecnologia · Dados · Pessoas · Suporte Jurídico para maximizar sua captação FUNDEB</p>
+        <div class="services">
+            <div class="svc">Plataforma de Inteligência</div>
+            <div class="svc">Compliance VAAR</div>
+            <div class="svc">Busca Ativa AEE</div>
+            <div class="svc">Suporte Jurídico</div>
+            <div class="svc">BNCC Computação</div>
+        </div>
+        <div class="email">contato@institutoi10.org.br</div>
+    </div>
+
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 6 / 6</div>
+</div>
+
+</body></html>
