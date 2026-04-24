@@ -505,28 +505,28 @@ def build_html(uf, receita, vaar_info, inep, cats, pot):
             continue
         tier_key = label.split()[0]
         if tier_key == "T2":
-            recs.append(("ALTO", "T2", "Converter Parcial → Integral no Ensino Médio",
-                f"{fmt_n(pot['t2']['items'][0]['alunos'] if pot['t2']['items'] else 0)} alunos do EM em jornada parcial. Converter = ganho de {fmt(val)}/ano. EC 135 exige 4% para novas vagas integrais."))
+            recs.append(("ALTO", "T2", "Converter Parcial para Integral no Ensino Médio",
+                f"{fmt_n(pot['t2']['items'][0]['alunos'] if pot['t2']['items'] else 0)} alunos do EM em jornada parcial. A conversão representa um ganho de {fmt(val)}/ano. A EC 135 exige 4% do FUNDEB para novas vagas integrais."))
         elif tier_key == "T3":
             total_esp = sum(i['alunos'] for i in pot['t3']['items'])
-            recs.append(("ALTO", "T3", "Maximizar AEE (Dupla Matrícula)",
-                f"{fmt_n(total_esp)} alunos Ed. Especial. Se todos tiverem AEE = ganho de {fmt(val)}/ano."))
+            recs.append(("ALTO", "T3", "Maximizar o AEE (Dupla Matrícula)",
+                f"{fmt_n(total_esp)} alunos em Educação Especial. Se todos tiverem o AEE registrado, o ganho é de {fmt(val)}/ano."))
         elif tier_key == "T5":
             if not pot['t5']['recebe']:
-                recs.append(("ALTO", "T5", "Cumprir 5 Condicionalidades VAAR",
-                    f"Não recebe VAAR. Potencial: {fmt(val)}/ano. Requer: gestores por mérito, SAEB ≥80%, BNCC Computação, ICMS Educacional."))
+                recs.append(("ALTO", "T5", "Cumprir as 5 Condicionalidades do VAAR",
+                    f"Não recebe VAAR. Potencial: {fmt(val)}/ano. Requer: gestores selecionados por mérito, SAEB ≥ 80%, BNCC Computação e ICMS Educacional."))
             else:
-                recs.append(("MEDIO", "T5", "Maximizar VAAR",
-                    f"Já recebe VAAR ({fmt(pot['t5']['atual'])}). Potencial adicional: {fmt(val)}/ano otimizando indicadores."))
+                recs.append(("MEDIO", "T5", "Maximizar o VAAR",
+                    f"Já recebe VAAR ({fmt(pot['t5']['atual'])}). Potencial adicional de {fmt(val)}/ano com a otimização dos indicadores."))
         elif tier_key == "T6":
-            recs.append(("ALTO", "T6", "Implementar BNCC Computação + Expandir Integral",
-                f"Obrigatório 2026. Condicionalidade V do VAAR. 4% FUNDEB = {fmt(val)} para expansão integral."))
+            recs.append(("ALTO", "T6", "Implementar a BNCC Computação e Expandir o Integral",
+                f"Obrigatório a partir de 2026. Condicionalidade V do VAAR. 4% do FUNDEB = {fmt(val)} para expansão do tempo integral."))
         elif tier_key == "T1":
             recs.append(("MEDIO", "T1", f"Abrir {pot['t1']['items'].__len__()} Categorias Faltantes",
-                f"Categorias sem matrícula representam receita perdida. Potencial: {fmt(val)}/ano."))
+                f"Categorias sem matrícula representam receita não captada. Potencial: {fmt(val)}/ano."))
         elif tier_key == "T4":
-            recs.append(("MEDIO", "T4", "Reclassificar Escolas (Campo/Indígena/Quilombola)",
-                f"Escolas rurais ou em terras indígenas com classificação incorreta. Potencial: {fmt(val)}/ano."))
+            recs.append(("MEDIO", "T4", "Reclassificar Escolas (Campo / Indígena / Quilombola)",
+                f"Escolas rurais ou em terras indígenas com classificação incorreta no Educacenso. Potencial: {fmt(val)}/ano."))
 
     recs_html = ""
     for prio, tier, title, desc in recs:
@@ -697,32 +697,32 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
 
     <h3>T1 — Expansão VAAF: {len(pot['t1']['items'])} Categorias Não Captadas</h3>
     <div class="ctx ctx-sit">
-        <strong>Situação Atual:</strong> {f"A rede estadual de {nome_estado} opera em {pot['cats_ativas']} das {pot['cats_total']} categorias possíveis. Nenhuma categoria está completamente zerada, o que indica uma cobertura mínima em todas as etapas (EM, EF, EJA, Ed. Especial, Ed. Profissional)." if pot['cats_faltantes'] == 0 else f"A rede estadual de {nome_estado} opera em apenas {pot['cats_ativas']} das {pot['cats_total']} categorias possíveis. Existem {pot['cats_faltantes']} categorias com ZERO matrículas — cada uma representa receita FUNDEB que o estado contribui mas não recebe de volta."}
+        <strong>Situação Atual:</strong> {f"A rede estadual de {nome_estado} opera em {pot['cats_ativas']} das {pot['cats_total']} categorias possíveis. Nenhuma categoria está completamente zerada, o que indica cobertura mínima em todas as etapas (Ensino Médio, Ensino Fundamental, EJA, Educação Especial e Educação Profissional)." if pot['cats_faltantes'] == 0 else f"A rede estadual de {nome_estado} opera em apenas {pot['cats_ativas']} das {pot['cats_total']} categorias possíveis. Há {pot['cats_faltantes']} categorias com ZERO matrículas — cada uma representa receita do FUNDEB que o estado contribui, mas não recebe de volta."}
     </div>
     <div class="ctx ctx-pot">
         <strong>Potencial Não Captado: {fmt(pot['t1']['total'])}</strong><br>
-        {"Mesmo com todas as categorias ativas, há oportunidade de expandir as que têm pouquíssimas matrículas. Categorias com menos de 100 alunos podem ser ampliadas com custo operacional baixo." if pot['cats_faltantes'] == 0 else f"Cada categoria nova aberta com apenas 10 alunos já gera receita imediata. Com 50 alunos por categoria, o ganho total estimado é de {fmt(pot['t1']['total'])}/ano."}
+        {"Mesmo com todas as categorias ativas, há oportunidade de expandir aquelas com pouquíssimas matrículas. Categorias com menos de 100 alunos podem ser ampliadas com baixo custo operacional." if pot['cats_faltantes'] == 0 else f"Cada categoria aberta com apenas 10 alunos já gera receita imediata. Com 50 alunos por categoria, o ganho total estimado chega a {fmt(pot['t1']['total'])}/ano."}
     </div>
     <div class="ctx ctx-acao ctx-curto">
         <strong>Como Captar</strong> <span class="tag-prazo tag-curto">CURTO PRAZO</span><br>
-        Identificar categorias sub-representadas no Educacenso. Abrir turmas ou formalizar parcerias conveniadas antes do Censo Escolar (28/mai/2026). Bastam 10 matrículas por categoria para iniciar a captação.
+        Identificar categorias sub-representadas no Educacenso. Abrir turmas ou formalizar parcerias conveniadas antes do Censo Escolar (28/mai/2026). São necessárias apenas 10 matrículas por categoria para iniciar a captação.
     </div>
     <table>
         <tr><th>Categoria Faltante</th><th class="right">VAAF/Aluno</th><th class="right">Ganho +10</th><th class="right">Ganho +50</th></tr>
         {t1_rows}
     </table>
 
-    <h3>T2 — Conversão Parcial → Integral</h3>
+    <h3>T2 — Conversão de Parcial para Integral</h3>
     <div class="ctx ctx-sit">
-        <strong>Situação Atual:</strong> A rede estadual de {nome_estado} mantém {fmt_n(inep.get('em_integral_est',0))} alunos em tempo integral no Ensino Médio ({pot['t6']['pct_integral']:.1f}% do total). Isso significa que {100 - pot['t6']['pct_integral']:.1f}% dos estudantes do EM estão em jornada parcial (meio período). No Ensino Fundamental estadual, a situação é semelhante. A média do Nordeste já supera 20% de integral — {nome_estado} está significativamente abaixo.
+        <strong>Situação Atual:</strong> A rede estadual de {nome_estado} mantém apenas {fmt_n(inep.get('em_integral_est',0))} alunos em tempo integral no Ensino Médio — apenas {pot['t6']['pct_integral']:.1f}% do total. Isso significa que {100 - pot['t6']['pct_integral']:.1f}% dos estudantes do EM frequentam jornada parcial (meio período). No Ensino Fundamental estadual, o cenário é semelhante. Para referência, a média da região Nordeste já ultrapassa 20% de matrículas integrais — {nome_estado} está muito abaixo desse patamar.
     </div>
     <div class="ctx ctx-pot">
         <strong>Potencial Não Captado: {fmt(pot['t2']['total'])}</strong><br>
-        Cada aluno convertido de EM Parcial (fator 1,25) para EM Integral (fator 1,52) gera +R$ 1.610/aluno-ano. No Ensino Fundamental, a conversão parcial→integral gera até +R$ 2.981/aluno-ano. Este é o maior potencial de captação da rede estadual.
+        Cada aluno convertido de EM Parcial (fator 1,25) para EM Integral (fator 1,52) gera um acréscimo de R$ 1.610 por aluno/ano. No Ensino Fundamental, a conversão de parcial para integral chega a gerar até R$ 2.981 por aluno/ano. Esta é a maior oportunidade de captação da rede estadual.
     </div>
     <div class="ctx ctx-acao ctx-medio">
         <strong>Como Captar</strong> <span class="tag-prazo tag-medio">MÉDIO PRAZO</span><br>
-        Aderir ao PETI (Programa Escola em Tempo Integral) do MEC, que oferece R$ 1.693/aluno de fomento federal. Ampliar jornada escolar para 7+ horas diárias com atividades complementares. Priorizar escolas com infraestrutura já adequada. O registro no Educacenso como "integral" ativa automaticamente o fator mais alto no FUNDEB do ano seguinte.
+        Aderir ao PETI (Programa Escola em Tempo Integral) do MEC, que oferece R$ 1.693/aluno como fomento federal. Ampliar a jornada escolar para 7 horas diárias ou mais, com atividades complementares. Priorizar escolas cuja infraestrutura já seja adequada. O simples registro no Educacenso como "integral" ativa automaticamente o fator mais alto no FUNDEB do ano seguinte.
     </div>
     <table>
         <tr><th>De (Parcial)</th><th>Para (Integral)</th><th class="right">Alunos</th><th class="right">Dif./Aluno</th><th class="right">Ganho Total</th></tr>
@@ -730,17 +730,17 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
     </table>
     <p class="bold" style="margin-top:0.3rem">Subtotal T2 &nbsp; <span class="accent">{fmt(pot['t2']['total'])}</span></p>
 
-    <h3>T3 — AEE Dupla Matrícula (Educação Especial)</h3>
+    <h3>T3 — AEE e Dupla Matrícula (Educação Especial)</h3>
     <div class="ctx ctx-sit">
-        <strong>Situação Atual:</strong> A rede estadual reporta {fmt_n(sum(i['alunos'] for i in pot['t3']['items']))} alunos em Educação Especial (classes comuns) distribuídos entre Ensino Médio, Fundamental e Infantil. Porém, para que esses alunos gerem a "dupla matrícula" no FUNDEB, é necessário que cada um tenha: (1) laudo médico registrado, (2) atendimento AEE efetivo em sala de recursos multifuncionais, e (3) registro correto no Educacenso como aluno AEE. Muitos estados reportam o aluno na classe comum, mas NÃO registram o AEE — perdendo o fator adicional de 1,40.
+        <strong>Situação Atual:</strong> A rede estadual registra {fmt_n(sum(i['alunos'] for i in pot['t3']['items']))} alunos em Educação Especial (classes comuns), distribuídos entre Ensino Médio, Fundamental e Educação Infantil. Entretanto, para que esses alunos gerem a chamada "dupla matrícula" no FUNDEB, é necessário que cada um possua: (1) laudo médico registrado, (2) atendimento AEE efetivo em sala de recursos multifuncionais e (3) registro correto no Educacenso como aluno com AEE. Na prática, muitos estados incluem o aluno na classe comum, mas NÃO registram o AEE — perdendo assim o fator adicional de 1,40.
     </div>
     <div class="ctx ctx-pot">
         <strong>Potencial Não Captado: {fmt(pot['t3']['total'])}</strong><br>
-        Cada aluno PcD com AEE registrado gera uma segunda contagem de {fmt(round(VAAF_MIN * 1.40))}/ano ALÉM da matrícula regular. Não é necessário matricular novos alunos — basta regularizar o registro dos que já existem na rede.
+        Cada aluno com deficiência que tenha o AEE registrado gera uma segunda contagem de {fmt(round(VAAF_MIN * 1.40))}/ano, além da matrícula regular. Não é necessário matricular novos alunos — basta regularizar o registro daqueles que já frequentam a rede.
     </div>
     <div class="ctx ctx-acao ctx-curto">
         <strong>Como Captar</strong> <span class="tag-prazo tag-curto">CURTO PRAZO</span><br>
-        Realizar busca ativa de alunos PcD sem laudo ou sem AEE registrado. Equipar salas de recursos multifuncionais. Garantir que o Educacenso registre TANTO a matrícula regular QUANTO o atendimento AEE para cada aluno elegível. Prazo: antes de 28/mai/2026 (Censo Escolar).
+        Realizar busca ativa de alunos com deficiência que estejam sem laudo ou sem AEE registrado. Equipar salas de recursos multifuncionais nas escolas estaduais. Garantir que o Educacenso registre tanto a matrícula regular quanto o atendimento AEE de cada aluno elegível. Prazo: antes de 28/mai/2026 (data de referência do Censo Escolar).
     </div>
     <table>
         <tr><th>Categoria</th><th class="right">Alunos Ed. Esp.</th><th class="right">VAAF AEE/Aluno</th><th class="right">Ganho Adicional</th></tr>
@@ -755,15 +755,15 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
 <div class="page">
     <h3>T4 — Reclassificação de Localidade</h3>
     <div class="ctx ctx-sit">
-        <strong>Situação Atual:</strong> A rede estadual de {nome_estado} reporta {fmt_n(pot['t4']['mat_urbanas'])} matrículas classificadas como "urbanas" e {fmt_n(sum(c.get('Campo',0) for c in cats.values()))} como "campo" (rural). No FUNDEB, escolas em área rural recebem automaticamente +15% sobre o fator de ponderação, e escolas em terras indígenas ou quilombolas recebem +40%. Muitas escolas estaduais localizadas em perímetros rurais, distritos ou próximas a comunidades tradicionais estão classificadas incorretamente como urbanas no Educacenso — deixando de captar esses multiplicadores.
+        <strong>Situação Atual:</strong> A rede estadual de {nome_estado} registra {fmt_n(pot['t4']['mat_urbanas'])} matrículas classificadas como "urbanas" e {fmt_n(sum(c.get('Campo',0) for c in cats.values()))} como "campo" (rural). No FUNDEB, escolas em área rural recebem automaticamente um acréscimo de 15% sobre o fator de ponderação, enquanto escolas em terras indígenas ou quilombolas recebem 40% a mais. Diversas escolas estaduais localizadas em perímetros rurais, distritos ou nas proximidades de comunidades tradicionais encontram-se classificadas incorretamente como urbanas no Educacenso — deixando de captar esses multiplicadores.
     </div>
     <div class="ctx ctx-pot">
         <strong>Potencial Não Captado: {fmt(pot['t4']['total'])}</strong><br>
-        Se apenas 10% das matrículas urbanas forem corretamente reclassificadas como "campo", o ganho é de {fmt(pot['t4']['campo'])}/ano. Se 5% forem reclassificadas como indígena/quilombola, o ganho adicional é de {fmt(pot['t4']['ind'])}/ano.
+        Se apenas 10% das matrículas hoje classificadas como urbanas forem corretamente reclassificadas como "campo", o ganho é de {fmt(pot['t4']['campo'])}/ano. Se 5% forem reclassificadas como indígena ou quilombola, o ganho adicional alcança {fmt(pot['t4']['ind'])}/ano.
     </div>
     <div class="ctx ctx-acao ctx-curto">
         <strong>Como Captar</strong> <span class="tag-prazo tag-curto">CURTO PRAZO</span><br>
-        Auditar a classificação de localidade de cada escola estadual no Educacenso. Cruzar com dados do IBGE (setores censitários rurais) e da FUNAI/Fundação Palmares (terras indígenas e quilombolas). Corrigir classificações incorretas antes do Censo Escolar 2026. Não requer nenhum investimento — apenas correção cadastral.
+        Auditar a classificação de localidade de cada escola estadual no Educacenso. Cruzar os dados com o IBGE (setores censitários rurais) e com a FUNAI e a Fundação Palmares (terras indígenas e territórios quilombolas). Corrigir as classificações incorretas antes do Censo Escolar 2026. Não requer investimento financeiro — apenas correção cadastral.
     </div>
     <table>
         <tr><td>Matrículas urbanas</td><td class="right bold">{fmt_n(pot['t4']['mat_urbanas'])}</td><td>Tem matrículas campo</td><td class="right bold">{"Sim" if pot['t4']['tem_campo'] else "Não"}</td></tr>
@@ -773,15 +773,15 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
 
     <h3>T5 — Complementação Federal (VAAR + VAAT)</h3>
     <div class="ctx ctx-sit">
-        <strong>Situação Atual:</strong> {"A rede estadual de " + nome_estado + " NÃO recebe complementação VAAR atualmente. Isso significa que o estado não cumpre (ou não registrou) as 5 condicionalidades exigidas pelo MEC: (I) seleção de diretores por mérito, (II) participação mínima de 80% no SAEB, (III) redução de desigualdades, (IV) ICMS Educacional — exclusiva de estados, (V) implementação da BNCC incluindo BNCC Computação. São R$ 7,5 bilhões disponíveis nacionalmente que " + nome_estado + " não está acessando." if not recebe_vaar else "A rede estadual de " + nome_estado + " JÁ recebe complementação VAAR no valor de " + fmt(vaar_atual) + "/ano. Porém, há potencial de ampliar esse valor otimizando os indicadores de atendimento e aprendizagem que determinam o coeficiente de distribuição."}
+        <strong>Situação Atual:</strong> {"A rede estadual de " + nome_estado + " NÃO recebe a complementação VAAR atualmente. Isso indica que o estado não cumpre — ou não registrou no SIMEC — as 5 condicionalidades exigidas pelo MEC: (I) seleção de diretores por critérios de mérito, (II) participação mínima de 80% dos alunos no SAEB, (III) redução de desigualdades de aprendizagem, (IV) ICMS Educacional — exclusiva de redes estaduais, e (V) implementação da BNCC, incluindo o módulo de Computação. São R$ 7,5 bilhões disponíveis nacionalmente que " + nome_estado + " não está acessando." if not recebe_vaar else "A rede estadual de " + nome_estado + " já recebe a complementação VAAR no valor de " + fmt(vaar_atual) + "/ano. Contudo, há potencial para ampliar esse valor por meio da otimização dos indicadores de atendimento e aprendizagem que determinam o coeficiente de distribuição."}
     </div>
     <div class="ctx ctx-pot">
         <strong>Potencial Não Captado: {fmt(pot['t5']['total'])}</strong><br>
-        {"Com base na mediana nacional de R$ 710/aluno VAAR e " + fmt_n(pot['total_mat_est']) + " matrículas estaduais, o potencial estimado é de " + fmt(pot['t5']['potencial']) + "/ano. Este recurso vem integralmente da União — não sai do caixa do estado." if not recebe_vaar else "Potencial adicional de " + fmt(pot['t5']['total']) + "/ano com melhoria nos indicadores de resultado."}
+        {"Com base na mediana nacional de R$ 710 por aluno (VAAR) e nas " + fmt_n(pot['total_mat_est']) + " matrículas da rede estadual, o potencial estimado é de " + fmt(pot['t5']['potencial']) + "/ano. Esse recurso vem integralmente da União — não sai do caixa do estado." if not recebe_vaar else "Potencial adicional de " + fmt(pot['t5']['total']) + "/ano com a melhoria dos indicadores de resultado."}
     </div>
     <div class="ctx ctx-acao {"ctx-medio" if not recebe_vaar else "ctx-curto"}">
         <strong>Como Captar</strong> <span class="tag-prazo {"tag-medio" if not recebe_vaar else "tag-curto"}">{"MÉDIO PRAZO" if not recebe_vaar else "CURTO PRAZO"}</span><br>
-        {"Registrar as 5 condicionalidades no SIMEC (módulo VAAR/FUNDEB). Atenção especial à Condicionalidade IV (ICMS Educacional), que é EXCLUSIVA de redes estaduais. Implementar BNCC Computação (Cond. V) com os 3 eixos: Pensamento Computacional, Mundo Digital e Cultura Digital. Garantir participação mínima de 80% dos alunos no SAEB. Prazo habitual: agosto-setembro do ano corrente." if not recebe_vaar else "Melhorar indicadores SAEB, ampliar participação dos alunos nas avaliações, e garantir que a Cond. IV (ICMS Educacional) e Cond. V (BNCC Computação) estejam plenamente atendidas para maximizar o coeficiente VAAR."}
+        {"Registrar as 5 condicionalidades no SIMEC (módulo VAAR/FUNDEB). Atenção especial à Condicionalidade IV (ICMS Educacional), que é exclusiva das redes estaduais. Implementar a BNCC Computação (Condicionalidade V) com os 3 eixos obrigatórios: Pensamento Computacional, Mundo Digital e Cultura Digital. Garantir participação mínima de 80% dos alunos no SAEB. O prazo habitual para registro é agosto a setembro do ano corrente." if not recebe_vaar else "Melhorar os indicadores do SAEB, ampliar a participação dos alunos nas avaliações e garantir que a Condicionalidade IV (ICMS Educacional) e a Condicionalidade V (BNCC Computação) estejam plenamente atendidas para maximizar o coeficiente VAAR."}
     </div>
     <div class="t5-grid">
         <div>
@@ -801,15 +801,15 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
 <div class="page">
     <h3>T6 — EC 135/2024 + BNCC Computação</h3>
     <div class="ctx ctx-sit">
-        <strong>Situação Atual:</strong> A Emenda Constitucional 135/2024 determina que 4% da receita FUNDEB de cada ente DEVE ser destinada obrigatoriamente à criação de NOVAS vagas em tempo integral. Para a rede estadual de {nome_estado}, isso equivale a {fmt(pot['t6']['pct4'])}/ano. Atualmente, apenas {pot['t6']['pct_integral']:.1f}% dos alunos do EM estão em integral ({fmt_n(inep.get('em_integral_est',0))} alunos). A meta do PNE é 50%. Além disso, a BNCC Computação tornou-se obrigatória em 2026 — é uma das condicionalidades (V) do VAAR.
+        <strong>Situação Atual:</strong> A Emenda Constitucional 135/2024 determina que 4% da receita do FUNDEB de cada ente federado deve ser destinada obrigatoriamente à criação de novas vagas em tempo integral. Para a rede estadual de {nome_estado}, isso equivale a {fmt(pot['t6']['pct4'])} por ano. Atualmente, apenas {pot['t6']['pct_integral']:.1f}% dos alunos do Ensino Médio frequentam o regime integral ({fmt_n(inep.get('em_integral_est',0))} alunos). A meta do PNE é alcançar 50%. Além disso, a BNCC Computação tornou-se obrigatória a partir de 2026 e é uma das condicionalidades (V) do VAAR.
     </div>
     <div class="ctx ctx-pot">
         <strong>Potencial Não Captado: {fmt(pot['t6']['total'])}</strong><br>
-        Os 4% obrigatórios ({fmt(pot['t6']['pct4'])}) permitem criar aproximadamente {fmt_n(pot['t6']['novas_vagas'])} novas vagas integrais. Cada vaga nova conta com o fator integral (1,52 para EM) no FUNDEB do ano seguinte + R$ 1.693/aluno do PETI federal. Se o estado NÃO expandir integral, esses recursos ficam sem destinação legal e podem gerar problemas na prestação de contas.
+        Os 4% obrigatórios ({fmt(pot['t6']['pct4'])}) permitem criar aproximadamente {fmt_n(pot['t6']['novas_vagas'])} novas vagas em tempo integral. Cada vaga criada passa a contar com o fator integral (1,52 para o Ensino Médio) no FUNDEB do ano seguinte, além de R$ 1.693/aluno de fomento federal via PETI. Caso o estado não expanda o tempo integral, esses recursos ficam sem destinação legal e podem gerar irregularidades na prestação de contas.
     </div>
     <div class="ctx ctx-acao ctx-medio">
         <strong>Como Captar</strong> <span class="tag-prazo tag-medio">MÉDIO PRAZO</span><br>
-        Aderir ao PETI (Programa Escola em Tempo Integral) do MEC. Selecionar escolas com infraestrutura para jornada ampliada (refeitório, espaço para atividades). Implementar BNCC Computação em todas as escolas estaduais — é obrigatório e vinculado ao recebimento do VAAR. Registrar expansão no Educacenso e comprovar no SIMEC.
+        Aderir ao PETI (Programa Escola em Tempo Integral) do MEC. Selecionar escolas com infraestrutura adequada para jornada ampliada (refeitório, espaços para atividades). Implementar a BNCC Computação em todas as escolas estaduais — é obrigatória e está vinculada ao recebimento do VAAR. Registrar a expansão no Educacenso e comprovar a execução no SIMEC.
     </div>
     <div class="t5-grid">
         <div>
@@ -841,27 +841,27 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
     <div class="phase">
         <div class="phase-title">Fase 1 · Curto Prazo (0–6 meses)</div>
         <ul>
-            <li>Mapear categorias não captadas e planejar abertura de vagas</li>
-            <li>Busca ativa de alunos PcD para registro AEE (dupla matrícula)</li>
-            <li>Iniciar compliance das 5 condicionalidades VAAR (incluindo Cond. IV exclusiva estadual)</li>
-            <li>Implementar BNCC Computação (obrigatório 2026) em todas as escolas estaduais</li>
+            <li>Mapear categorias não captadas e planejar a abertura de vagas</li>
+            <li>Realizar busca ativa de alunos com deficiência para registro do AEE (dupla matrícula)</li>
+            <li>Iniciar o cumprimento das 5 condicionalidades do VAAR (incluindo a Cond. IV, exclusiva da rede estadual)</li>
+            <li>Implementar a BNCC Computação (obrigatória a partir de 2026) em todas as escolas estaduais</li>
         </ul>
     </div>
     <div class="phase">
         <div class="phase-title">Fase 2 · Médio Prazo (6–12 meses)</div>
         <ul>
-            <li>Converter {fmt_n(inep.get('em_parcial_est',0))} alunos do EM de parcial para integral</li>
-            <li>Adesão ao PETI (Programa Escola em Tempo Integral) para escolas estaduais</li>
-            <li>Reclassificação de escolas rurais e em terras indígenas/quilombolas</li>
-            <li>Expandir oferta de Educação Profissional Técnica integrada ao EM</li>
+            <li>Converter {fmt_n(inep.get('em_parcial_est',0))} alunos do Ensino Médio de parcial para integral</li>
+            <li>Aderir ao PETI (Programa Escola em Tempo Integral) para as escolas estaduais</li>
+            <li>Reclassificar escolas rurais e em terras indígenas ou quilombolas</li>
+            <li>Expandir a oferta de Educação Profissional Técnica integrada ao Ensino Médio</li>
         </ul>
     </div>
     <div class="phase">
         <div class="phase-title">Fase 3 · Longo Prazo (12–24 meses)</div>
         <ul>
-            <li>Monitoramento contínuo do Censo Escolar</li>
-            <li>Dashboard de acompanhamento de indicadores VAAR</li>
-            <li>Ampliar tempo integral de {pot['t6']['pct_integral']:.1f}% para meta PNE 50%</li>
+            <li>Manter monitoramento contínuo do Censo Escolar</li>
+            <li>Implantar painel de acompanhamento dos indicadores do VAAR</li>
+            <li>Ampliar o tempo integral de {pot['t6']['pct_integral']:.1f}% para a meta de 50% do PNE</li>
         </ul>
     </div>
 
