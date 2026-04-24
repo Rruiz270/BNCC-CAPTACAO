@@ -31,7 +31,7 @@ BASE = Path(__file__).parent
 XLSX_RECEITA = BASE / "01_receita_total_fundeb.xlsx"
 XLSX_VAAR = BASE / "06_redes_beneficiadas_vaar.xlsx"
 SINOPSE = BASE / "inep/sinopse_estatistica_censo_escolar_2024/Sinopse_Estatistica_da_Educação_Basica_2024.xlsx"
-OUT_DIR = BASE / "relatorios_estadual"
+OUT_DIR = Path("/Users/Raphael/Downloads/relatorios_estadual")
 OUT_DIR.mkdir(exist_ok=True)
 FONTS_DIR = BASE / "fonts"
 
@@ -115,6 +115,8 @@ def safe_int(v):
 
 
 def fmt(v):
+    if abs(v) >= 1_000_000_000:
+        return f"R$ {v/1_000_000_000:,.2f} bi".replace(",", "X").replace(".", ",").replace("X", ".")
     if abs(v) >= 1_000_000:
         return f"R$ {v/1_000_000:,.1f}M".replace(",", "X").replace(".", ",").replace("X", ".")
     if abs(v) >= 1_000:
