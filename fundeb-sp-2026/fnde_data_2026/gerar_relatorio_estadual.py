@@ -126,6 +126,10 @@ def fmt_n(v):
     return f"{v:,}".replace(",", ".")
 
 
+def fmt_pct(v):
+    return f"{v:.1f}".replace(".", ",")
+
+
 def load_receita(uf):
     df = pd.read_excel(XLSX_RECEITA, header=8, sheet_name=0)
     df.columns = ['uf', 'codigo_ibge', 'entidade', 'receita_contribuicao',
@@ -653,8 +657,8 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
     </div>
     <div>
         <div class="big-number">{fmt(pot['potencial_total'])}</div>
-        <div class="big-label">em recursos FUNDEB que a Rede Estadual de {nome_estado} não está captando</div>
-        <div><span class="pct-badge">+{pot['pct_ganho']:.1f}% sobre a receita atual</span></div>
+        <div class="big-label">em recursos do FUNDEB que a Rede Estadual de {nome_estado} não está captando</div>
+        <div><span class="pct-badge">+{fmt_pct(pot['pct_ganho'])}% sobre a receita atual</span></div>
     </div>
     <div class="footer">
         <span class="brand-small">Instituto i10</span> — Orquestrando o Futuro da Educação Pública<br>
@@ -666,16 +670,16 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
 <div class="page">
     <h2>Resumo Executivo</h2>
     <div class="metrics">
-        <div class="metric"><div class="label">Receita FUNDEB Atual</div><div class="value">{fmt(pot['receita_fundeb'])}</div></div>
+        <div class="metric"><div class="label">Receita Atual do FUNDEB</div><div class="value">{fmt(pot['receita_fundeb'])}</div></div>
         <div class="metric"><div class="label">Potencial Não Captado</div><div class="value accent">{fmt(pot['potencial_total'])}</div></div>
-        <div class="metric"><div class="label">Ganho Percentual</div><div class="value green">+{pot['pct_ganho']:.1f}%</div></div>
+        <div class="metric"><div class="label">Ganho Percentual</div><div class="value green">+{fmt_pct(pot['pct_ganho'])}%</div></div>
         <div class="metric"><div class="label">Complementação VAAR</div><div class="value {vaar_class}">{vaar_status}</div></div>
     </div>
     <div class="metrics">
         <div class="metric"><div class="label">Matrículas Rede Estadual</div><div class="value">{fmt_n(pot['total_mat_est'])}</div></div>
         <div class="metric"><div class="label">Categorias Ativas</div><div class="value">{pot['cats_ativas']} / {pot['cats_total']}</div></div>
         <div class="metric"><div class="label">Categorias Faltantes</div><div class="value red">{pot['cats_faltantes']}</div></div>
-        <div class="metric"><div class="label">% Ensino Médio Integral</div><div class="value">{pot['t6']['pct_integral']:.1f}%</div></div>
+        <div class="metric"><div class="label">% Ensino Médio Integral</div><div class="value">{fmt_pct(pot['t6']['pct_integral'])}%</div></div>
     </div>
 
     <h3>Decomposição do Potencial por Alavanca</h3>
@@ -685,7 +689,7 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
     <div class="alert">
         <strong>ALERTA CRÍTICO:</strong> A Rede Estadual de {nome_estado} {"não recebe" if not pot['recebe_vaar'] else "recebe"} complementação VAAR
         (R$ 7,5 bilhões disponíveis nacionalmente).
-        {"Potencial estimado: " + fmt(pot['t5']['total']) + "/ano se cumprir as 5 condicionalidades MEC." if not pot['recebe_vaar'] else "Valor atual: " + fmt(pot['t5']['atual']) + "/ano. Potencial adicional: " + fmt(pot['t5']['total']) + "."}
+        {"Potencial estimado: " + fmt(pot['t5']['total']) + "/ano se cumprir as 5 condicionalidades do MEC." if not pot['recebe_vaar'] else "Valor atual: " + fmt(pot['t5']['atual']) + "/ano. Potencial adicional: " + fmt(pot['t5']['total']) + "."}
     </div>
 
     <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Educação Pública &nbsp;&nbsp; 2 / 7</div>
@@ -714,11 +718,11 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
 
     <h3>T2 — Conversão de Parcial para Integral</h3>
     <div class="ctx ctx-sit">
-        <strong>Situação Atual:</strong> A rede estadual de {nome_estado} mantém apenas {fmt_n(inep.get('em_integral_est',0))} alunos em tempo integral no Ensino Médio — apenas {pot['t6']['pct_integral']:.1f}% do total. Isso significa que {100 - pot['t6']['pct_integral']:.1f}% dos estudantes do EM frequentam jornada parcial (meio período). No Ensino Fundamental estadual, o cenário é semelhante. Para referência, a média da região Nordeste já ultrapassa 20% de matrículas integrais — {nome_estado} está muito abaixo desse patamar.
+        <strong>Situação Atual:</strong> A rede estadual de {nome_estado} mantém {fmt_n(inep.get('em_integral_est',0))} alunos em tempo integral no Ensino Médio — apenas {str(pot['t6']['pct_integral']).replace('.',',')}% do total. Isso significa que {str(round(100 - pot['t6']['pct_integral'],1)).replace('.',',')}% dos estudantes do EM frequentam a jornada parcial (meio período). No Ensino Fundamental estadual, o cenário é semelhante. Para referência, a média da região Nordeste já ultrapassa 20% de matrículas em tempo integral — {nome_estado} está muito abaixo desse patamar.
     </div>
     <div class="ctx ctx-pot">
         <strong>Potencial Não Captado: {fmt(pot['t2']['total'])}</strong><br>
-        Cada aluno convertido de EM Parcial (fator 1,25) para EM Integral (fator 1,52) gera um acréscimo de R$ 1.610 por aluno/ano. No Ensino Fundamental, a conversão de parcial para integral chega a gerar até R$ 2.981 por aluno/ano. Esta é a maior oportunidade de captação da rede estadual.
+        Cada aluno convertido de EM Parcial (fator 1,25) para EM Integral (fator 1,52) gera um acréscimo de R$ 1.610 por aluno/ano. No Ensino Fundamental, a conversão de parcial para integral chega a gerar até R$ 2.981 por aluno/ano. Essa é a maior oportunidade de captação da rede estadual.
     </div>
     <div class="ctx ctx-acao ctx-medio">
         <strong>Como Captar</strong> <span class="tag-prazo tag-medio">MÉDIO PRAZO</span><br>
@@ -781,7 +785,7 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
     </div>
     <div class="ctx ctx-acao {"ctx-medio" if not recebe_vaar else "ctx-curto"}">
         <strong>Como Captar</strong> <span class="tag-prazo {"tag-medio" if not recebe_vaar else "tag-curto"}">{"MÉDIO PRAZO" if not recebe_vaar else "CURTO PRAZO"}</span><br>
-        {"Registrar as 5 condicionalidades no SIMEC (módulo VAAR/FUNDEB). Atenção especial à Condicionalidade IV (ICMS Educacional), que é exclusiva das redes estaduais. Implementar a BNCC Computação (Condicionalidade V) com os 3 eixos obrigatórios: Pensamento Computacional, Mundo Digital e Cultura Digital. Garantir participação mínima de 80% dos alunos no SAEB. O prazo habitual para registro é agosto a setembro do ano corrente." if not recebe_vaar else "Melhorar os indicadores do SAEB, ampliar a participação dos alunos nas avaliações e garantir que a Condicionalidade IV (ICMS Educacional) e a Condicionalidade V (BNCC Computação) estejam plenamente atendidas para maximizar o coeficiente VAAR."}
+        {"Registrar as 5 condicionalidades no SIMEC (módulo VAAR/FUNDEB). Atenção especial à Condicionalidade IV (ICMS Educacional), que é exclusiva das redes estaduais. Implementar a BNCC Computação (Condicionalidade V) com os 3 eixos obrigatórios: Pensamento Computacional, Mundo Digital e Cultura Digital. Garantir participação mínima de 80% dos alunos no SAEB. O prazo habitual para registro vai de agosto a setembro do ano corrente." if not recebe_vaar else "Melhorar os indicadores do SAEB, ampliar a participação dos alunos nas avaliações e garantir que a Condicionalidade IV (ICMS Educacional) e a Condicionalidade V (BNCC Computação) estejam plenamente atendidas para maximizar o coeficiente VAAR."}
     </div>
     <div class="t5-grid">
         <div>
@@ -801,7 +805,7 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
 <div class="page">
     <h3>T6 — EC 135/2024 + BNCC Computação</h3>
     <div class="ctx ctx-sit">
-        <strong>Situação Atual:</strong> A Emenda Constitucional 135/2024 determina que 4% da receita do FUNDEB de cada ente federado deve ser destinada obrigatoriamente à criação de novas vagas em tempo integral. Para a rede estadual de {nome_estado}, isso equivale a {fmt(pot['t6']['pct4'])} por ano. Atualmente, apenas {pot['t6']['pct_integral']:.1f}% dos alunos do Ensino Médio frequentam o regime integral ({fmt_n(inep.get('em_integral_est',0))} alunos). A meta do PNE é alcançar 50%. Além disso, a BNCC Computação tornou-se obrigatória a partir de 2026 e é uma das condicionalidades (V) do VAAR.
+        <strong>Situação Atual:</strong> A Emenda Constitucional 135/2024 determina que 4% da receita do FUNDEB de cada ente federado deve ser destinada obrigatoriamente à criação de novas vagas em tempo integral. Para a rede estadual de {nome_estado}, isso equivale a {fmt(pot['t6']['pct4'])} por ano. Atualmente, apenas {fmt_pct(pot['t6']['pct_integral'])}% dos alunos do Ensino Médio frequentam o regime integral ({fmt_n(inep.get('em_integral_est',0))} alunos). A meta do PNE é alcançar 50%. Além disso, a BNCC Computação tornou-se obrigatória a partir de 2026 e é uma das condicionalidades (V) do VAAR.
     </div>
     <div class="ctx ctx-pot">
         <strong>Potencial Não Captado: {fmt(pot['t6']['total'])}</strong><br>
@@ -813,12 +817,12 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
     </div>
     <div class="t5-grid">
         <div>
-            <div class="t5-item"><span class="t5-label">4% FUNDEB (obrigatório p/ integral)</span><span class="t5-val accent">{fmt(pot['t6']['pct4'])}</span></div>
-            <div class="t5-item"><span class="t5-label">Novas vagas possíveis com 4%</span><span class="t5-val accent">~{fmt_n(pot['t6']['novas_vagas'])} alunos</span></div>
+            <div class="t5-item"><span class="t5-label">4% do FUNDEB (obrigatório para integral)</span><span class="t5-val accent">{fmt(pot['t6']['pct4'])}</span></div>
+            <div class="t5-item"><span class="t5-label">Novas vagas possíveis com os 4%</span><span class="t5-val accent">~{fmt_n(pot['t6']['novas_vagas'])} alunos</span></div>
         </div>
         <div>
-            <div class="t5-item"><span class="t5-label">Tempo integral atual</span><span class="t5-val">{fmt_n(inep.get('em_integral_est',0))} ({pot['t6']['pct_integral']:.1f}%)</span></div>
-            <div class="t5-item"><span class="t5-label">PETI fomento federal/aluno</span><span class="t5-val">{fmt(PETI_FOMENTO)}</span></div>
+            <div class="t5-item"><span class="t5-label">Tempo integral atual</span><span class="t5-val">{fmt_n(inep.get('em_integral_est',0))} ({fmt_pct(pot['t6']['pct_integral'])}%)</span></div>
+            <div class="t5-item"><span class="t5-label">PETI — fomento federal por aluno</span><span class="t5-val">{fmt(PETI_FOMENTO)}</span></div>
         </div>
     </div>
 
@@ -861,7 +865,7 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
         <ul>
             <li>Manter monitoramento contínuo do Censo Escolar</li>
             <li>Implantar painel de acompanhamento dos indicadores do VAAR</li>
-            <li>Ampliar o tempo integral de {pot['t6']['pct_integral']:.1f}% para a meta de 50% do PNE</li>
+            <li>Ampliar o tempo integral de {fmt_pct(pot['t6']['pct_integral'])}% para a meta de 50% do PNE</li>
         </ul>
     </div>
 
@@ -872,7 +876,7 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
 <div class="page">
     <div class="cta">
         <h3>O Instituto i10 pode implementar este plano para a Rede Estadual de {nome_estado}</h3>
-        <p>Tecnologia · Dados · Pessoas · Suporte Jurídico para maximizar sua captação FUNDEB</p>
+        <p>Tecnologia · Dados · Pessoas · Suporte Jurídico para maximizar a captação do FUNDEB</p>
         <div class="services">
             <div class="svc">Plataforma de Inteligência</div>
             <div class="svc">Compliance VAAR</div>
