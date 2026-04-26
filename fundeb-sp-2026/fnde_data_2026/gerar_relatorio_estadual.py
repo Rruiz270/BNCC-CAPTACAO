@@ -227,13 +227,26 @@ def load_inep(uf):
     if row:
         d['prof_tec_integrado_est'] = safe_int(row[7])
 
-    ws = wb['Classes Comuns 1.40']
-    row = find_state_row(ws, state_name)
-    if row:
-        d['esp_total'] = safe_int(row[4])
-        d['esp_ei'] = safe_int(row[5])
-        d['esp_ef'] = safe_int(row[8])
-        d['esp_em'] = safe_int(row[11])
+    # Ed. Especial: 1.41 tem por dependência administrativa (estadual separado)
+    # 1.40 tem por etapa (EI/EF/EM) mas TODAS as redes juntas
+    ws41 = wb['1.41']
+    row41 = find_state_row(ws41, state_name)
+    ws40 = wb['Classes Comuns 1.40']
+    row40 = find_state_row(ws40, state_name)
+    if row41 and row40:
+        esp_est_total = safe_int(row41[7]) + safe_int(row41[12])  # Estadual urbano + rural
+        esp_all_total = safe_int(row40[4])  # Total todas as redes
+        esp_all_ei = safe_int(row40[5])
+        esp_all_ef = safe_int(row40[8])
+        esp_all_em = safe_int(row40[11])
+        # Distribuir o total estadual proporcionalmente entre EI/EF/EM
+        if esp_all_total > 0:
+            d['esp_ei'] = round(esp_est_total * esp_all_ei / esp_all_total)
+            d['esp_ef'] = round(esp_est_total * esp_all_ef / esp_all_total)
+            d['esp_em'] = round(esp_est_total * esp_all_em / esp_all_total)
+        else:
+            d['esp_ei'] = d['esp_ef'] = d['esp_em'] = 0
+        d['esp_total'] = esp_est_total
 
     ws = wb['Educação Indígena 1.52']
     row = find_state_row(ws, state_name)
@@ -386,14 +399,20 @@ def calc_potencial(cats, receita, vaar_info, inep):
         t3_items.append({"cat": cat, "alunos": alunos, "vaaf_aee": vaaf_aee, "ganho": ganho})
         t3_total += ganho
 
-    # T4: reclassificação de localidade
+    # T4: reclassificação de localidade (dados reais)
     mat_urbanas = sum(c.get("Urbano", 0) for c in cats.values())
     mat_campo = sum(c.get("Campo", 0) for c in cats.values())
     mat_ind = sum(c.get("Ind/Quilomb", 0) for c in cats.values())
     tem_campo = mat_campo > 0
     vaaf_medio = receita_fundeb / max(1, total_mat_est)
-    t4_campo = round(mat_urbanas * 0.10 * vaaf_medio * 0.15)
-    t4_ind = round(mat_urbanas * 0.05 * vaaf_medio * 0.40)
+    # Rural: estimar 2% das matrículas urbanas passíveis de reclassificação (conservador)
+    pct_rural_reclass = 0.02
+    t4_campo = round(mat_urbanas * pct_rural_reclass * vaaf_medio * 0.15)
+    # Indígena/quilombola: usar dados reais da população indígena do estado
+    # Estimar que ~50% dos alunos indígenas podem ter escolas mal classificadas
+    indigena_total = inep.get('indigena_total', 0)
+    alunos_ind_reclass = min(round(indigena_total * 0.50), mat_urbanas)
+    t4_ind = round(alunos_ind_reclass * vaaf_medio * 0.40)
     t4_total = t4_campo + t4_ind
 
     # T5: VAAR
@@ -564,14 +583,14 @@ def build_html(uf, receita, vaar_info, inep, cats, pot):
 <head>
 <meta charset="UTF-8">
 <style>
-@page {{ size: A4; margin: 1.5cm 2cm; }}
+@page {{ size: A4; margin: 1.8cm 2cm; }}
 * {{ margin:0; padding:0; box-sizing:border-box; }}
-body {{ font-family: 'Segoe UI', system-ui, sans-serif; color: #2d3748; font-size: 10pt; line-height: 1.5; }}
+body {{ font-family: 'Segoe UI', system-ui, sans-serif; color: #2d3748; font-size: 9.5pt; line-height: 1.55; }}
 
 .cover {{ background: linear-gradient(135deg, #1a365d, #2b6cb0); color: white; min-height: 100vh; padding: 3rem 2.5rem; page-break-after: always; display: flex; flex-direction: column; justify-content: space-between; }}
 .cover .brand {{ color: #4fd1c5; font-size: 14pt; font-weight: 700; margin-bottom: 2rem; }}
 .cover .subtitle {{ font-size: 10pt; color: rgba(255,255,255,0.8); margin-bottom: 3rem; }}
-.cover .entity {{ font-size: 28pt; font-weight: 800; margin-bottom: 0.5rem; }}
+.cover .entity {{ font-size: 26pt; font-weight: 800; margin-bottom: 0.5rem; }}
 .cover .entity-sub {{ font-size: 10pt; color: rgba(255,255,255,0.7); margin-bottom: 4rem; }}
 .cover .big-number {{ font-size: 48pt; font-weight: 800; color: #48bb78; margin-bottom: 0.5rem; }}
 .cover .big-label {{ font-size: 11pt; color: rgba(255,255,255,0.8); margin-bottom: 2rem; }}
@@ -580,30 +599,31 @@ body {{ font-family: 'Segoe UI', system-ui, sans-serif; color: #2d3748; font-siz
 .cover .footer .brand-small {{ color: #4fd1c5; font-weight: 700; }}
 
 .page {{ page-break-before: always; padding-top: 0.5rem; }}
-h2 {{ font-size: 16pt; color: #1a365d; margin-bottom: 1rem; }}
-h3 {{ font-size: 12pt; color: #2b6cb0; margin: 1.5rem 0 0.5rem; }}
+h2 {{ font-size: 15pt; color: #1a365d; margin-bottom: 0.75rem; border-bottom: 2px solid #2b6cb0; padding-bottom: 0.3rem; }}
+h3 {{ font-size: 11pt; color: #2b6cb0; margin: 1.2rem 0 0.4rem; }}
 
-.metrics {{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-bottom: 1.5rem; }}
-.metric {{ border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.75rem; text-align: center; }}
-.metric .label {{ font-size: 7pt; text-transform: uppercase; color: #718096; letter-spacing: 0.5px; }}
-.metric .value {{ font-size: 16pt; font-weight: 700; color: #1a365d; }}
+.metrics {{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; margin-bottom: 1.2rem; }}
+.metric {{ border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.6rem; text-align: center; }}
+.metric .label {{ font-size: 6.5pt; text-transform: uppercase; color: #718096; letter-spacing: 0.5px; }}
+.metric .value {{ font-size: 14pt; font-weight: 700; color: #1a365d; }}
 .metric .value.accent {{ color: #2b6cb0; }}
 .metric .value.red {{ color: #e53e3e; }}
 .metric .value.green {{ color: #38a169; }}
 
-.tier-row {{ display: flex; align-items: center; margin: 0.4rem 0; }}
-.tier-label {{ width: 100px; font-size: 9pt; font-weight: 600; color: #4a5568; }}
-.tier-bar-bg {{ flex: 1; height: 20px; background: #edf2f7; border-radius: 4px; overflow: hidden; margin: 0 0.5rem; }}
+.tier-row {{ display: flex; align-items: center; margin: 0.35rem 0; }}
+.tier-label {{ width: 90px; font-size: 8.5pt; font-weight: 600; color: #4a5568; }}
+.tier-bar-bg {{ flex: 1; height: 18px; background: #edf2f7; border-radius: 4px; overflow: hidden; margin: 0 0.5rem; }}
 .tier-bar {{ height: 100%; background: linear-gradient(90deg, #4fd1c5, #2b6cb0); border-radius: 4px; }}
-.tier-value {{ width: 100px; text-align: right; font-size: 9pt; font-weight: 700; color: #1a365d; }}
-.tier-total {{ font-size: 14pt; font-weight: 800; color: #2b6cb0; margin-top: 0.75rem; }}
+.tier-value {{ width: 110px; text-align: right; font-size: 8.5pt; font-weight: 700; color: #1a365d; }}
+.tier-total {{ font-size: 13pt; font-weight: 800; color: #2b6cb0; margin-top: 0.5rem; }}
 
-.alert {{ border: 1.5px solid #e53e3e; border-radius: 8px; padding: 0.75rem 1rem; margin-top: 1rem; font-size: 9pt; color: #4a5568; }}
+.alert {{ border: 1.5px solid #e53e3e; border-radius: 8px; padding: 0.6rem 1rem; margin-top: 0.75rem; font-size: 8.5pt; color: #4a5568; }}
 .alert strong {{ color: #e53e3e; }}
 
-table {{ width: 100%; border-collapse: collapse; margin: 0.5rem 0; font-size: 9pt; }}
-th {{ text-transform: uppercase; font-size: 7.5pt; letter-spacing: 0.5px; color: #718096; border-bottom: 2px solid #e2e8f0; padding: 0.4rem 0.5rem; text-align: left; }}
-td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
+table {{ width: 100%; border-collapse: collapse; margin: 0.4rem 0; font-size: 8.5pt; }}
+th {{ text-transform: uppercase; font-size: 7pt; letter-spacing: 0.5px; color: #718096; border-bottom: 2px solid #e2e8f0; padding: 0.35rem 0.5rem; text-align: left; }}
+td {{ padding: 0.35rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
+tr {{ page-break-inside: avoid; }}
 .right {{ text-align: right; }}
 .bold {{ font-weight: 700; }}
 .accent {{ color: #2b6cb0; }}
@@ -633,7 +653,7 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
 
 .page-footer {{ text-align: center; font-size: 7.5pt; color: #a0aec0; margin-top: 2rem; padding-top: 0.5rem; border-top: 1px solid #e2e8f0; }}
 
-.ctx {{ border-radius: 8px; padding: 0.75rem 1rem; margin: 0.5rem 0 0.75rem; font-size: 8.5pt; line-height: 1.6; }}
+.ctx {{ border-radius: 8px; padding: 0.5rem 0.8rem; margin: 0.3rem 0 0.5rem; font-size: 8pt; line-height: 1.55; page-break-inside: avoid; }}
 .ctx-sit {{ background: #f7fafc; border-left: 4px solid #a0aec0; }}
 .ctx-pot {{ background: #ebf8ff; border-left: 4px solid #2b6cb0; }}
 .ctx-acao {{ border-left: 4px solid #38a169; padding: 0.5rem 1rem; }}
@@ -765,7 +785,7 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
     </div>
     <div class="ctx ctx-pot">
         <strong>Potencial Não Captado: {fmt(pot['t4']['total'])}</strong><br>
-        Se apenas 10% das matrículas hoje classificadas como urbanas forem corretamente reclassificadas como "campo", o ganho é de {fmt(pot['t4']['campo'])}/ano. Se 5% forem reclassificadas como indígena ou quilombola, o ganho adicional alcança {fmt(pot['t4']['ind'])}/ano.
+        Estimando que 2% das matrículas urbanas estejam em escolas passíveis de reclassificação como "campo", o ganho seria de {fmt(pot['t4']['campo'])}/ano. Considerando os dados reais de população indígena do estado ({fmt_n(inep.get('indigena_total',0))} alunos), o ganho adicional por reclassificação indígena/quilombola alcança {fmt(pot['t4']['ind'])}/ano.
     </div>
     <div class="ctx ctx-acao ctx-curto">
         <strong>Como Captar</strong> <span class="tag-prazo tag-curto">CURTO PRAZO</span><br>
@@ -773,8 +793,8 @@ td {{ padding: 0.4rem 0.5rem; border-bottom: 1px solid #edf2f7; }}
     </div>
     <table>
         <tr><td>Matrículas urbanas</td><td class="right bold">{fmt_n(pot['t4']['mat_urbanas'])}</td><td>Tem matrículas campo</td><td class="right bold">{"Sim" if pot['t4']['tem_campo'] else "Não"}</td></tr>
-        <tr><td>Ganho se 10% reclassificadas como Campo (+15%)</td><td colspan="3" class="right bold accent">{fmt(pot['t4']['campo'])}</td></tr>
-        <tr><td>Ganho se 5% reclassificadas como Ind/Quilomb (+40%)</td><td colspan="3" class="right bold accent">{fmt(pot['t4']['ind'])}</td></tr>
+        <tr><td>Ganho se 2% reclassificadas como Campo (+15%)</td><td colspan="3" class="right bold accent">{fmt(pot['t4']['campo'])}</td></tr>
+        <tr><td>Ganho por reclassificação Indígena/Quilombola (+40%)</td><td colspan="3" class="right bold accent">{fmt(pot['t4']['ind'])}</td></tr>
     </table>
 
     <h3>T5 — Complementação Federal (VAAR + VAAT)</h3>
