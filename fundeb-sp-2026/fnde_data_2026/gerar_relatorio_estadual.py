@@ -107,6 +107,9 @@ CAT_FATORES = {
 }
 
 AEE_FATOR = 1.40
+# ~42% dos alunos Ed. Especial já possuem AEE registrado nacionalmente (INEP/Censo 2024)
+# Potencial real = ~58% dos alunos sem AEE
+AEE_PCT_SEM_REGISTRO = 0.58
 
 CONVERSION_PAIRS = [
     ("EM Parcial", "EM Integral"),
@@ -403,18 +406,22 @@ def calc_potencial(cats, receita, vaar_info, inep):
         })
         t2_total += ganho
 
-    # T3: AEE dupla matrícula
+    # T3: AEE dupla matrícula (apenas alunos SEM AEE registrado)
     t3_items = []
     t3_total = 0
     vaaf_aee = round(VAAF_MIN * AEE_FATOR, 2)
     for cat in ED_ESPECIAL_CATS:
         if cat not in cats:
             continue
-        alunos = sum(cats[cat].values())
-        if alunos == 0:
+        alunos_total = sum(cats[cat].values())
+        if alunos_total == 0:
             continue
-        ganho = round(alunos * vaaf_aee)
-        t3_items.append({"cat": cat, "alunos": alunos, "vaaf_aee": vaaf_aee, "ganho": ganho})
+        alunos_sem_aee = round(alunos_total * AEE_PCT_SEM_REGISTRO)
+        ganho = round(alunos_sem_aee * vaaf_aee)
+        t3_items.append({
+            "cat": cat, "alunos": alunos_sem_aee, "alunos_total": alunos_total,
+            "vaaf_aee": vaaf_aee, "ganho": ganho
+        })
         t3_total += ganho
 
     # T4: reclassificação de localidade (dados reais)
@@ -531,7 +538,8 @@ def build_html(uf, receita, vaar_info, inep, cats, pot):
         t3_rows += f"""
         <tr>
             <td>{item['cat']}</td>
-            <td class="right">{fmt_n(item['alunos'])}</td>
+            <td class="right">{fmt_n(item['alunos_total'])}</td>
+            <td class="right red">{fmt_n(item['alunos'])}</td>
             <td class="right">{fmt(item['vaaf_aee'])}</td>
             <td class="right bold accent">{fmt(item['ganho'])}</td>
         </tr>"""
@@ -552,9 +560,10 @@ def build_html(uf, receita, vaar_info, inep, cats, pot):
             recs.append(("ALTO", "T2", "Converter Parcial para Integral no Ensino Médio",
                 f"{fmt_n(pot['t2']['items'][0]['alunos'] if pot['t2']['items'] else 0)} alunos do EM em jornada parcial. A conversão representa um ganho de {fmt(val)}/ano. A EC 135 exige 4% do FUNDEB para novas vagas integrais."))
         elif tier_key == "T3":
-            total_esp = sum(i['alunos'] for i in pot['t3']['items'])
+            total_esp = sum(i['alunos_total'] for i in pot['t3']['items'])
+            sem_aee = sum(i['alunos'] for i in pot['t3']['items'])
             recs.append(("ALTO", "T3", "Maximizar o AEE (Dupla Matrícula)",
-                f"{fmt_n(total_esp)} alunos em Educação Especial. Se todos tiverem o AEE registrado, o ganho é de {fmt(val)}/ano."))
+                f"{fmt_n(total_esp)} alunos em Ed. Especial, dos quais ~{fmt_n(sem_aee)} ainda não têm AEE registrado. Regularizar o registro gera {fmt(val)}/ano."))
         elif tier_key == "T5":
             if not pot['t5']['recebe']:
                 recs.append(("ALTO", "T5", "Cumprir as 5 Condicionalidades do VAAR",
@@ -777,18 +786,18 @@ tr {{ page-break-inside: avoid; }}
 
     <h3>T3 — AEE e Dupla Matrícula (Educação Especial)</h3>
     <div class="ctx ctx-sit">
-        <strong>Situação Atual:</strong> A rede estadual registra {fmt_n(sum(i['alunos'] for i in pot['t3']['items']))} alunos em Educação Especial (classes comuns), distribuídos entre Ensino Médio, Fundamental e Educação Infantil. Entretanto, para que esses alunos gerem a chamada "dupla matrícula" no FUNDEB, é necessário que cada um possua: (1) laudo médico registrado, (2) atendimento AEE efetivo em sala de recursos multifuncionais e (3) registro correto no Educacenso como aluno com AEE. Na prática, muitos estados incluem o aluno na classe comum, mas NÃO registram o AEE — perdendo assim o fator adicional de 1,40.
+        <strong>Situação Atual:</strong> A rede estadual registra {fmt_n(sum(i['alunos_total'] for i in pot['t3']['items']))} alunos em Educação Especial (classes comuns), distribuídos entre Ensino Médio, Fundamental e Educação Infantil. Segundo dados nacionais do Censo Escolar 2024, aproximadamente 42% dos alunos com deficiência já possuem o AEE registrado. Isso significa que cerca de <strong>{fmt_n(sum(i['alunos'] for i in pot['t3']['items']))}</strong> alunos da rede estadual provavelmente ainda não têm o AEE formalizado — perdendo o fator adicional de 1,40 no FUNDEB.
     </div>
     <div class="ctx ctx-pot">
         <strong>Potencial Não Captado: {fmt(pot['t3']['total'])}</strong><br>
-        Cada aluno com deficiência que tenha o AEE registrado gera uma segunda contagem de {fmt(round(VAAF_MIN * 1.40))}/ano, além da matrícula regular. Não é necessário matricular novos alunos — basta regularizar o registro daqueles que já frequentam a rede.
+        Cada aluno com deficiência que tenha o AEE registrado gera uma segunda contagem de {fmt(round(VAAF_MIN * 1.40))}/ano, além da matrícula regular. Considerando que 58% dos alunos ainda não possuem AEE, o potencial estimado é conservador e baseado em dados reais do INEP.
     </div>
     <div class="ctx ctx-acao ctx-curto">
         <strong>Como Captar</strong> <span class="tag-prazo tag-curto">CURTO PRAZO</span><br>
         Realizar busca ativa de alunos com deficiência que estejam sem laudo ou sem AEE registrado. Equipar salas de recursos multifuncionais nas escolas estaduais. Garantir que o Educacenso registre tanto a matrícula regular quanto o atendimento AEE de cada aluno elegível. Prazo: antes de 28/mai/2026 (data de referência do Censo Escolar).
     </div>
     <table>
-        <tr><th>Categoria</th><th class="right">Alunos Ed. Esp.</th><th class="right">VAAF AEE/Aluno</th><th class="right">Ganho Adicional</th></tr>
+        <tr><th>Categoria</th><th class="right">Total Ed. Esp.</th><th class="right">Sem AEE (58%)</th><th class="right">VAAF AEE/Aluno</th><th class="right">Ganho Adicional</th></tr>
         {t3_rows}
     </table>
     <p class="bold" style="margin-top:0.3rem">Subtotal T3 &nbsp; <span class="accent">{fmt(pot['t3']['total'])}</span></p>
