@@ -72,25 +72,35 @@ STATE_CATS = [
     "EM Integral",
     "EM Parcial",
     "EM Integrado Ed. Profissional",
-    "Ens. Fund. Anos Finais",
+    "EM Normal/Magistério",
+    "Ed. Prof. Concomitante",
+    "Ed. Prof. Subsequente",
     "Ens. Fund. Integral",
+    "Ens. Fund. Anos Finais",
     "Ens. Fund. Anos Iniciais",
     "EJA Médio",
     "EJA Fundamental",
+    "EJA Integrada Ed. Profissional",
     "Ed. Especial EM",
     "Ed. Especial EF",
     "Ed. Especial EI",
 ]
 
+T1_THRESHOLD = 100  # categorias com menos de 100 alunos = sub-captadas
+
 CAT_FATORES = {
     "EM Integral":                   (1.52, 1.748, 2.128),
     "EM Parcial":                    (1.25, 1.4375, 1.75),
     "EM Integrado Ed. Profissional": (1.35, 1.5525, 1.89),
+    "EM Normal/Magistério":          (1.25, 1.4375, 1.75),
+    "Ed. Prof. Concomitante":        (1.35, 1.5525, 1.89),
+    "Ed. Prof. Subsequente":         (1.35, 1.5525, 1.89),
     "Ens. Fund. Integral":           (1.50, 1.725, 2.10),
     "Ens. Fund. Anos Finais":        (1.10, 1.265, 1.54),
     "Ens. Fund. Anos Iniciais":      (1.00, 1.15, 1.40),
     "EJA Médio":                     (1.00, 1.15, 1.40),
     "EJA Fundamental":               (1.00, 1.15, 1.40),
+    "EJA Integrada Ed. Profissional": (1.35, 1.5525, 1.89),
     "Ed. Especial EM":               (1.40, 1.61, 1.96),
     "Ed. Especial EF":               (1.40, 1.61, 1.96),
     "Ed. Especial EI":               (1.40, 1.61, 1.96),
@@ -226,6 +236,10 @@ def load_inep(uf):
     row = find_state_row(ws, state_name)
     if row:
         d['prof_tec_integrado_est'] = safe_int(row[7])
+        d['prof_normal_est'] = safe_int(row[12])       # Normal/Magistério Estadual
+        d['prof_concomitante_est'] = safe_int(row[17])  # Concomitante Estadual
+        d['prof_subsequente_est'] = safe_int(row[22])   # Subsequente Estadual
+        d['prof_eja_integrada_est'] = safe_int(row[27]) # EJA Integrada Estadual
 
     # Ed. Especial: 1.41 tem por dependência administrativa (estadual separado)
     # 1.40 tem por etapa (EI/EF/EM) mas TODAS as redes juntas
@@ -302,18 +316,19 @@ def build_cats_state(inep):
     prof = inep.get('prof_tec_integrado_est', 0)
     add("EM Integrado Ed. Profissional", prof, 0, 0)
 
-    ef_af = inep.get('ef_af_est', 0)
-    ef_af_urb = inep.get('ef_af_urb_est', 0)
-    ef_af_rur = inep.get('ef_af_rur_est', 0)
-    ef_af_int = inep.get('ef_af_int_est', 0)
-    ef_af_par = inep.get('ef_af_par_est', 0)
-    ef_af_ind = int(ef_af * ind_pct)
-    add("Ens. Fund. Anos Finais", max(0, ef_af_urb - ef_af_ind), max(0, ef_af_rur), ef_af_ind)
+    add("EM Normal/Magistério", inep.get('prof_normal_est', 0), 0, 0)
+    add("Ed. Prof. Concomitante", inep.get('prof_concomitante_est', 0), 0, 0)
+    add("Ed. Prof. Subsequente", inep.get('prof_subsequente_est', 0), 0, 0)
 
     ef_int_est = inep.get('ef_ai_int_est', 0) + inep.get('ef_af_int_est', 0)
     add("Ens. Fund. Integral", ef_int_est, 0, 0)
 
-    ef_ai = inep.get('ef_ai_est', 0)
+    ef_af = inep.get('ef_af_est', 0)
+    ef_af_urb = inep.get('ef_af_urb_est', 0)
+    ef_af_rur = inep.get('ef_af_rur_est', 0)
+    ef_af_ind = int(ef_af * ind_pct)
+    add("Ens. Fund. Anos Finais", max(0, ef_af_urb - ef_af_ind), max(0, ef_af_rur), ef_af_ind)
+
     ef_ai_urb = inep.get('ef_ai_urb_est', 0)
     ef_ai_rur = inep.get('ef_ai_rur_est', 0)
     add("Ens. Fund. Anos Iniciais", ef_ai_urb, ef_ai_rur, 0)
@@ -323,6 +338,8 @@ def build_cats_state(inep):
 
     eja_fund = inep.get('eja_fund_est', 0)
     add("EJA Fundamental", eja_fund, 0, 0)
+
+    add("EJA Integrada Ed. Profissional", inep.get('prof_eja_integrada_est', 0), 0, 0)
 
     esp_em = inep.get('esp_em', 0)
     esp_ef = inep.get('esp_ef', 0)
@@ -352,19 +369,20 @@ def calc_potencial(cats, receita, vaar_info, inep):
     cats_ativas = sum(1 for c in cats.values() if sum(c.values()) > 0)
     cats_faltantes = len(STATE_CATS) - cats_ativas
 
-    # T1: categorias com 0 matrículas
+    # T1: categorias com 0 matrículas OU sub-captadas (< T1_THRESHOLD)
     t1_items = []
     t1_total = 0
     for cat in STATE_CATS:
         if cat not in cats:
             continue
         mat = sum(cats[cat].values())
-        if mat == 0:
+        if mat < T1_THRESHOLD:
             vaaf = vaaf_ref[cat]["Urbano"]
             ganho_10 = round(vaaf * 10)
             ganho_50 = round(vaaf * 50)
-            t1_items.append({"cat": cat, "vaaf": vaaf, "g10": ganho_10, "g50": ganho_50})
-            t1_total += ganho_10
+            status = "ZERO" if mat == 0 else f"{mat} alunos"
+            t1_items.append({"cat": cat, "vaaf": vaaf, "g10": ganho_10, "g50": ganho_50, "mat_atual": mat, "status": status})
+            t1_total += ganho_50  # usar ganho +50 como referência para sub-captadas
 
     # T2: conversão parcial → integral
     t2_items = []
@@ -489,9 +507,10 @@ def build_html(uf, receita, vaar_info, inep, cats, pot):
         t1_rows += f"""
         <tr>
             <td>{item['cat']}</td>
+            <td class="right {"red" if item['mat_atual']==0 else ""}">{item['status']}</td>
             <td class="right">{fmt(item['vaaf'])}</td>
             <td class="right">{fmt(item['g10'])}</td>
-            <td class="right">{fmt(item['g50'])}</td>
+            <td class="right bold accent">{fmt(item['g50'])}</td>
         </tr>"""
 
     # T2 table
@@ -721,26 +740,26 @@ tr {{ page-break-inside: avoid; }}
 <div class="page">
     <h2>Detalhamento por Alavanca</h2>
 
-    <h3>T1 — Expansão VAAF: {len(pot['t1']['items'])} Categorias Não Captadas</h3>
+    <h3>T1 — Categorias Zeradas ou Sub-captadas ({len(pot['t1']['items'])} encontradas)</h3>
     <div class="ctx ctx-sit">
-        <strong>Situação Atual:</strong> {f"A rede estadual de {nome_estado} opera em {pot['cats_ativas']} das {pot['cats_total']} categorias possíveis. Nenhuma categoria está completamente zerada, o que indica cobertura mínima em todas as etapas (Ensino Médio, Ensino Fundamental, EJA, Educação Especial e Educação Profissional)." if pot['cats_faltantes'] == 0 else f"A rede estadual de {nome_estado} opera em apenas {pot['cats_ativas']} das {pot['cats_total']} categorias possíveis. Há {pot['cats_faltantes']} categorias com ZERO matrículas — cada uma representa receita do FUNDEB que o estado contribui, mas não recebe de volta."}
+        <strong>Situação Atual:</strong> A rede estadual de {nome_estado} opera em {pot['cats_ativas']} das {pot['cats_total']} categorias do FUNDEB. {f"Há {len(pot['t1']['items'])} categorias com menos de 100 matrículas — incluindo subcategorias de Educação Profissional (Concomitante, Subsequente), EJA Integrada e Normal/Magistério que muitas redes estaduais não exploram adequadamente." if len(pot['t1']['items']) > 0 else "Todas as categorias possuem volume expressivo de matrículas."} Cada categoria sub-captada representa receita do FUNDEB que o estado contribui, mas não recebe de volta na proporção ideal.
     </div>
     <div class="ctx ctx-pot">
         <strong>Potencial Não Captado: {fmt(pot['t1']['total'])}</strong><br>
-        {"Mesmo com todas as categorias ativas, há oportunidade de expandir aquelas com pouquíssimas matrículas. Categorias com menos de 100 alunos podem ser ampliadas com baixo custo operacional." if pot['cats_faltantes'] == 0 else f"Cada categoria aberta com apenas 10 alunos já gera receita imediata. Com 50 alunos por categoria, o ganho total estimado chega a {fmt(pot['t1']['total'])}/ano."}
+        {"As categorias abaixo possuem zero ou pouquíssimas matrículas na rede estadual. Expandir cada uma para 50 alunos — número mínimo viável — já geraria o potencial listado. Algumas dessas categorias, como a Educação Profissional, contam com fator de ponderação de 1,35 (dupla matrícula) no FUNDEB." if len(pot['t1']['items']) > 0 else "Todas as categorias já possuem volume adequado de matrículas."}
     </div>
     <div class="ctx ctx-acao ctx-curto">
         <strong>Como Captar</strong> <span class="tag-prazo tag-curto">CURTO PRAZO</span><br>
-        Identificar categorias sub-representadas no Educacenso. Abrir turmas ou formalizar parcerias conveniadas antes do Censo Escolar (28/mai/2026). São necessárias apenas 10 matrículas por categoria para iniciar a captação.
+        {"Abrir turmas nas categorias sub-captadas antes do Censo Escolar (28/mai/2026). Para Educação Profissional, firmar convênios com o Sistema S (SENAI, SENAC) ou instituições federais. Para EJA Integrada, articular com programas de qualificação profissional existentes. Cada matrícula nova nessas categorias já conta para o FUNDEB do ano seguinte." if len(pot['t1']['items']) > 0 else "Monitorar o Educacenso para garantir que todas as categorias mantenham volume adequado."}
     </div>
     <table>
-        <tr><th>Categoria Faltante</th><th class="right">VAAF/Aluno</th><th class="right">Ganho +10</th><th class="right">Ganho +50</th></tr>
+        <tr><th>Categoria</th><th class="right">Atual</th><th class="right">VAAF/Aluno</th><th class="right">Ganho +10</th><th class="right">Ganho +50</th></tr>
         {t1_rows}
     </table>
 
     <h3>T2 — Conversão de Parcial para Integral</h3>
     <div class="ctx ctx-sit">
-        <strong>Situação Atual:</strong> A rede estadual de {nome_estado} mantém {fmt_n(inep.get('em_integral_est',0))} alunos em tempo integral no Ensino Médio — apenas {str(pot['t6']['pct_integral']).replace('.',',')}% do total. Isso significa que {str(round(100 - pot['t6']['pct_integral'],1)).replace('.',',')}% dos estudantes do EM frequentam a jornada parcial (meio período). No Ensino Fundamental estadual, o cenário é semelhante. Para referência, a média da região Nordeste já ultrapassa 20% de matrículas em tempo integral — {nome_estado} está muito abaixo desse patamar.
+        <strong>Situação Atual:</strong> A rede estadual de {nome_estado} mantém {fmt_n(inep.get('em_integral_est',0))} alunos em tempo integral no Ensino Médio — apenas {fmt_pct(pot['t6']['pct_integral'])}% do total. Isso significa que {fmt_pct(100 - pot['t6']['pct_integral'])}% dos estudantes do EM frequentam a jornada parcial (meio período). No Ensino Fundamental estadual, o cenário é semelhante. Para referência, a média da região Nordeste já ultrapassa 20% de matrículas em tempo integral — {nome_estado} está muito abaixo desse patamar.
     </div>
     <div class="ctx ctx-pot">
         <strong>Potencial Não Captado: {fmt(pot['t2']['total'])}</strong><br>
