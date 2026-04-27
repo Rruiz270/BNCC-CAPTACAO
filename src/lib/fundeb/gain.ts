@@ -235,7 +235,9 @@ function computeMultiplicadores(intake: IntakeInput): GainResult['multiplicadore
 
 function computeVaar(muni: MunicipalityInput): GainResult['vaar'] {
   const totalAlunos = n(muni.totalMatriculas);
-  const potencial = totalAlunos * FUNDEB_PARAMS.VAAR_MEDIAN_SP;
+  const potencialEstimado = totalAlunos * FUNDEB_PARAMS.VAAR_MEDIAN_SP;
+  const vaarRecebidoBanco = n(muni.vaar);
+  const jaRecebe = vaarRecebidoBanco > 0;
 
   // Compliance score: % de itens "done" na seção A (5 condicionalidades).
   // Quando o caller não passa ainda, assume 0.
@@ -247,22 +249,21 @@ function computeVaar(muni: MunicipalityInput): GainResult['vaar'] {
   const ideb = n(muni.idebAi);
   const idebScore = clamp01((ideb - IDEB_AI_FLOOR) / (IDEB_AI_TARGET - IDEB_AI_FLOOR));
 
-  // Elegibilidade: ambos os gates precisam estar cumpridos.
-  const elegivel = complianceScore >= COMPLIANCE_MIN && idebScore >= IDEB_MIN;
-  // Progresso geral: média ponderada — compliance pesa mais (gate hard) que IDEB.
-  const overallProgress = clamp01(complianceScore * 0.6 + idebScore * 0.4);
+  // Elegibilidade: município que JÁ recebe VAAR (banco) é elegível por
+  // definição. Senão, calcula via compliance + IDEB.
+  const elegivel = jaRecebe || (complianceScore >= COMPLIANCE_MIN && idebScore >= IDEB_MIN);
+  const overallProgress = jaRecebe ? 1 : clamp01(complianceScore * 0.6 + idebScore * 0.4);
 
-  // Atual: se elegível, paga ~90% do potencial (margem). Se não, 0.
-  // Mostra honestamente "R$ 0 hoje" enquanto município não destrava.
-  const atual = elegivel ? potencial * 0.9 : 0;
+  // Atual: prioriza valor real do banco. Senão, estimativa baseada em mediana.
+  const atual = jaRecebe ? vaarRecebidoBanco : elegivel ? potencialEstimado * 0.9 : 0;
+  const potencial = jaRecebe ? vaarRecebidoBanco : potencialEstimado;
 
-  // Gaps: lista textual do que falta destravar. Ordena por severidade.
   const gaps: VaarGap[] = [];
-  if (complianceScore < COMPLIANCE_MIN) {
+  if (!jaRecebe && complianceScore < COMPLIANCE_MIN) {
     const missing = Math.max(0, complianceTotal - complianceDone);
     gaps.push({ kind: 'compliance', pct: complianceScore, missing });
   }
-  if (idebScore < IDEB_MIN) {
+  if (!jaRecebe && idebScore < IDEB_MIN) {
     gaps.push({ kind: 'ideb_ai', current: ideb, target: IDEB_AI_TARGET });
   }
 
@@ -302,15 +303,19 @@ export function calculateGain(
     multiplicadores.totalGanho +
     vaar.potencial; // mostra o caminho destravado
 
-  // Ganho garantido: dependem SÓ de cadastro/Censo correto.
-  // Reclassificar VAAF + jornada integral PETI + multiplicadores localidade.
-  const ganhoGarantido = Math.max(
-    0,
-    vaaf.ganho + peti.ganho + multiplicadores.totalGanho,
-  );
+  // Ganho garantido: 2 fontes complementares
+  //   1. baselineFromDB: o ETL já estimou pot_total a partir de cats faltantes,
+  //      AEE, integral, campo/indígena (T1+T2+T3+T4+T6). Disponível mesmo
+  //      sem o consultor mexer em nada — é o "ganho de cadastro" do município.
+  //   2. inputDeltas: sliders do simulador / valores manuais do intake.
+  // Usa o MAIOR — assume que o consultor está validando ou expandindo a
+  // baseline. Não soma porque duplicaria.
+  const baselineFromDB = n(muni.potTotal);
+  const inputDeltas = vaaf.ganho + peti.ganho + multiplicadores.totalGanho;
+  const ganhoGarantido = Math.max(0, baselineFromDB, inputDeltas);
 
-  // Potencial a destravar: o que VAAR ainda não dá. Quando elegível, vai a 0
-  // porque o município já recebe (entra no totalOtimizado).
+  // Potencial a destravar: VAAR que município ainda não recebe. Quando já
+  // recebe (banco) ou é elegível por gates, vai a 0.
   const potencialDestravar = vaar.elegivel ? 0 : vaar.potencial;
 
   return {
