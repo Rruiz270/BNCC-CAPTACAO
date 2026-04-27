@@ -25,6 +25,12 @@ const CITIES: Array<Pick<TreinamentoMeta, "cityKey" | "cityLabel" | "municipalit
   { cityKey: "grande-campinas", cityLabel: "Campinas", municipalityName: "Campinas", expectedSize: "grande" },
 ];
 
+const E2E = {
+  cityKey: "e2e-paulinia",
+  label: "Fluxo completo APM → CRM → BNCC",
+  description: "End-to-end: APM gera lead em campo, CRM trabalha o pipeline até fechar contrato, BNCC executa a auditoria FUNDEB.",
+};
+
 async function loadMeta(cityKey: string): Promise<Partial<TreinamentoMeta> | null> {
   try {
     const path = resolve(process.cwd(), "public", "treinamento", "data", `${cityKey}.json`);
@@ -62,6 +68,7 @@ export default async function TreinamentoIndex() {
   const cards = await Promise.all(
     CITIES.map(async (c) => ({ ...c, ...(await loadMeta(c.cityKey)) })),
   );
+  const e2eMeta = await loadMeta(E2E.cityKey);
 
   return (
     <div>
@@ -72,6 +79,39 @@ export default async function TreinamentoIndex() {
       />
 
       <div className="max-w-6xl mx-auto px-8 py-8">
+        {e2eMeta && (
+          <a
+            href={`/admin/treinamento/${E2E.cityKey}`}
+            className="block mb-8 bg-gradient-to-br from-[#0A2463] to-[#0d3280] text-white rounded-xl p-6 hover:shadow-lg transition-shadow"
+          >
+            <div className="flex items-start gap-5">
+              <div className="text-5xl text-[#00E5A0]">▶</div>
+              <div className="flex-1">
+                <div className="text-[10px] font-bold uppercase tracking-widest text-[#00E5A0] mb-1">
+                  FLUXO COMPLETO · CROSS-APP
+                </div>
+                <div className="text-xl font-bold mb-1" style={{ fontFamily: "'Source Serif 4', serif" }}>
+                  {E2E.label}
+                </div>
+                <div className="text-sm text-white/80">{E2E.description}</div>
+                <div className="mt-3 flex gap-4 text-xs text-white/60">
+                  <span>{e2eMeta.scenesCount ?? "—"} cenas</span>
+                  <span>·</span>
+                  <span>
+                    {e2eMeta.durationSec
+                      ? `${Math.floor(e2eMeta.durationSec / 60)}:${String(Math.floor(e2eMeta.durationSec % 60)).padStart(2, "0")}`
+                      : "—"}
+                  </span>
+                  <span>·</span>
+                  <span>Paulínia (médio)</span>
+                </div>
+              </div>
+            </div>
+          </a>
+        )}
+        <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text2)] mb-4">
+          Treinamento por tela do BNCC Captação
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {cards.map((card) => {
             const badge = SIZE_BADGE[card.expectedSize];

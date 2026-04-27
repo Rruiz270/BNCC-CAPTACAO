@@ -7,10 +7,11 @@ import { TreinamentoPlayer } from "@/components/treinamento-player";
 
 export const dynamic = "force-dynamic";
 
-const CITY_LABELS: Record<string, { label: string; size: "pequeno" | "medio" | "grande" }> = {
+const CITY_LABELS: Record<string, { label: string; size: "pequeno" | "medio" | "grande" | "e2e" }> = {
   "pequeno-balbinos": { label: "Balbinos (pequena)", size: "pequeno" },
   "medio-paulinia": { label: "Paulínia (média)", size: "medio" },
   "grande-campinas": { label: "Campinas (grande)", size: "grande" },
+  "e2e-paulinia": { label: "Fluxo completo APM → CRM → BNCC (Paulínia)", size: "e2e" },
 };
 
 interface SceneData {
