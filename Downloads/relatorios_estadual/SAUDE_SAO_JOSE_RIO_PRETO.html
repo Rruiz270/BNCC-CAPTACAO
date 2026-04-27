@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<style>
+@page { size: A4; margin: 1.8cm 2cm; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; color: #2d3748; font-size: 9.5pt; line-height: 1.55; }
+
+.cover { background: linear-gradient(135deg, #1a5632, #2d8659); color: white; min-height: 100vh; padding: 3rem 2.5rem; page-break-after: always; display: flex; flex-direction: column; justify-content: space-between; }
+.cover .brand { color: #68d391; font-size: 14pt; font-weight: 700; margin-bottom: 2rem; }
+.cover .subtitle { font-size: 10pt; color: rgba(255,255,255,0.8); margin-bottom: 3rem; }
+.cover .entity { font-size: 26pt; font-weight: 800; margin-bottom: 0.5rem; }
+.cover .entity-sub { font-size: 10pt; color: rgba(255,255,255,0.7); margin-bottom: 4rem; }
+.cover .big-number { font-size: 44pt; font-weight: 800; color: #68d391; margin-bottom: 0.5rem; }
+.cover .big-label { font-size: 11pt; color: rgba(255,255,255,0.8); margin-bottom: 2rem; }
+.cover .pct-badge { display: inline-block; border: 2px solid #68d391; color: #68d391; padding: 0.5rem 2rem; border-radius: 8px; font-size: 14pt; font-weight: 700; }
+.cover .footer { font-size: 8pt; color: rgba(255,255,255,0.5); margin-top: 2rem; }
+.cover .footer .brand-small { color: #68d391; font-weight: 700; }
+
+.page { page-break-before: always; padding-top: 0.5rem; }
+h2 { font-size: 15pt; color: #1a5632; margin-bottom: 0.75rem; border-bottom: 2px solid #2d8659; padding-bottom: 0.3rem; }
+h3 { font-size: 11pt; color: #2d8659; margin: 1.2rem 0 0.4rem; }
+
+.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; margin-bottom: 1.2rem; }
+.metric { border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.6rem; text-align: center; }
+.metric .label { font-size: 6.5pt; text-transform: uppercase; color: #718096; letter-spacing: 0.5px; }
+.metric .value { font-size: 13pt; font-weight: 700; color: #1a5632; }
+.metric .value.accent { color: #2d8659; }
+.metric .value.red { color: #e53e3e; }
+.metric .value.green { color: #38a169; }
+
+.tier-row { display: flex; align-items: center; margin: 0.35rem 0; }
+.tier-label { width: 120px; font-size: 8.5pt; font-weight: 600; color: #4a5568; }
+.tier-bar-bg { flex: 1; height: 18px; background: #edf2f7; border-radius: 4px; overflow: hidden; margin: 0 0.5rem; }
+.tier-bar { height: 100%; background: linear-gradient(90deg, #68d391, #2d8659); border-radius: 4px; }
+.tier-value { width: 100px; text-align: right; font-size: 8.5pt; font-weight: 700; color: #1a5632; }
+.tier-total { font-size: 13pt; font-weight: 800; color: #2d8659; margin-top: 0.5rem; }
+
+.alert { border: 1.5px solid #e53e3e; border-radius: 8px; padding: 0.6rem 1rem; margin-top: 0.75rem; font-size: 8.5pt; color: #4a5568; }
+.alert strong { color: #e53e3e; }
+
+table { width: 100%; border-collapse: collapse; margin: 0.4rem 0; font-size: 8.5pt; }
+th { text-transform: uppercase; font-size: 7pt; letter-spacing: 0.5px; color: #718096; border-bottom: 2px solid #e2e8f0; padding: 0.35rem 0.5rem; text-align: left; }
+td { padding: 0.35rem 0.5rem; border-bottom: 1px solid #edf2f7; }
+tr { page-break-inside: avoid; }
+.right { text-align: right; }
+.bold { font-weight: 700; }
+.accent { color: #2d8659; }
+.red { color: #e53e3e; }
+.green { color: #38a169; }
+
+.ctx { border-radius: 8px; padding: 0.5rem 0.8rem; margin: 0.3rem 0 0.5rem; font-size: 8pt; line-height: 1.55; page-break-inside: avoid; }
+.ctx-sit { background: #f7fafc; border-left: 4px solid #a0aec0; }
+.ctx-pot { background: #f0fff4; border-left: 4px solid #2d8659; }
+.ctx-acao { border-left: 4px solid #38a169; padding: 0.5rem 1rem; }
+.ctx-curto { background: #f0fff4; }
+.ctx-medio { background: #fffff0; }
+.ctx strong { font-size: 8pt; text-transform: uppercase; letter-spacing: 0.3px; }
+.ctx .tag-prazo { display: inline-block; border-radius: 3px; padding: 0.1rem 0.5rem; font-size: 7pt; font-weight: 700; color: white; margin-left: 0.3rem; }
+.tag-curto { background: #38a169; }
+.tag-medio { background: #d69e2e; }
+
+.t5-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 0.5rem 0; }
+.t5-item { display: flex; justify-content: space-between; font-size: 9pt; padding: 0.2rem 0; }
+.t5-label { color: #718096; }
+.t5-val { font-weight: 700; }
+
+.rec-item { border-left: 3px solid #e2e8f0; padding: 0.5rem 0.75rem; margin: 0.5rem 0; }
+.rec-prio { display: inline-block; border: 1.5px solid; border-radius: 3px; padding: 0.1rem 0.4rem; font-size: 7pt; font-weight: 700; margin-right: 0.3rem; }
+.rec-tier { display: inline-block; background: #edf2f7; border-radius: 3px; padding: 0.1rem 0.4rem; font-size: 7pt; font-weight: 600; color: #4a5568; margin-right: 0.3rem; }
+.rec-desc { font-size: 8.5pt; color: #718096; margin-top: 0.2rem; }
+
+.phase { border-left: 3px solid #68d391; padding: 0.5rem 0.75rem; margin: 0.75rem 0; }
+.phase .phase-title { display: inline-block; background: #f0fff4; color: #1a5632; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 9pt; font-weight: 600; margin-bottom: 0.3rem; }
+.phase li { font-size: 9pt; margin: 0.2rem 0; margin-left: 1rem; }
+
+.cta { background: linear-gradient(135deg, #1a5632, #2d8659); color: white; border-radius: 12px; padding: 1.5rem 2rem; text-align: center; margin-top: 2rem; }
+.cta h3 { color: #68d391; font-size: 12pt; margin-bottom: 0.3rem; }
+.cta p { font-size: 9pt; color: rgba(255,255,255,0.8); margin-bottom: 1rem; }
+.cta .services { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+.cta .svc { border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; padding: 0.3rem 0.75rem; font-size: 8pt; }
+.cta .email { color: #68d391; font-weight: 700; font-size: 10pt; }
+
+.page-footer { text-align: center; font-size: 7.5pt; color: #a0aec0; margin-top: 2rem; padding-top: 0.5rem; border-top: 1px solid #e2e8f0; }
+</style>
+</head>
+<body>
+
+<!-- PAGE 1: COVER -->
+<div class="cover">
+    <div>
+        <div class="brand">INSTITUTO i10</div>
+        <div class="subtitle">Diagnóstico SUS 2026 · Potencial Máximo de Captação Federal · SAÚDE MUNICIPAL</div>
+        <div class="entity">SÃO JOSÉ DO RIO PRETO</div>
+        <div class="entity-sub">Estado de SP · 504.166 habitantes · 85 equipes eSF · 82 estabelecimentos SUS</div>
+    </div>
+    <div>
+        <div class="big-number">R$ 19,7M a R$ 44,3M</div>
+        <div class="big-label">em recursos federais de saúde que São José do Rio Preto pode estar deixando de captar anualmente</div>
+        <div><span class="pct-badge">Benchmark: FUNDEB do mesmo município capta R$ 10,1M a mais</span></div>
+    </div>
+    <div class="footer">
+        <span class="brand-small">Instituto i10</span> — Orquestrando o Futuro da Saúde Pública<br>
+        Relatório gerado em 26/04/2026 · Dados: FNS, CNES, SIOPS, e-Gestor, SISMAC, Portal da Transparência
+    </div>
+</div>
+
+<!-- PAGE 2: RESUMO EXECUTIVO -->
+<div class="page">
+    <h2>Resumo Executivo</h2>
+    <div class="metrics">
+        <div class="metric"><div class="label">Orçamento Saúde 2026</div><div class="value">R$ 769,7M</div></div>
+        <div class="metric"><div class="label">Potencial Não Captado</div><div class="value accent">R$ 19,7M–44,3M</div></div>
+        <div class="metric"><div class="label">% Aplicado em Saúde</div><div class="value green">22,9%</div></div>
+        <div class="metric"><div class="label">Mínimo Constitucional</div><div class="value">15%</div></div>
+    </div>
+    <div class="metrics">
+        <div class="metric"><div class="label">População (IBGE 2025)</div><div class="value">504.166</div></div>
+        <div class="metric"><div class="label">Equipes eSF</div><div class="value">85</div></div>
+        <div class="metric"><div class="label">Cobertura APS Estimada</div><div class="value red">~58%</div></div>
+        <div class="metric"><div class="label">ISF Previne Brasil</div><div class="value green">9,66</div></div>
+    </div>
+
+    <h3>Decomposição do Potencial por Alavanca</h3>
+    <div class="tier-row">
+        <span class="tier-label">A — Cobertura APS</span>
+        <div class="tier-bar-bg"><div class="tier-bar" style="width:100%"></div></div>
+        <span class="tier-value">R$ 5,3M–9,0M</span>
+    </div>
+    <div class="tier-row">
+        <span class="tier-label">B — Habilitações</span>
+        <div class="tier-bar-bg"><div class="tier-bar" style="width:15%"></div></div>
+        <span class="tier-value">R$ 1,0M–1,5M</span>
+    </div>
+    <div class="tier-row">
+        <span class="tier-label">C — Teto MAC</span>
+        <div class="tier-bar-bg"><div class="tier-bar" style="width:33%"></div></div>
+        <span class="tier-value">R$ 2,0M–5,0M</span>
+    </div>
+    <div class="tier-row">
+        <span class="tier-label">D — Assist. Farmacêutica</span>
+        <div class="tier-bar-bg"><div class="tier-bar" style="width:3%"></div></div>
+        <span class="tier-value">R$ 37k–75k</span>
+    </div>
+    <div class="tier-row">
+        <span class="tier-label">E — Emendas Parlam.</span>
+        <div class="tier-bar-bg"><div class="tier-bar" style="width:70%"></div></div>
+        <span class="tier-value">R$ 10M–30M</span>
+    </div>
+    <div class="tier-row">
+        <span class="tier-label">F — Investimentos (PAC)</span>
+        <div class="tier-bar-bg"><div class="tier-bar" style="width:25%"></div></div>
+        <span class="tier-value">R$ 1,3M–3,0M</span>
+    </div>
+    <div class="tier-total">TOTAL ESTIMADO &nbsp; R$ 19,7M – R$ 44,3M/ano</div>
+
+    <div class="alert">
+        <strong>DESTAQUE:</strong> São José do Rio Preto aplica 22,9% da receita em saúde (acima dos 15% obrigatórios), o que demonstra compromisso. Porém, a cobertura de Atenção Primária está em apenas ~58% — abaixo da meta federal de 80%. Expandir as equipes eSF é a principal alavanca para captar mais recursos federais.
+    </div>
+
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Saúde Pública &nbsp;&nbsp; 2 / 7</div>
+</div>
+
+<!-- PAGE 3: CATEGORIAS A-B -->
+<div class="page">
+    <h2>Detalhamento por Alavanca</h2>
+
+    <h3>A — Expansão da Cobertura de Atenção Primária (eSF)</h3>
+    <div class="ctx ctx-sit">
+        <strong>Situação Atual:</strong> São José do Rio Preto possui 85 equipes de Saúde da Família (eSF) registradas no CNES, além de 41 equipes de Saúde Bucal e 15 profissionais do Mais Médicos. Com 504.166 habitantes e cobertura estimada de ~58%, há aproximadamente 211 mil pessoas sem cobertura da Estratégia Saúde da Família. O desempenho no Previne Brasil é excelente (ISF 9,66 no 1º quadrimestre de 2025 — o melhor da história do município), o que significa que as equipes existentes performam bem. O problema é a quantidade insuficiente de equipes.
+    </div>
+    <div class="ctx ctx-pot">
+        <strong>Potencial Não Captado: R$ 5,3M a R$ 9,0M/ano</strong><br>
+        Para atingir 80% de cobertura (meta federal), seriam necessárias aproximadamente 35 a 45 novas equipes eSF. Sob a Portaria 3.493/2024, cada equipe eSF gera entre R$ 150 mil e R$ 408 mil/ano em transferências federais (componentes fixo + vínculo + qualidade + per capita), dependendo do estrato IED e do desempenho. Considerando o alto ISF do município, as novas equipes provavelmente receberiam valores próximos ao teto.
+    </div>
+    <div class="ctx ctx-acao ctx-medio">
+        <strong>Como Captar</strong> <span class="tag-prazo tag-medio">MÉDIO PRAZO (6–12 meses)</span><br>
+        Solicitar credenciamento de novas equipes eSF ao Ministério da Saúde via e-Gestor. Registrar as equipes no CNES com composição completa. Garantir alimentação do SISAB para gerar os indicadores do Previne Brasil. Priorizar territórios descobertos com maior vulnerabilidade (IED estrato 1 = maior repasse federal). A homologação é mensal.
+    </div>
+    <table>
+        <tr><th>Indicador</th><th class="right">Atual</th><th class="right">Meta</th><th class="right">Gap</th></tr>
+        <tr><td>Equipes eSF registradas</td><td class="right bold">85</td><td class="right">120–130</td><td class="right red">35–45 equipes</td></tr>
+        <tr><td>Cobertura APS estimada</td><td class="right bold">~58%</td><td class="right">80%</td><td class="right red">~22 p.p.</td></tr>
+        <tr><td>População descoberta</td><td class="right bold">~211 mil</td><td class="right">~101 mil</td><td class="right red">~110 mil pessoas</td></tr>
+        <tr><td>Repasse federal por equipe/ano</td><td class="right bold">R$ 150k–408k</td><td class="right">—</td><td class="right accent">R$ 5,3M–9,0M total</td></tr>
+    </table>
+
+    <h3>B — Serviços Não Habilitados (CAPS III, e-Multi, Academia da Saúde)</h3>
+    <div class="ctx ctx-sit">
+        <strong>Situação Atual:</strong> O município possui boa rede de atenção psicossocial com 7 CAPS (2 CAPS II, 3 CAPSi, 2 CAPS AD), 2 CEO (tipos II e III), 4 UPA, SAMU regional com 13 veículos, e 2 polos de Academia da Saúde. Entretanto, para uma população acima de 500 mil habitantes, a Portaria de Parâmetros do SUS recomenda a existência de pelo menos 1 CAPS III (funcionamento 24 horas para adultos) — que o município ainda não possui. Além disso, não foram identificadas equipes e-Multi (antigo NASF) registradas no CNES.
+    </div>
+    <div class="ctx ctx-pot">
+        <strong>Potencial Não Captado: R$ 1,0M a R$ 1,5M/ano</strong><br>
+        A habilitação de 1 CAPS III gera aproximadamente R$ 1,2M/ano em incentivo federal de custeio (Portaria 5.500/2024). Equipes e-Multi geram entre R$ 120 mil e R$ 200 mil/ano cada. Novos polos de Academia da Saúde geram R$ 36 mil/ano de custeio + recursos de construção.
+    </div>
+    <div class="ctx ctx-acao ctx-medio">
+        <strong>Como Captar</strong> <span class="tag-prazo tag-medio">MÉDIO PRAZO (6–18 meses)</span><br>
+        Solicitar habilitação do CAPS III ao Ministério da Saúde (converter um CAPS II existente para funcionamento 24h ou construir novo). Registrar equipes e-Multi no CNES com composição completa. Solicitar novos polos de Academia da Saúde via SISMOB. Toda habilitação requer registro prévio no CNES e aprovação da CIB estadual.
+    </div>
+    <table>
+        <tr><th>Serviço</th><th class="right">Status</th><th class="right">Incentivo Federal/Ano</th></tr>
+        <tr><td>CAPS III (24h adulto)</td><td class="right red">Não possui</td><td class="right bold accent">R$ 1.200.000</td></tr>
+        <tr><td>e-Multi (ex-NASF) — 2 equipes</td><td class="right red">Não identificado</td><td class="right bold accent">R$ 240.000–400.000</td></tr>
+        <tr><td>Academia da Saúde (novos polos)</td><td class="right">2 existentes</td><td class="right accent">R$ 36.000/polo</td></tr>
+    </table>
+
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Saúde Pública &nbsp;&nbsp; 3 / 7</div>
+</div>
+
+<!-- PAGE 4: CATEGORIAS C-D -->
+<div class="page">
+    <h3>C — Recomposição do Teto MAC (Média e Alta Complexidade)</h3>
+    <div class="ctx ctx-sit">
+        <strong>Situação Atual:</strong> O Hospital de Base de São José do Rio Preto é referência para 102 municípios (1,7 milhão de pessoas) com 1.318 leitos, sendo 85% SUS. Em 2024, o teto MAC do município recebeu incrementos de R$ 14,2M (Portaria 4.159/2024) e R$ 3M para a UPA Jaguaré. O município também aderiu ao programa Mais Acesso a Especialistas (PMAE) em fevereiro de 2025. A produção ambulatorial (SIA) e hospitalar (SIH) cresceu 6.796 consultas especializadas e 98.521 exames a mais no último quadrimestre — indicando que a demanda pode estar batendo no teto.
+    </div>
+    <div class="ctx ctx-pot">
+        <strong>Potencial Não Captado: R$ 2,0M a R$ 5,0M/ano</strong><br>
+        Se a produção SIA/SIH está consistentemente atingindo o teto MAC, o município pode solicitar recomposição ao Ministério da Saúde. Além disso, procedimentos FAEC (Fundo de Ações Estratégicas) são pagos à parte do teto — garantir que toda produção estratégica esteja registrada corretamente no BPA/APAC pode desbloquear recursos adicionais.
+    </div>
+    <div class="ctx ctx-acao ctx-curto">
+        <strong>Como Captar</strong> <span class="tag-prazo tag-curto">CURTO PRAZO (0–6 meses)</span><br>
+        Auditar produção SIA/SIH vs teto MAC atual no SISMAC. Identificar procedimentos subregistrados ou não codificados corretamente na Tabela SIGTAP. Elaborar pleito de recomposição do teto MAC com justificativa técnica (crescimento populacional, produção acima do teto, referência regional). Encaminhar via CIB/CIR ao Ministério da Saúde. Garantir faturamento correto de procedimentos FAEC.
+    </div>
+
+    <h3>D — Assistência Farmacêutica (QUALIFAR-SUS)</h3>
+    <div class="ctx ctx-sit">
+        <strong>Situação Atual:</strong> O município possui 3 farmácias municipais, REMUME com ~400 itens e atendeu 189.453 pacientes com 44,7 milhões de unidades de medicamentos dispensadas no último quadrimestre. Está credenciado no Farmácia Popular (58.900+ pessoas atendidas). Porém, o status de habilitação no QUALIFAR-SUS não foi confirmado nas fontes públicas.
+    </div>
+    <div class="ctx ctx-pot">
+        <strong>Potencial Não Captado: R$ 37 mil a R$ 75 mil/ano</strong><br>
+        A habilitação no QUALIFAR-SUS (Eixo Estrutura) gera R$ 24.000/ano por município qualificado. Se múltiplas UBS forem incluídas, o valor pode chegar a R$ 75 mil/ano. Além disso, a habilitação garante acesso a recursos de estruturação (equipamentos, mobiliário).
+    </div>
+    <div class="ctx ctx-acao ctx-curto">
+        <strong>Como Captar</strong> <span class="tag-prazo tag-curto">CURTO PRAZO (0–3 meses)</span><br>
+        Verificar habilitação no QUALIFAR-SUS via e-Gestor. Se não habilitado, solicitar adesão (Portaria 7.556/2025). Garantir alimentação regular do BNAFAR (Base Nacional de Dados de Ações e Serviços da Assistência Farmacêutica).
+    </div>
+
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Saúde Pública &nbsp;&nbsp; 4 / 7</div>
+</div>
+
+<!-- PAGE 5: CATEGORIAS E-F -->
+<div class="page">
+    <h3>E — Emendas Parlamentares para Saúde</h3>
+    <div class="ctx ctx-sit">
+        <strong>Situação Atual:</strong> Foram identificadas aproximadamente R$ 8,9 milhões em emendas parlamentares federais para saúde em 2025 (deputados Bilynskyj, Tatto e Poit). Entretanto, o estado de São Paulo possui 70 deputados federais e 3 senadores. A Secretaria Municipal de Saúde bloqueou R$ 4,4 milhões em emendas de vereadores por descumprimento de requisitos técnicos — indicando fragilidade no processo de captação e execução de emendas. Com as novas regras da LC 210 (transparência), a captação de emendas exige planejamento técnico prévio.
+    </div>
+    <div class="ctx ctx-pot">
+        <strong>Potencial Não Captado: R$ 10M a R$ 30M/ano</strong><br>
+        Municípios de porte similar (Ribeirão Preto, Sorocaba, Campinas) captam sistematicamente R$ 30M+ em emendas parlamentares para saúde. A diferença está na articulação institucional proativa com bancadas parlamentares e na preparação de projetos técnicos prontos para execução. Emendas de bancada estadual e do relator (RP) têm valores maiores.
+    </div>
+    <div class="ctx ctx-acao ctx-curto">
+        <strong>Como Captar</strong> <span class="tag-prazo tag-curto">CURTO PRAZO (0–6 meses)</span><br>
+        Mapear todos os deputados federais e senadores de SP com potencial de alocação. Preparar portfólio de projetos prontos para receber emendas (construção UBS, equipamentos, custeio MAC, veículos SAMU). Articular com gabinetes parlamentares ANTES da votação do PLOA 2027. Garantir que o Plano Municipal de Saúde 2026-2029 esteja aprovado (pré-requisito).
+    </div>
+
+    <h3>F — Programas de Investimento Federal (PAC Saúde / Requalifica UBS)</h3>
+    <div class="ctx ctx-sit">
+        <strong>Situação Atual:</strong> O município possui 26 UBS. No PAC Saúde, o governo federal disponibiliza recursos para construção de novas UBS (R$ 1,2M a R$ 2,5M cada), reforma (R$ 30k a R$ 350k), ampliação (R$ 50k a R$ 250k), e construção de CEO e CAPS. Não foram identificadas aprovações recentes do PAC Seleções 2025 para o município. A UPA do Jaguaré recebeu R$ 3M de custeio em 2024.
+    </div>
+    <div class="ctx ctx-pot">
+        <strong>Potencial Não Captado: R$ 1,3M a R$ 3,0M (investimento pontual)</strong><br>
+        Cada UBS nova construída com recurso federal = R$ 1,2M a R$ 2,5M. Reformas de UBS existentes = R$ 30k a R$ 350k cada. Novos CEO ou CAPS com recurso de implantação = R$ 120k a R$ 240k. Essas são oportunidades pontuais (não recorrentes), mas reduzem a necessidade de investimento com recursos próprios.
+    </div>
+    <div class="ctx ctx-acao ctx-medio">
+        <strong>Como Captar</strong> <span class="tag-prazo tag-medio">MÉDIO PRAZO (6–12 meses)</span><br>
+        Monitorar abertura de seleções do PAC Saúde, Requalifica UBS e SISMOB. Manter propostas técnicas pré-elaboradas para construção, reforma e equipamentos. Garantir regularidade fiscal e CNES atualizado (pré-requisitos). Articular com a COSEMS-SP para oportunidades regionais.
+    </div>
+
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Saúde Pública &nbsp;&nbsp; 5 / 7</div>
+</div>
+
+<!-- PAGE 6: COMPARATIVO + RECOMENDAÇÕES -->
+<div class="page">
+    <h2>Comparativo: Saúde vs FUNDEB</h2>
+    <p style="font-size:9pt;color:#718096;margin-bottom:0.75rem">O mesmo município sob duas lentes de captação federal:</p>
+    <table>
+        <tr><th>Dimensão</th><th>FUNDEB (Educação)</th><th>SUS (Saúde)</th></tr>
+        <tr><td>Receita federal atual</td><td class="right">R$ 10,1M</td><td class="right">~R$ 366M</td></tr>
+        <tr><td>Potencial não captado</td><td class="right accent">R$ 4,1M (+40%)</td><td class="right accent">R$ 19,7M–44,3M</td></tr>
+        <tr><td>Mecanismo</td><td>Automático (matrículas)</td><td>Ativo (habilitação + indicadores)</td></tr>
+        <tr><td>Principal alavanca</td><td>Conversão parcial→integral</td><td>Expansão equipes eSF</td></tr>
+        <tr><td>Prazo de impacto</td><td>Ano seguinte (Censo Escolar)</td><td>Imediato (homologação mensal)</td></tr>
+        <tr><td>Complexidade</td><td>1 sistema (Educacenso)</td><td>7+ sistemas (CNES, SISAB, FNS...)</td></tr>
+    </table>
+
+    <h2 style="margin-top:1.5rem">Recomendações Priorizadas</h2>
+
+    <div class="rec-item">
+        <span class="rec-prio" style="border-color:#e53e3e;color:#e53e3e">ALTO</span>
+        <span class="rec-tier">A</span>
+        <strong>Expandir equipes eSF para 80% de cobertura</strong>
+        <p class="rec-desc">35–45 novas equipes necessárias. Ganho de R$ 5,3M–9,0M/ano em transferências federais. Priorizar territórios com IED estrato 1 (maior repasse).</p>
+    </div>
+    <div class="rec-item">
+        <span class="rec-prio" style="border-color:#e53e3e;color:#e53e3e">ALTO</span>
+        <span class="rec-tier">E</span>
+        <strong>Estruturar captação proativa de emendas parlamentares</strong>
+        <p class="rec-desc">Potencial de R$ 10M–30M/ano com articulação sistemática com a bancada federal de SP (70 deputados + 3 senadores). Preparar portfólio de projetos prontos.</p>
+    </div>
+    <div class="rec-item">
+        <span class="rec-prio" style="border-color:#e53e3e;color:#e53e3e">ALTO</span>
+        <span class="rec-tier">C</span>
+        <strong>Auditar e recompor o teto MAC</strong>
+        <p class="rec-desc">Produção hospitalar e ambulatorial crescendo consistentemente. Verificar se teto acompanha a demanda. Potencial: R$ 2M–5M/ano.</p>
+    </div>
+    <div class="rec-item">
+        <span class="rec-prio" style="border-color:#d69e2e;color:#d69e2e">MEDIO</span>
+        <span class="rec-tier">B</span>
+        <strong>Habilitar CAPS III (24h) e equipes e-Multi</strong>
+        <p class="rec-desc">Obrigatório para população acima de 500 mil. Ganho de ~R$ 1,2M/ano só com CAPS III.</p>
+    </div>
+    <div class="rec-item">
+        <span class="rec-prio" style="border-color:#d69e2e;color:#d69e2e">MEDIO</span>
+        <span class="rec-tier">D</span>
+        <strong>Confirmar habilitação QUALIFAR-SUS</strong>
+        <p class="rec-desc">Verificar status no e-Gestor. Se não habilitado, aderir imediatamente (Portaria 7.556/2025).</p>
+    </div>
+
+    <h2 style="margin-top:1.5rem">Plano de Ação Sugerido</h2>
+    <div class="phase">
+        <div class="phase-title">Fase 1 · Curto Prazo (0–6 meses)</div>
+        <ul>
+            <li>Auditar teto MAC vs produção real no SISMAC</li>
+            <li>Verificar habilitação QUALIFAR-SUS e regularizar se necessário</li>
+            <li>Mapear parlamentares e preparar portfólio de projetos para emendas</li>
+            <li>Atualizar registros CNES (equipes, profissionais, serviços)</li>
+        </ul>
+    </div>
+    <div class="phase">
+        <div class="phase-title">Fase 2 · Médio Prazo (6–12 meses)</div>
+        <ul>
+            <li>Credenciar 35–45 novas equipes eSF nos territórios descobertos</li>
+            <li>Solicitar habilitação do CAPS III (24h) ao Ministério da Saúde</li>
+            <li>Registrar equipes e-Multi no CNES</li>
+            <li>Submeter propostas ao PAC Saúde / Requalifica UBS</li>
+        </ul>
+    </div>
+    <div class="phase">
+        <div class="phase-title">Fase 3 · Longo Prazo (12–24 meses)</div>
+        <ul>
+            <li>Atingir 80% de cobertura APS e monitorar indicadores Previne Brasil</li>
+            <li>Implantar painel de acompanhamento de todas as fontes de recurso federal</li>
+            <li>Ampliar articulação com bancada federal para emendas de bancada estadual</li>
+        </ul>
+    </div>
+
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Saúde Pública &nbsp;&nbsp; 6 / 7</div>
+</div>
+
+<!-- PAGE 7: CTA -->
+<div class="page">
+    <div class="cta">
+        <h3>O Instituto i10 pode implementar este plano para São José do Rio Preto</h3>
+        <p>Tecnologia · Dados · Pessoas · Suporte Jurídico para maximizar a captação de recursos federais em saúde</p>
+        <div class="services">
+            <div class="svc">Plataforma de Inteligência SUS</div>
+            <div class="svc">Gestão de Emendas</div>
+            <div class="svc">Auditoria CNES/MAC</div>
+            <div class="svc">Suporte Jurídico</div>
+            <div class="svc">Credenciamento eSF</div>
+        </div>
+        <div class="email">contato@institutoi10.org.br</div>
+    </div>
+
+    <div class="page-footer">Instituto i10 — Orquestrando o Futuro da Saúde Pública &nbsp;&nbsp; 7 / 7</div>
+</div>
+
+</body></html>
