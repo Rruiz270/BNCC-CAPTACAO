@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useState, useCallback, use } from "react";
+import { useEffect, useState, useCallback, use, useMemo } from "react";
+import { calculateGain, type GainResult, type IntakeInput, type MunicipalityInput } from "@/lib/fundeb/gain";
+import { GainBigCard, GainBreakdownTable } from "@/components/gain-display";
+import { formatCurrency } from "@/lib/utils";
 
 interface Municipality {
   id: number;
@@ -18,6 +21,12 @@ interface Municipality {
   totalDocentes: number;
   potTotal: number;
   pctPotTotal: number;
+  idebAi?: number;
+  idebAf?: number;
+  eiMat?: number;
+  efMat?: number;
+  complianceASectionDone?: number;
+  complianceASectionTotal?: number;
 }
 
 interface Enrollment {
@@ -82,6 +91,7 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
   const [escolasQuilombola, setEscolasQuilombola] = useState("");
   const [alunosCampo, setAlunosCampo] = useState("");
   const [alunosIndigena, setAlunosIndigena] = useState("");
+  const [alunosQuilombola, setAlunosQuilombola] = useState("");
 
   // Escola Integral
   const [escolasIntegral, setEscolasIntegral] = useState("");
@@ -133,6 +143,62 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
     setRealValues((prev) => ({ ...prev, [idx]: value }));
   }
 
+  // Engine de ganho — recalcula a cada onChange. useMemo evita custo desnecessário.
+  const gainResult: GainResult | null = useMemo(() => {
+    if (!data) return null;
+    const muniInput: MunicipalityInput = {
+      id: data.municipality.id,
+      nome: data.municipality.nome,
+      totalMatriculas: data.municipality.totalMatriculas ?? null,
+      receitaTotal: data.municipality.receitaTotal ?? null,
+      vaat: data.municipality.vaat ?? null,
+      vaar: data.municipality.vaar ?? null,
+      potTotal: data.municipality.potTotal ?? null,
+      idebAi: data.municipality.idebAi ?? null,
+      idebAf: data.municipality.idebAf ?? null,
+      escolasRurais: data.municipality.escolasRurais ?? null,
+      eiMat: data.municipality.eiMat ?? null,
+      efMat: data.municipality.efMat ?? null,
+      complianceASectionDone: data.municipality.complianceASectionDone ?? null,
+      complianceASectionTotal: data.municipality.complianceASectionTotal ?? null,
+    };
+
+    const enrollmentDeltas: Record<string, number> = {};
+    data.enrollments.forEach((e, idx) => {
+      const v = realValues[idx];
+      if (v && v !== "") {
+        const real = parseInt(v, 10);
+        if (!isNaN(real)) enrollmentDeltas[e.categoria] = real;
+      }
+    });
+
+    const intakeInput: IntakeInput = {
+      schoolsTotal: schoolsTotal ? parseInt(schoolsTotal, 10) : null,
+      schoolsRural: schoolsRural ? parseInt(schoolsRural, 10) : null,
+      alunosAee: alunosAee ? parseInt(alunosAee, 10) : null,
+      alunosDuplaMatricula: alunosDuplaMatricula ? parseInt(alunosDuplaMatricula, 10) : null,
+      alunosClasseEspecial: alunosClasseEspecial ? parseInt(alunosClasseEspecial, 10) : null,
+      alunosCampo: alunosCampo ? parseInt(alunosCampo, 10) : null,
+      alunosIndigena: alunosIndigena ? parseInt(alunosIndigena, 10) : null,
+      alunosQuilombola: alunosQuilombola ? parseInt(alunosQuilombola, 10) : null,
+      escolasCampo: escolasCampo ? parseInt(escolasCampo, 10) : null,
+      escolasIndigena: escolasIndigena ? parseInt(escolasIndigena, 10) : null,
+      escolasQuilombola: escolasQuilombola ? parseInt(escolasQuilombola, 10) : null,
+      alunosIntegral: alunosIntegral ? parseInt(alunosIntegral, 10) : null,
+      escolasIntegral: escolasIntegral ? parseInt(escolasIntegral, 10) : null,
+      enrollmentDeltas,
+    };
+
+    return calculateGain(muniInput, intakeInput);
+  }, [
+    data, realValues,
+    schoolsTotal, schoolsRural,
+    alunosAee, alunosDuplaMatricula, alunosClasseEspecial,
+    alunosCampo, alunosIndigena, alunosQuilombola,
+    escolasCampo, escolasIndigena, escolasQuilombola,
+    alunosIntegral, escolasIntegral,
+  ]);
+
   function getDelta(idx: number, publicVal: number) {
     const val = realValues[idx];
     if (!val || val === "") return null;
@@ -175,6 +241,8 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
         schoolsRural: schoolsRural ? parseInt(schoolsRural, 10) : null,
         enrollmentData,
         observations: observations.trim() || null,
+        // Engine result — guarda o ganho calculado junto da resposta
+        gainResult: gainResult ?? null,
         // Educacao Especial e AEE
         alunosAee: alunosAee ? parseInt(alunosAee, 10) : null,
         alunosDuplaMatricula: alunosDuplaMatricula ? parseInt(alunosDuplaMatricula, 10) : null,
@@ -186,6 +254,7 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
         escolasQuilombola: escolasQuilombola ? parseInt(escolasQuilombola, 10) : null,
         alunosCampo: alunosCampo ? parseInt(alunosCampo, 10) : null,
         alunosIndigena: alunosIndigena ? parseInt(alunosIndigena, 10) : null,
+        alunosQuilombola: alunosQuilombola ? parseInt(alunosQuilombola, 10) : null,
         // Escola Integral
         escolasIntegral: escolasIntegral ? parseInt(escolasIntegral, 10) : null,
         alunosIntegral: alunosIntegral ? parseInt(alunosIntegral, 10) : null,
@@ -215,6 +284,25 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
         setSubmitting(false);
         return;
       }
+
+      // Persiste snapshot do ganho calculado — vira linha do tempo no relatório.
+      // Best-effort: falha não bloqueia o usuário.
+      if (gainResult && data) {
+        fetch("/api/gain-snapshots", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            municipalityId: data.municipality.id,
+            intakeToken: token,
+            screen: "intake:secretaria",
+            gainTotal: gainResult.ganhoTotal,
+            gainBreakdown: gainResult,
+            intakeData: payload.data,
+            capturedBy: respName.trim() || "secretaria",
+          }),
+        }).catch(() => {});
+      }
+
       setState("thankyou");
     } catch {
       alert("Erro de conexão. Tente novamente.");
@@ -247,22 +335,61 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
     );
   }
 
-  // THANK YOU
+  // THANK YOU — agora mostra o ganho identificado em vez de só "Obrigado!"
   if (state === "thankyou") {
+    const muni = data?.municipality;
     return (
-      <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
-        <div className="text-center px-6">
-          <div className="w-20 h-20 rounded-full bg-[#00E5A0]/12 flex items-center justify-center mx-auto mb-5">
-            <span className="text-4xl">&#10004;</span>
+      <div className="min-h-screen bg-[var(--bg)]">
+        <div className="bg-[var(--navy)] text-white py-5 border-b-[3px] border-[var(--cyan)]">
+          <div className="max-w-[900px] mx-auto px-6 flex justify-between items-center">
+            <div className="text-[var(--cyan)] font-extrabold text-sm tracking-wider uppercase">
+              INSTITUTO I10
+            </div>
+            <div className="text-sm text-white/60">Diagnóstico FUNDEB 2026</div>
           </div>
-          <h2 className="text-2xl font-bold text-[var(--navy)] mb-2" style={{ fontFamily: "'Source Serif 4', serif" }}>
-            Obrigado!
-          </h2>
-          <p className="text-[var(--text2)] max-w-md mx-auto">
-            Seus dados foram enviados ao Instituto i10. Eles serão utilizados para preparar
-            seu diagnóstico personalizado FUNDEB 2026.
-          </p>
-          <p className="mt-4 text-sm text-[var(--text3)]">Você pode fechar esta página.</p>
+        </div>
+
+        <div className="max-w-[900px] mx-auto px-6 py-10">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 rounded-full bg-[#00E5A0]/15 flex items-center justify-center mx-auto mb-4">
+              <span className="text-3xl">&#10004;</span>
+            </div>
+            <h1 className="text-3xl font-bold text-[var(--navy)] mb-2" style={{ fontFamily: "'Source Serif 4', serif" }}>
+              Pronto, {respName.split(" ")[0] || ""}!
+            </h1>
+            <p className="text-[var(--text2)] max-w-xl mx-auto">
+              Calculamos o impacto FUNDEB com os números reais que você nos passou.
+              Veja abaixo o que identificamos para <strong>{muni?.nome}</strong>.
+            </p>
+          </div>
+
+          {gainResult && (
+            <div className="space-y-6">
+              <GainBigCard result={gainResult} variant="final" municipioName={muni?.nome} />
+              <GainBreakdownTable result={gainResult} />
+
+              <div className="bg-gradient-to-br from-[var(--navy)] to-[#0d3280] text-white rounded-2xl p-7">
+                <h2 className="text-xl font-bold mb-2" style={{ fontFamily: "'Source Serif 4', serif" }}>
+                  Próximo passo
+                </h2>
+                <p className="text-white/80 text-sm mb-5 max-w-xl">
+                  Nossa equipe vai validar esses números na consultoria gratuita e te entregar um
+                  plano de ação concreto até 27/Mai/2026 (data do Censo). Quer agendar?
+                </p>
+                <a
+                  href={`mailto:contato@institutoi10.com.br?subject=Consultoria FUNDEB - ${muni?.nome}&body=Olá, sou ${encodeURIComponent(respName)} (${encodeURIComponent(respRole)}). Recebi nosso diagnóstico e gostaria de agendar a reunião.`}
+                  className="inline-block px-8 py-3 bg-[var(--cyan)] hover:bg-[#009fc0] text-white font-bold rounded-xl text-sm transition-colors"
+                >
+                  Agendar reunião de validação
+                </a>
+              </div>
+            </div>
+          )}
+
+          <div className="text-center mt-8 text-xs text-[var(--text3)]">
+            Os números acima são estimativas baseadas nas leis EC 108/2020 + EC 135/2025 + Lei 14.113/2020.
+            Validação final na consultoria com a equipe i10.
+          </div>
         </div>
       </div>
     );
@@ -313,38 +440,16 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
       </div>
 
       <div className="max-w-[900px] mx-auto px-6 pb-12">
-        {/* Municipality Preview — Consultoria Preview */}
-        <section className="bg-gradient-to-br from-emerald-50 to-cyan-50 border border-emerald-200 rounded-xl p-7 mt-6">
-          <h2 className="text-base font-bold text-[var(--navy)] mb-1">Preview: Oportunidades Identificadas</h2>
-          <p className="text-xs text-[var(--text2)] mb-4">
-            Nossa análise preliminar identificou as seguintes oportunidades de captação FUNDEB para seu município.
-            Os dados detalhados serão apresentados na consultoria.
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {summaryItems.map((item, i) => (
-              <div key={i} className="bg-white rounded-lg p-3 border border-emerald-100">
-                <div className="text-[10px] font-semibold uppercase text-[var(--text2)] tracking-wider">{item.label}</div>
-                <div className="text-lg font-bold text-[var(--navy)] mt-0.5">{item.value}</div>
-                <div className="text-[10px] text-[var(--text2)]">{item.sub}</div>
-              </div>
-            ))}
+        {/* Sticky live gain card — recalcula a cada onChange dos inputs abaixo */}
+        {gainResult && (
+          <div className="sticky top-4 z-30 mt-6">
+            <GainBigCard result={gainResult} variant="live" />
+            <p className="text-[10px] text-[var(--text3)] text-center mt-2">
+              Esse número sobe à medida que você confirma os dados reais do município abaixo.
+              Ele é uma estimativa preliminar — validação final na consultoria.
+            </p>
           </div>
-          {muni.potTotal > 0 && (
-            <div className="mt-4 bg-white rounded-lg p-4 border border-emerald-200">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold text-emerald-700">Receita otimizada estimada</span>
-                <span className="text-lg font-bold text-emerald-700">{fmtBRL(muni.receitaTotal + muni.potTotal)}</span>
-              </div>
-              <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
-                <div className="h-full bg-emerald-400 rounded-full" style={{ width: `${Math.min(((muni.receitaTotal) / (muni.receitaTotal + muni.potTotal)) * 100, 100)}%` }} />
-              </div>
-              <div className="flex justify-between mt-1 text-[10px] text-[var(--text2)]">
-                <span>Atual: {fmtBRL(muni.receitaTotal)}</span>
-                <span className="text-emerald-600 font-semibold">+{fmtBRL(muni.potTotal)} potencial</span>
-              </div>
-            </div>
-          )}
-        </section>
+        )}
 
         {/* Respondent Info */}
         <section className="bg-white border border-[var(--border)] rounded-xl p-7 mt-6">
@@ -535,6 +640,17 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
                 type="number"
                 value={alunosIndigena}
                 onChange={(e) => setAlunosIndigena(e.target.value)}
+                min="0"
+                placeholder="Ex: 0"
+                className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-xs font-semibold text-[var(--text2)] uppercase tracking-wider mb-1">Alunos matriculados em escolas quilombolas</label>
+              <input
+                type="number"
+                value={alunosQuilombola}
+                onChange={(e) => setAlunosQuilombola(e.target.value)}
                 min="0"
                 placeholder="Ex: 0"
                 className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"

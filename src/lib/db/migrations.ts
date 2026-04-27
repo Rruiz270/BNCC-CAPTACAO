@@ -530,6 +530,27 @@ $IMM$ LANGUAGE plpgsql`,
   )`,
   `CREATE INDEX IF NOT EXISTS idx_muni_access_token ON fundeb.municipio_access(access_token)`,
   `CREATE INDEX IF NOT EXISTS idx_muni_access_muni ON fundeb.municipio_access(municipality_id)`,
+
+  // ── fundeb.gain_snapshots — narrativa do ganho ao longo da consultoria ─
+  // Registra cada milestone da engine calculateGain() em momentos-chave
+  // (intake, cada step do wizard, simulação salva, snapshot final).
+  // No relatório final, vira "linha do tempo do ganho identificado".
+  `CREATE TABLE IF NOT EXISTS fundeb.gain_snapshots (
+    id              BIGSERIAL PRIMARY KEY,
+    consultoria_id  INTEGER REFERENCES fundeb.consultorias(id) ON DELETE CASCADE,
+    municipality_id INTEGER REFERENCES fundeb.municipalities(id),
+    intake_token    VARCHAR(64),
+    screen          TEXT NOT NULL,
+    gain_total      REAL DEFAULT 0,
+    gain_breakdown  JSONB,
+    intake_data     JSONB,
+    captured_by     TEXT,
+    captured_at     TIMESTAMP DEFAULT NOW()
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_gain_snapshots_consultoria ON fundeb.gain_snapshots(consultoria_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_gain_snapshots_muni ON fundeb.gain_snapshots(municipality_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_gain_snapshots_token ON fundeb.gain_snapshots(intake_token)`,
+  `CREATE INDEX IF NOT EXISTS idx_gain_snapshots_at ON fundeb.gain_snapshots(captured_at DESC)`,
 ];
 
 // ── Stored Procedures ─────────────────────────────────────────────────────

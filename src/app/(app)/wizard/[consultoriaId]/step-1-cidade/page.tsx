@@ -53,13 +53,18 @@ export default function StepCidade() {
   const [detail, setDetail] = useState<MuniDetail | null>(null);
 
   useEffect(() => {
-    fetch(`/api/consultorias`)
+    // Busca direta por id em vez de filtrar a lista (que usa view=mine
+    // por default e não enxerga sessão de outro consultor mesmo pra admin).
+    fetch(`/api/consultorias/${consultoriaId}`)
       .then((r) => r.json())
       .then((data) => {
-        const s = data.sessions?.find((x: SessionData) => x.id === consultoriaId);
-        setSession(s || null);
-        if (s?.municipality?.id) {
-          fetch(`/api/municipalities/${s.municipality.id}`)
+        if (data.error || !data.municipality) {
+          setSession(null);
+          return;
+        }
+        setSession({ id: data.id, municipality: data.municipality });
+        if (data.municipality?.id) {
+          fetch(`/api/municipalities/${data.municipality.id}`)
             .then((r) => r.json())
             .then((d) => setDetail(d))
             .catch(() => {});

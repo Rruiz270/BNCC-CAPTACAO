@@ -20,6 +20,9 @@ export default auth((req) => {
     nextUrl.pathname.startsWith('/api/intake/') ||
     nextUrl.pathname.startsWith('/acompanhamento/') ||
     nextUrl.pathname.startsWith('/api/acompanhamento/') ||
+    // gain-snapshots: secretaria precisa registrar snapshot ao submeter intake
+    // (POST sem login — rota valida intake_token internamente).
+    nextUrl.pathname === '/api/gain-snapshots' ||
     nextUrl.pathname.startsWith('/_next') ||
     nextUrl.pathname === '/favicon.ico';
 

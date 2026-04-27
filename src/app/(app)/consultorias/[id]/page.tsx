@@ -251,6 +251,12 @@ export default function ConsultoriaDetailPage({ params }: { params: Promise<{ id
       >
         <StatusBadge status={consultoria.status} />
         <Link
+          href={`/consultorias/${consultoria.id}/telao`}
+          className="px-4 py-2 rounded-lg text-sm font-semibold bg-[#00B4D8] text-white hover:bg-[#009fc0] transition-colors"
+        >
+          Modo Telão
+        </Link>
+        <Link
           href={`/consultorias/${consultoria.id}/relatorio`}
           className="px-4 py-2 rounded-lg text-sm font-semibold bg-white/10 text-white hover:bg-white/20 transition-colors"
         >

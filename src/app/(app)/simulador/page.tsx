@@ -7,6 +7,8 @@ import { StatCard } from "@/components/stat-card";
 import { useConsultoria } from "@/lib/consultoria-context";
 import { CATEGORIAS_FUNDEB, VAAF_BASE } from "@/lib/constants";
 import { formatCurrency, formatNumber } from "@/lib/utils";
+import { calculateGain, type IntakeInput, type MunicipalityInput } from "@/lib/fundeb/gain";
+import { GainBigCard, GainBreakdownTable } from "@/components/gain-display";
 import {
   BarChart,
   Bar,
@@ -39,7 +41,14 @@ interface MunicipalityDetail {
   enrollments: Enrollment[];
   financials: {
     receitaTotal: number | null;
+    vaat?: number | null;
+    vaar?: number | null;
   };
+  enrollmentSummary?: { totalMatriculas: number | null; eiMat: number | null; efMat: number | null };
+  potencial?: { potTotal: number | null };
+  schools?: { rurais: number | null };
+  educationMetrics?: { idebAi: number | null; idebAf: number | null };
+  compliance?: { summary: Record<string, { total: number; done: number; progress: number; pending: number }> };
 }
 
 function shortLabel(label: string): string {
@@ -86,6 +95,11 @@ export default function SimuladorPage() {
   const [detail, setDetail] = useState<MunicipalityDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const [simulated, setSimulated] = useState<Record<string, number>>({});
+  // Inputs adicionais para a engine (PETI / multiplicadores)
+  const [simAlunosIntegral, setSimAlunosIntegral] = useState(0);
+  const [simAlunosCampo, setSimAlunosCampo] = useState(0);
+  const [simAlunosIndigena, setSimAlunosIndigena] = useState(0);
+  const [simAlunosQuilombola, setSimAlunosQuilombola] = useState(0);
 
   // Use session municipality if available, otherwise use manual selector
   const effectiveId = activeSession?.municipalityId || selectedId;
@@ -173,6 +187,36 @@ export default function SimuladorPage() {
   const handleReset = useCallback(() => {
     setSimulated({ ...currentCounts });
   }, [currentCounts]);
+
+  // Engine completa (PETI + multiplicadores + VAAR híbrido)
+  const engineResult = useMemo(() => {
+    if (!detail) return null;
+    const complianceA = detail.compliance?.summary?.A;
+    const muniInput: MunicipalityInput = {
+      id: detail.id,
+      nome: detail.nome,
+      totalMatriculas: detail.enrollmentSummary?.totalMatriculas ?? null,
+      receitaTotal: detail.financials.receitaTotal ?? null,
+      vaat: detail.financials.vaat ?? null,
+      vaar: detail.financials.vaar ?? null,
+      potTotal: detail.potencial?.potTotal ?? null,
+      idebAi: detail.educationMetrics?.idebAi ?? null,
+      idebAf: detail.educationMetrics?.idebAf ?? null,
+      escolasRurais: detail.schools?.rurais ?? null,
+      eiMat: detail.enrollmentSummary?.eiMat ?? null,
+      efMat: detail.enrollmentSummary?.efMat ?? null,
+      complianceASectionDone: complianceA?.done ?? null,
+      complianceASectionTotal: complianceA?.total ?? null,
+    };
+    const intakeInput: IntakeInput = {
+      alunosIntegral: simAlunosIntegral || null,
+      alunosCampo: simAlunosCampo || null,
+      alunosIndigena: simAlunosIndigena || null,
+      alunosQuilombola: simAlunosQuilombola || null,
+      enrollmentDeltas: simulated,
+    };
+    return calculateGain(muniInput, intakeInput);
+  }, [detail, simulated, simAlunosIntegral, simAlunosCampo, simAlunosIndigena, simAlunosQuilombola]);
 
   return (
     <div className="min-h-screen">
@@ -412,6 +456,76 @@ export default function SimuladorPage() {
               )}
             </div>
           </div>
+        )}
+
+        {/* Engine completa: PETI + multiplicadores + VAAR híbrido */}
+        {engineResult && detail && (
+          <section className="space-y-4 border-t border-[var(--border)] pt-8 mt-4">
+            <div>
+              <h2 className="text-base font-bold text-[var(--navy)] mb-1">
+                Cenário FUNDEB completo
+              </h2>
+              <p className="text-xs text-[var(--text2)]">
+                Engine inclui PETI (R$ {VAAF_BASE.toLocaleString("pt-BR")}/aluno integral),
+                multiplicadores de localidade (campo, indígena, quilombola) e VAAR híbrido (potencial + gaps).
+              </p>
+            </div>
+
+            {/* Inputs adicionais — alimentam a engine */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3 bg-white border border-[var(--border)] rounded-xl p-4">
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--text3)] block mb-1">
+                  Alunos integral (simulado)
+                </label>
+                <input
+                  type="number"
+                  value={simAlunosIntegral}
+                  onChange={(e) => setSimAlunosIntegral(parseInt(e.target.value, 10) || 0)}
+                  min="0"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm tabular-nums focus:outline-none focus:border-[var(--cyan)]"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--text3)] block mb-1">
+                  Alunos campo (rural)
+                </label>
+                <input
+                  type="number"
+                  value={simAlunosCampo}
+                  onChange={(e) => setSimAlunosCampo(parseInt(e.target.value, 10) || 0)}
+                  min="0"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm tabular-nums focus:outline-none focus:border-[var(--cyan)]"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--text3)] block mb-1">
+                  Alunos indígenas
+                </label>
+                <input
+                  type="number"
+                  value={simAlunosIndigena}
+                  onChange={(e) => setSimAlunosIndigena(parseInt(e.target.value, 10) || 0)}
+                  min="0"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm tabular-nums focus:outline-none focus:border-[var(--cyan)]"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--text3)] block mb-1">
+                  Alunos quilombolas
+                </label>
+                <input
+                  type="number"
+                  value={simAlunosQuilombola}
+                  onChange={(e) => setSimAlunosQuilombola(parseInt(e.target.value, 10) || 0)}
+                  min="0"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm tabular-nums focus:outline-none focus:border-[var(--cyan)]"
+                />
+              </div>
+            </div>
+
+            <GainBigCard result={engineResult} variant="live" municipioName={detail.nome} />
+            <GainBreakdownTable result={engineResult} />
+          </section>
         )}
       </div>
     </div>

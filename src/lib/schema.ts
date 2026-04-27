@@ -418,6 +418,22 @@ export const refMatriculasVaaf = fundebSchema.table('ref_matriculas_vaaf', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// fundeb.gain_snapshots — narrativa do ganho ao longo da consultoria
+// Registra cada momento-chave (intake, step do wizard, simulação) com o
+// resultado da engine calculateGain(). No fim, vira linha do tempo do ganho.
+export const gainSnapshots = fundebSchema.table('gain_snapshots', {
+  id: bigserial('id', { mode: 'number' }).primaryKey(),
+  consultoriaId: integer('consultoria_id').references(() => consultorias.id, { onDelete: 'cascade' }),
+  municipalityId: integer('municipality_id').references(() => municipalities.id),
+  intakeToken: varchar('intake_token', { length: 64 }),
+  screen: text('screen').notNull(),
+  gainTotal: real('gain_total').default(0),
+  gainBreakdown: jsonb('gain_breakdown'),
+  intakeData: jsonb('intake_data'),
+  capturedBy: text('captured_by'),
+  capturedAt: timestamp('captured_at').defaultNow(),
+});
+
 // audit.snapshots — snapshot imutavel (UC-AU.05, UC-AU.07)
 export const auditSnapshots = auditSchema.table('snapshots', {
   id: bigserial('id', { mode: 'number' }).primaryKey(),

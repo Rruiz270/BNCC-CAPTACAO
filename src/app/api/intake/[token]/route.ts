@@ -22,7 +22,8 @@ export async function GET(
              m.recursos_receber, m.vaat, m.vaar, m.ganho_perda,
              m.total_matriculas, m.total_escolas, m.escolas_municipais,
              m.escolas_rurais, m.total_docentes,
-             m.pot_total, m.pct_pot_total
+             m.pot_total, m.pct_pot_total,
+             m.ideb_ai, m.ideb_af, m.ei_mat, m.ef_mat
       FROM fundeb.intake_tokens t
       JOIN fundeb.municipalities m ON m.id = t.municipality_id
       WHERE t.token = ${token}
@@ -53,6 +54,15 @@ export async function GET(
       ORDER BY id
     `;
 
+    // Compliance da seção A (5 condicionalidades VAAR) — alimenta engine
+    const complianceA = await sql`
+      SELECT
+        COUNT(*)::int AS total,
+        SUM(CASE WHEN status = 'done' THEN 1 ELSE 0 END)::int AS done
+      FROM fundeb.compliance_items
+      WHERE municipality_id = ${row.municipality_id} AND section = 'A'
+    `;
+
     return Response.json({
       token: row.token,
       municipality: {
@@ -72,6 +82,12 @@ export async function GET(
         totalDocentes: row.total_docentes,
         potTotal: row.pot_total,
         pctPotTotal: row.pct_pot_total,
+        idebAi: row.ideb_ai ?? null,
+        idebAf: row.ideb_af ?? null,
+        eiMat: row.ei_mat ?? null,
+        efMat: row.ef_mat ?? null,
+        complianceASectionDone: complianceA[0]?.done ?? 0,
+        complianceASectionTotal: complianceA[0]?.total ?? 5,
       },
       enrollments: enrollments.map((e: Record<string, unknown>) => ({
         categoria: e.categoria,
