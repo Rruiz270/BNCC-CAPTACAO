@@ -293,7 +293,7 @@ export default async function ApmDashboard() {
               return (
                 <Link
                   key={city.cityKey}
-                  href={`/admin/treinamento/${city.cityKey}`}
+                  href={`/apm/treinamento/${city.cityKey}`}
                   className="block rounded-2xl overflow-hidden border border-[var(--border)] bg-white hover:shadow-lg transition-shadow group"
                 >
                   <div className="bg-gradient-to-br from-[#0A2463] to-[#0d3280] p-8 text-center text-white relative">
