@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ['better-sqlite3'],
   images: {
     remotePatterns: [
-      { protocol: 'https', hostname: 'apm-fundeb-sp.vercel.app' },
+      { protocol: 'https', hostname: 'apm-seven.vercel.app' },
     ],
   },
 };

@@ -12,7 +12,7 @@ export const metadata = {
 };
 
 const APM_LOGO_URL =
-  "https://apm-fundeb-sp.vercel.app/fundeb-sp/apm-logo-pill-web.png";
+  "https://apm-seven.vercel.app/fundeb-sp/apm-logo-pill-web.png";
 
 const EMAIL_MKT_DASHBOARD_URL =
   "https://www.institutoi10.com.br/sistemas/apm/dashboard";
