@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# raw simulation output (copies are published into public/treinamento/)
+.simulation-runs/

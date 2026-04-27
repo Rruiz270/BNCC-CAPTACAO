@@ -466,6 +466,16 @@ export function Sidebar({ user }: { user?: SidebarUser }) {
         >
           Gerar Relatório
         </Link>
+        <Link
+          href="/admin/treinamento"
+          className={`flex items-center px-3 py-2.5 rounded-lg text-sm transition-all ${
+            isActive("/admin/treinamento")
+              ? "bg-white/15 text-white font-semibold"
+              : "text-white/60 hover:bg-white/8 hover:text-white/90"
+          }`}
+        >
+          Treinamento
+        </Link>
 
         {/* ADMIN */}
         <div className="pt-4 pb-1 px-3">
