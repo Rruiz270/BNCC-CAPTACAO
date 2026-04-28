@@ -48,9 +48,8 @@ const CARDS: CardDef[] = [
     tag: "EMAIL MKT",
     tagColor: "#D97706",
     title: "Métricas pós-evento",
-    sub: "Tracking de downloads em tempo real",
-    href: EMAIL_MKT_DASHBOARD_URL,
-    external: true,
+    sub: "Tracking de downloads",
+    href: "/apm/email-mkt",
     available: true,
   },
   {
