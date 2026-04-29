@@ -45,9 +45,9 @@ const CARDS: CardDef[] = [
     available: false,
   },
   {
-    tag: "EMAIL MKT",
+    tag: "CAMPANHAS",
     tagColor: "#D97706",
-    title: "Métricas pós-evento",
+    title: "Email + WhatsApp",
     sub: "Tracking de downloads",
     href: "/apm/email-mkt",
     available: true,
