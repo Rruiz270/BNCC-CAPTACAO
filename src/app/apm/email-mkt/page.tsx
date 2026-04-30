@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 
-const STATS_URL = "https://apm-seven.vercel.app/api/stats";
+const STATS_URL = "https://apm-fundeb-sp.vercel.app/api/stats";
 
 interface MuniStat {
   nome: string;
