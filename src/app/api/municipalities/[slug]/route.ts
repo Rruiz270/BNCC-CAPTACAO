@@ -52,6 +52,18 @@ export async function GET(
       );
     }
 
+    if (municipality.uf) {
+      const est = await sql`
+        SELECT vaaf_medio, vaat_medio, vaar_medio
+        FROM fundeb.estados WHERE uf = ${municipality.uf}
+      `;
+      if (est[0]) {
+        municipality.vaarMedioUf = est[0].vaar_medio;
+        municipality.vaatMedioUf = est[0].vaat_medio;
+        municipality.vaafMedioUf = est[0].vaaf_medio;
+      }
+    }
+
     const muniId = municipality.id;
 
     // Fetch enrollments for this municipality
@@ -135,6 +147,10 @@ export async function GET(
       id: m.id,
       nome: m.nome,
       codigoIbge: m.codigo_ibge,
+      uf: m.uf,
+      vaarMedioUf: m.vaarMedioUf ?? null,
+      vaatMedioUf: m.vaatMedioUf ?? null,
+      vaafMedioUf: m.vaafMedioUf ?? null,
       populacao: m.populacao,
       regiao: m.regiao,
 

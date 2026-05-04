@@ -161,6 +161,7 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
       efMat: data.municipality.efMat ?? null,
       complianceASectionDone: data.municipality.complianceASectionDone ?? null,
       complianceASectionTotal: data.municipality.complianceASectionTotal ?? null,
+      vaarMedioUf: data.municipality.vaarMedioUf ?? null,
     };
 
     const enrollmentDeltas: Record<string, number> = {};

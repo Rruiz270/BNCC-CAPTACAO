@@ -86,6 +86,7 @@ export function GainTracker({
       efMat: muni.enrollmentSummary?.efMat ?? null,
       complianceASectionDone: complianceA?.done ?? null,
       complianceASectionTotal: complianceA?.total ?? null,
+      vaarMedioUf: muni.vaarMedioUf ?? null,
     };
 
     const intake: IntakeInput = intakeData

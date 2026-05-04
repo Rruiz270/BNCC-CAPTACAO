@@ -103,6 +103,7 @@ export default function TelaoPage({ params }: { params: Promise<{ id: string }> 
       efMat: muni.enrollmentSummary?.efMat ?? null,
       complianceASectionDone: complianceA?.done ?? null,
       complianceASectionTotal: complianceA?.total ?? null,
+      vaarMedioUf: muni.vaarMedioUf ?? null,
     };
 
     const intake: IntakeInput = intakeData

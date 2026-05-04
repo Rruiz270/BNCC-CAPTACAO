@@ -4,11 +4,13 @@ export const fundebSchema = pgSchema('fundeb');
 export const rawSchema = pgSchema('raw');
 export const auditSchema = pgSchema('audit');
 
-// municipalities - 645 SP cities
+// municipalities - up to 5,568 BR cities (was 645 SP-only).
+// `uf` is the canonical state filter; nullable during backfill, must be set for new rows.
 export const municipalities = fundebSchema.table('municipalities', {
   id: serial('id').primaryKey(),
   nome: text('nome').notNull(),
   codigoIbge: varchar('codigo_ibge', { length: 7 }).unique(),
+  uf: varchar('uf', { length: 2 }),
   populacao: integer('populacao'),
   regiao: text('regiao'),
   // FUNDEB data
@@ -432,6 +434,21 @@ export const gainSnapshots = fundebSchema.table('gain_snapshots', {
   intakeData: jsonb('intake_data'),
   capturedBy: text('captured_by'),
   capturedAt: timestamp('captured_at').defaultNow(),
+});
+
+// fundeb.estados — UF-level VAAR/VAAT/VAAF medians (substitui constants _SP).
+// Carregado pelo seed nacional. gain.ts faz lookup por municipality.uf.
+export const estados = fundebSchema.table('estados', {
+  uf: varchar('uf', { length: 2 }).primaryKey(),
+  nome: text('nome'),
+  vaafMedio: real('vaaf_medio'),
+  vaatMedio: real('vaat_medio'),
+  vaarMedio: real('vaar_medio'),
+  petiPorAluno: real('peti_por_aluno'),
+  populacao: integer('populacao'),
+  totalMunicipios: integer('total_municipios'),
+  anoReferencia: integer('ano_referencia').default(2026),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
 // audit.snapshots — snapshot imutavel (UC-AU.05, UC-AU.07)

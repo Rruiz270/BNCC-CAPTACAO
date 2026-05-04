@@ -43,6 +43,12 @@ export interface MunicipalityInput {
    */
   complianceASectionDone?: number | null;
   complianceASectionTotal?: number | null;
+  /**
+   * Mediana VAAR por aluno do estado (R$/aluno). Vem da tabela fundeb.estados
+   * via JOIN no fetch do município. Quando ausente, cai pro valor SP histórico
+   * (VAAR_MEDIAN_SP) — preserva comportamento single-UF.
+   */
+  vaarMedioUf?: number | null;
 }
 
 /**
@@ -235,7 +241,8 @@ function computeMultiplicadores(intake: IntakeInput): GainResult['multiplicadore
 
 function computeVaar(muni: MunicipalityInput): GainResult['vaar'] {
   const totalAlunos = n(muni.totalMatriculas);
-  const potencialEstimado = totalAlunos * FUNDEB_PARAMS.VAAR_MEDIAN_SP;
+  const vaarMedio = muni.vaarMedioUf ?? FUNDEB_PARAMS.VAAR_MEDIAN_SP;
+  const potencialEstimado = totalAlunos * vaarMedio;
   const vaarRecebidoBanco = n(muni.vaar);
   const jaRecebe = vaarRecebidoBanco > 0;
 

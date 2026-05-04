@@ -207,6 +207,7 @@ export default function SimuladorPage() {
       efMat: detail.enrollmentSummary?.efMat ?? null,
       complianceASectionDone: complianceA?.done ?? null,
       complianceASectionTotal: complianceA?.total ?? null,
+      vaarMedioUf: detail.vaarMedioUf ?? null,
     };
     const intakeInput: IntakeInput = {
       alunosIntegral: simAlunosIntegral || null,
