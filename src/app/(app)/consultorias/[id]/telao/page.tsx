@@ -26,6 +26,7 @@ interface MuniDetail {
   schools: { rurais: number | null };
   educationMetrics: { idebAi: number | null; idebAf: number | null };
   compliance: { summary: Record<string, { total: number; done: number; progress: number; pending: number }> };
+  vaarMedioUf?: number | null;
 }
 
 interface SnapshotRow {
