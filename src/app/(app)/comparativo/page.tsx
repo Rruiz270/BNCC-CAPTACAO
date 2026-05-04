@@ -189,7 +189,7 @@ export default function ComparativoPage() {
   const autoSelectedRef = useRef(false);
 
   useEffect(() => {
-    fetch("/api/municipalities?limit=645")
+    fetch("/api/municipalities?limit=6000")
       .then((r) => r.json())
       .then((data) => {
         setAllMunicipalities(data.data || []);

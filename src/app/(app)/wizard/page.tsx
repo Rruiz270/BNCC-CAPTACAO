@@ -28,7 +28,7 @@ export default function WizardLanding() {
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
-    fetch("/api/municipalities?limit=645&sort=nome")
+    fetch("/api/municipalities?limit=6000&sort=nome")
       .then((r) => r.json())
       .then((data) => setMunicipalities(data.data || []))
       .catch(() => {});
@@ -62,7 +62,7 @@ export default function WizardLanding() {
         {/* Nova consultoria */}
         <div className="bg-white border border-[var(--border)] rounded-xl p-6">
           <h2 className="text-sm font-bold text-[var(--text1)] mb-1">Nova consultoria</h2>
-          <p className="text-xs text-[var(--text3)] mb-4">Selecione um dos 645 municipios de SP</p>
+          <p className="text-xs text-[var(--text3)] mb-4">Selecione um municipio do Brasil</p>
 
           <input
             type="text"

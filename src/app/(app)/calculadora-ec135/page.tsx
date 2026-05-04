@@ -57,7 +57,7 @@ export default function CalculadoraEC135() {
   const [custoVaga, setCustoVaga] = useState(CUSTO_INFRA_POR_VAGA)
 
   useEffect(() => {
-    fetch('/api/municipalities?limit=645&sort=nome')
+    fetch('/api/municipalities?limit=6000&sort=nome')
       .then(r => r.json())
       .then(d => setMunicipalities(d.data || []))
       .catch(() => {})

@@ -27,7 +27,7 @@ function SidebarMunicipalityPicker({ onSelect, creating }: { onSelect: (id: numb
 
   useEffect(() => {
     if (loaded) return;
-    fetch("/api/municipalities?limit=645&sort=nome")
+    fetch("/api/municipalities?limit=6000&sort=nome")
       .then((r) => r.json())
       .then((data) => {
         setMunicipalities(data.data || []);
@@ -540,8 +540,8 @@ export function Sidebar({ user }: { user?: SidebarUser }) {
 
       {/* Footer */}
       <div className="px-6 py-3 border-t border-white/10 text-[10px] text-white/30">
-        <div>FUNDEB SP 2026</div>
-        <div>645 municípios - 15 categorias</div>
+        <div>FUNDEB Brasil 2026</div>
+        <div>5.569 municípios - 15 categorias</div>
       </div>
 
       {/* Intake Response Modal */}

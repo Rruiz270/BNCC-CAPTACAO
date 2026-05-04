@@ -21,7 +21,7 @@ export function MunicipalitySelector({ value, onChange, className }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    fetch("/api/municipalities?limit=645")
+    fetch("/api/municipalities?limit=6000")
       .then((r) => r.json())
       .then((data) => setMunicipalities(data.data || []));
   }, []);

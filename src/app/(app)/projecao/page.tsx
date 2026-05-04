@@ -63,7 +63,7 @@ export default function ProjecaoFinanceira() {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    fetch('/api/municipalities?limit=645&sort=nome')
+    fetch('/api/municipalities?limit=6000&sort=nome')
       .then(r => r.json())
       .then(d => setMunicipalities(d.data || []))
       .catch(() => {})

@@ -108,7 +108,7 @@ export default function DashboardPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("/api/municipalities?limit=645");
+        const res = await fetch("/api/municipalities?limit=6000");
         if (!res.ok) throw new Error("Falha ao carregar dados");
         const json: ApiResponse = await res.json();
         setData(json.data);
@@ -144,7 +144,7 @@ export default function DashboardPage() {
   if (error) {
     return (
       <div>
-        <PageHeader title="Dashboard" description="Visao geral do FUNDEB SP 2026 - 645 municipios" />
+        <PageHeader title="Dashboard" description="Visao geral do FUNDEB 2026 - 5.569 municipios" />
         <div className="max-w-7xl mx-auto px-8 py-12">
           <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
             <p className="text-red-700 font-semibold">Erro ao carregar dados</p>
@@ -157,7 +157,7 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <PageHeader title="Dashboard" description="Visao geral do FUNDEB SP 2026 - 645 municipios" />
+      <PageHeader title="Dashboard" description="Visao geral do FUNDEB 2026 - 5.569 municipios" />
 
       <div className="max-w-7xl mx-auto px-8 py-8 space-y-8">
         {/* Session-Aware Panel */}

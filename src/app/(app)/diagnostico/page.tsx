@@ -182,7 +182,7 @@ export default function DiagnosticoPage() {
       <div>
         <PageHeader
           title="Diagnostico Municipal"
-          description="Analise detalhada dos 645 municipios paulistas"
+          description="Analise detalhada dos municipios brasileiros"
         />
         <div className="max-w-7xl mx-auto px-8 py-6">
           {activeSession && activeMunicipality && (
@@ -206,7 +206,7 @@ export default function DiagnosticoPage() {
     <div>
       <PageHeader
         title="Diagnostico Municipal"
-        description="Analise detalhada dos 645 municipios paulistas"
+        description="Analise detalhada dos municipios brasileiros"
       />
 
       <div className="max-w-7xl mx-auto px-8 py-6">

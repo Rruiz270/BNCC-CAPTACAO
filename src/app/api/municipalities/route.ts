@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
 
     const search = searchParams.get('search') || '';
-    const limit = Math.min(parseInt(searchParams.get('limit') || '50') || 50, 1000);
+    const limit = Math.min(parseInt(searchParams.get('limit') || '50') || 50, 6000);
     const offset = parseInt(searchParams.get('offset') || '0') || 0;
     const sort = searchParams.get('sort') || 'nome';
     const order = searchParams.get('order') === 'desc' ? 'desc' : 'asc';

@@ -18,7 +18,7 @@ export default function GerarRelatorio() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch('/api/municipalities?limit=645&sort=nome')
+    fetch('/api/municipalities?limit=6000&sort=nome')
       .then(r => r.json())
       .then(d => setMunicipalities(d.data || []))
       .catch(() => {})

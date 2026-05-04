@@ -55,7 +55,7 @@ export default function CaptacaoPage() {
   // Load municipalities
   useEffect(() => {
     if (loaded) return;
-    fetch("/api/municipalities?limit=645&sort=nome")
+    fetch("/api/municipalities?limit=6000&sort=nome")
       .then((r) => r.json())
       .then((data) => {
         setMunicipalities(data.data || []);
