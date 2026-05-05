@@ -1,0 +1,1887 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia do Consultor — Instituto i10 FUNDEB 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0A2463;
+            --navy-dark: #061740;
+            --cyan: #00B4D8;
+            --cyan-light: #48CAE4;
+            --green: #00E5A0;
+            --green-dark: #00C88A;
+            --red: #D4553A;
+            --orange: #E8A838;
+            --bg: #F4F7FA;
+            --card: #ffffff;
+            --border: #DDE3EB;
+            --text: #0A2463;
+            --text2: #5A6B80;
+            --text3: #8896AB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, var(--navy) 0%, #0d3280 100%);
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(0, 180, 216, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-brand {
+            color: var(--cyan);
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.95rem;
+        }
+
+        .header-badge {
+            display: inline-block;
+            margin-top: 1rem;
+            background: rgba(0, 180, 216, 0.15);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            color: var(--cyan-light);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* NAV */
+        .nav {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(10, 36, 99, 0.05);
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: var(--text2);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav a:hover {
+            background: rgba(0, 180, 216, 0.1);
+            color: var(--cyan);
+        }
+
+        .nav a.active {
+            background: var(--navy);
+            color: white;
+        }
+
+        /* MAIN */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* SECTIONS */
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .section-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .section-header h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .section-header .subtitle {
+            font-size: 0.85rem;
+            color: var(--text2);
+            margin-top: 0.2rem;
+        }
+
+        /* TIER COLORS */
+        .tier-t1 { background: linear-gradient(135deg, #E8F5E9, #C8E6C9); color: #2E7D32; }
+        .tier-t2 { background: linear-gradient(135deg, #E3F2FD, #BBDEFB); color: #1565C0; }
+        .tier-t3 { background: linear-gradient(135deg, #F3E5F5, #E1BEE7); color: #7B1FA2; }
+        .tier-t4 { background: linear-gradient(135deg, #FFF3E0, #FFE0B2); color: #E65100; }
+        .tier-t5 { background: linear-gradient(135deg, #FCE4EC, #F8BBD0); color: #C62828; }
+        .tier-t6 { background: linear-gradient(135deg, #E0F7FA, #B2EBF2); color: #00695C; }
+
+        /* CARDS */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: box-shadow 0.2s;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 16px rgba(10, 36, 99, 0.08);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .card-subtitle {
+            font-size: 0.8rem;
+            color: var(--text2);
+            margin-top: 0.2rem;
+        }
+
+        /* BADGES */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-easy { background: #E8F5E9; color: #2E7D32; }
+        .badge-medium { background: #FFF3E0; color: #E65100; }
+        .badge-complex { background: #FCE4EC; color: #C62828; }
+        .badge-long { background: #E3F2FD; color: #1565C0; }
+
+        /* TABLES */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin: 1rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        thead {
+            background: var(--navy);
+            color: white;
+        }
+
+        thead th {
+            padding: 0.8rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s;
+        }
+
+        tbody tr:hover {
+            background: rgba(0, 180, 216, 0.03);
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody td {
+            padding: 0.75rem 1rem;
+            vertical-align: top;
+        }
+
+        .td-question {
+            font-weight: 600;
+            color: var(--navy);
+            min-width: 200px;
+        }
+
+        .td-example {
+            color: var(--text2);
+            font-style: italic;
+        }
+
+        .td-compliance {
+            color: var(--text);
+            font-size: 0.8rem;
+        }
+
+        .td-compliance ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .td-compliance li {
+            padding: 0.2rem 0;
+            padding-left: 1.2rem;
+            position: relative;
+        }
+
+        .td-compliance li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--green-dark);
+            font-weight: 700;
+        }
+
+        /* GAIN BOX */
+        .gain-box {
+            background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+            border: 1px solid #A5D6A7;
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .gain-box-icon {
+            font-size: 1.5rem;
+        }
+
+        .gain-box-content {
+            flex: 1;
+        }
+
+        .gain-box-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #2E7D32;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .gain-box-value {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #1B5E20;
+        }
+
+        .gain-box-detail {
+            font-size: 0.8rem;
+            color: #388E3C;
+            margin-top: 0.2rem;
+        }
+
+        /* ALERT BOX */
+        .alert {
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        .alert-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .alert-warning {
+            background: #FFF8E1;
+            border: 1px solid #FFE082;
+            color: #F57F17;
+        }
+
+        .alert-danger {
+            background: #FFEBEE;
+            border: 1px solid #EF9A9A;
+            color: #C62828;
+        }
+
+        .alert-info {
+            background: #E3F2FD;
+            border: 1px solid #90CAF9;
+            color: #1565C0;
+        }
+
+        .alert-success {
+            background: #E8F5E9;
+            border: 1px solid #A5D6A7;
+            color: #2E7D32;
+        }
+
+        .alert strong {
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        /* TIMELINE */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.55rem;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--cyan);
+            border: 2px solid var(--card);
+            box-shadow: 0 0 0 2px var(--cyan);
+        }
+
+        .timeline-date {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .timeline-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin: 0.2rem 0;
+        }
+
+        .timeline-desc {
+            font-size: 0.8rem;
+            color: var(--text2);
+        }
+
+        /* OVERVIEW GRID */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .overview-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            transition: all 0.2s;
+        }
+
+        .overview-card:hover {
+            border-color: var(--cyan);
+            box-shadow: 0 4px 12px rgba(0, 180, 216, 0.1);
+        }
+
+        .overview-card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .overview-card-content h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .overview-card-content p {
+            font-size: 0.8rem;
+            color: var(--text2);
+        }
+
+        .overview-card-content .stat {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--cyan);
+            margin-top: 0.3rem;
+        }
+
+        /* COMPLIANCE PROGRESS */
+        .compliance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .compliance-item {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .compliance-item-letter {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--navy);
+        }
+
+        .compliance-item-name {
+            font-size: 0.8rem;
+            color: var(--text2);
+            margin: 0.3rem 0;
+        }
+
+        .compliance-item-count {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--cyan);
+        }
+
+        /* MULTIPLIER VISUAL */
+        .multiplier-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .multiplier-row:last-child {
+            border-bottom: none;
+        }
+
+        .multiplier-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: var(--cyan);
+            transition: width 0.3s;
+        }
+
+        .multiplier-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--navy);
+            min-width: 140px;
+        }
+
+        .multiplier-value {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--cyan);
+            min-width: 50px;
+            text-align: right;
+        }
+
+        /* FOOTER */
+        .footer {
+            background: var(--navy-dark);
+            color: rgba(255, 255, 255, 0.5);
+            padding: 2rem;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        .footer a {
+            color: var(--cyan);
+            text-decoration: none;
+        }
+
+        /* PRINT */
+        @media print {
+            .nav { display: none; }
+            .header { padding: 1.5rem; }
+            .container { padding: 1rem; }
+            .card { break-inside: avoid; }
+            body { background: white; }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.4rem; }
+            .container { padding: 1rem; }
+            .overview-grid { grid-template-columns: 1fr; }
+            .compliance-grid { grid-template-columns: repeat(2, 1fr); }
+            .nav-inner { gap: 0.25rem; }
+            .nav a { font-size: 0.65rem; padding: 0.3rem 0.5rem; }
+        }
+
+        /* SCROLL BEHAVIOR */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        section {
+            scroll-margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="header-brand">Instituto i10</div>
+    <h1>Guia do Consultor FUNDEB 2026</h1>
+    <p>Referência completa: perguntas, exemplos e requisitos de compliance por alavanca</p>
+    <div class="header-badge">Documento Interno — Uso Exclusivo Consultores i10</div>
+</header>
+
+<!-- NAV -->
+<nav class="nav">
+    <div class="nav-inner">
+        <a href="#visao-geral">Visão Geral</a>
+        <a href="#t1">T1 Categorias</a>
+        <a href="#t2">T2 Integral</a>
+        <a href="#t3">T3 AEE</a>
+        <a href="#t4">T4 Localização</a>
+        <a href="#t5">T5 VAAR</a>
+        <a href="#t6">T6 EC 135</a>
+        <a href="#cronograma">Cronograma</a>
+        <a href="#simulacao">Simulação</a>
+    </div>
+</nav>
+
+<main class="container">
+
+    <!-- VISÃO GERAL -->
+    <section id="visao-geral" class="section">
+        <div class="section-header">
+            <div class="section-icon" style="background: linear-gradient(135deg, var(--navy), #0d3280); color: white;">
+                📋
+            </div>
+            <div>
+                <h2>Visão Geral das 6 Alavancas</h2>
+                <div class="subtitle">Cada alavanca representa uma oportunidade de incremento na captação FUNDEB do município</div>
+            </div>
+        </div>
+
+        <div class="overview-grid">
+            <div class="overview-card">
+                <div class="overview-card-icon tier-t1">🎯</div>
+                <div class="overview-card-content">
+                    <h4>T1 — Categorias Zeradas</h4>
+                    <p>Ativar categorias FUNDEB com zero matrículas registradas</p>
+                    <div class="stat">4 perguntas</div>
+                </div>
+            </div>
+            <div class="overview-card">
+                <div class="overview-card-icon tier-t2">⏰</div>
+                <div class="overview-card-content">
+                    <h4>T2 — Reclassificação Integral</h4>
+                    <p>Converter parcial → integral (+50% por aluno)</p>
+                    <div class="stat">5 perguntas</div>
+                </div>
+            </div>
+            <div class="overview-card">
+                <div class="overview-card-icon tier-t3">♿</div>
+                <div class="overview-card-content">
+                    <h4>T3 — AEE / Ed. Especial</h4>
+                    <p>Captar dupla matrícula AEE não registrada</p>
+                    <div class="stat">7 perguntas</div>
+                </div>
+            </div>
+            <div class="overview-card">
+                <div class="overview-card-icon tier-t4">🌾</div>
+                <div class="overview-card-content">
+                    <h4>T4 — Campo / Indígena / Quilombola</h4>
+                    <p>Aplicar multiplicadores de localização (1.15x–1.40x)</p>
+                    <div class="stat">8 perguntas</div>
+                </div>
+            </div>
+            <div class="overview-card">
+                <div class="overview-card-icon tier-t5">🏛️</div>
+                <div class="overview-card-content">
+                    <h4>T5 — VAAR / Compliance</h4>
+                    <p>Cumprir condicionalidades para complementação federal</p>
+                    <div class="stat">19 perguntas</div>
+                </div>
+            </div>
+            <div class="overview-card">
+                <div class="overview-card-icon tier-t6">📈</div>
+                <div class="overview-card-content">
+                    <h4>T6 — EC 135 Integral</h4>
+                    <p>Expansão obrigatória 4%/ano + PETI</p>
+                    <div class="stat">5 perguntas</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-info">
+            <span class="alert-icon">💡</span>
+            <div>
+                <strong>Como usar este guia</strong>
+                Para cada pergunta você encontrará: o que perguntar ao município, um exemplo de resposta ideal, e exatamente o que precisa estar em ordem para o município estar compliant. Use como roteiro nas reuniões de Discovery e Diagnóstico.
+            </div>
+        </div>
+
+        <!-- COMPLIANCE SECTIONS OVERVIEW -->
+        <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem;">Seções de Compliance (5 blocos — 20 itens)</h3>
+        <div class="compliance-grid">
+            <div class="compliance-item">
+                <div class="compliance-item-letter">A</div>
+                <div class="compliance-item-name">Condicionalidades VAAR</div>
+                <div class="compliance-item-count">5 itens — Deadline: 31/Ago/2026</div>
+            </div>
+            <div class="compliance-item">
+                <div class="compliance-item-letter">B</div>
+                <div class="compliance-item-name">BNCC Computação</div>
+                <div class="compliance-item-count">6 itens — Deadline: 31/Ago/2026</div>
+            </div>
+            <div class="compliance-item">
+                <div class="compliance-item-letter">C</div>
+                <div class="compliance-item-name">Censo Escolar</div>
+                <div class="compliance-item-count">4 itens — Deadline: 27/Mai/2026</div>
+            </div>
+            <div class="compliance-item">
+                <div class="compliance-item-letter">D</div>
+                <div class="compliance-item-name">SIMEC</div>
+                <div class="compliance-item-count">3 itens — Deadline: 31/Ago/2026</div>
+            </div>
+            <div class="compliance-item">
+                <div class="compliance-item-letter">E</div>
+                <div class="compliance-item-name">EC 135 Integral</div>
+                <div class="compliance-item-count">2 itens — Deadline: 31/Dez/2026</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- T1 — CATEGORIAS ZERADAS -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <section id="t1" class="section">
+        <div class="section-header">
+            <div class="section-icon tier-t1">🎯</div>
+            <div>
+                <h2>T1 — Categorias Zeradas</h2>
+                <div class="subtitle">Ativar categorias FUNDEB com zero matrículas — ganho imediato por categoria ativada</div>
+            </div>
+            <span class="badge badge-easy">Fácil</span>
+        </div>
+
+        <div class="alert alert-success">
+            <span class="alert-icon">💰</span>
+            <div>
+                <strong>Por que priorizar?</strong>
+                Muitos municípios deixam de registrar matrículas em categorias que já existem de fato. Cada categoria "zerada" ativada gera receita imediata sem necessidade de criar nada novo.
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Pergunta ao Município</th>
+                        <th>Exemplo de Resposta</th>
+                        <th>O que precisa para estar compliant</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>1.1</strong></td>
+                        <td class="td-question">Qual a matrícula real em cada uma das 16 categorias FUNDEB?</td>
+                        <td class="td-example">"Creche Integral: mostra 0 no sistema, mas temos 45 crianças em turno de 7h"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Registrar no Educenso antes de 27/Mai/2026</li>
+                                <li>Comprovar jornada (PPP + grade horária)</li>
+                                <li>Turma cadastrada com tipo correto</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>1.2</strong></td>
+                        <td class="td-question">A rede possui creches ou pré-escolas conveniadas?</td>
+                        <td class="td-example">"Sim, 3 convênios com entidades — 180 crianças no total"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Convênio vigente e atualizado</li>
+                                <li>Prestação de contas em dia</li>
+                                <li>Registro no Educenso como "conveniada"</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>1.3</strong></td>
+                        <td class="td-question">Há alunos em EJA (Educação de Jovens e Adultos) não registrados?</td>
+                        <td class="td-example">"Temos 2 turmas noturnas com 60 alunos — não sei se estão no sistema"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Turmas EJA registradas no Educenso</li>
+                                <li>Frequência mínima dos alunos comprovada</li>
+                                <li>Projeto pedagógico EJA documentado</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>1.4</strong></td>
+                        <td class="td-question">Existem turmas de pré-escola conveniada em tempo integral?</td>
+                        <td class="td-example">"Parceria com entidade filantrópica — 40 crianças em jornada de 8h"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Convênio formal com a entidade</li>
+                                <li>Jornada ≥7h comprovada</li>
+                                <li>Categoria "pré-escola conveniada integral" no Educenso</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="gain-box">
+            <div class="gain-box-icon">📊</div>
+            <div class="gain-box-content">
+                <div class="gain-box-label">Ganho típico por ativação</div>
+                <div class="gain-box-value">R$ 415.890 / ano</div>
+                <div class="gain-box-detail">Exemplo: 45 crianças em creche integral ativada (45 × R$ 9.242)</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- T2 — RECLASSIFICAÇÃO INTEGRAL -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <section id="t2" class="section">
+        <div class="section-header">
+            <div class="section-icon tier-t2">⏰</div>
+            <div>
+                <h2>T2 — Reclassificação Integral</h2>
+                <div class="subtitle">Converter matrículas parciais para integral — cada conversão gera +50% no fator VAAF</div>
+            </div>
+            <span class="badge badge-medium">Médio</span>
+        </div>
+
+        <div class="alert alert-info">
+            <span class="alert-icon">⚡</span>
+            <div>
+                <strong>Quick Win mais poderoso</strong>
+                Escolas com jornada de 6h30 que estendem para 7h ganham automaticamente o fator 1,50 (vs 1,00). Nenhuma construção necessária — apenas ajuste de horário + registro.
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Pergunta ao Município</th>
+                        <th>Exemplo de Resposta</th>
+                        <th>O que precisa para estar compliant</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>2.1</strong></td>
+                        <td class="td-question">Quantas escolas já oferecem jornada integral (≥7h/dia)?</td>
+                        <td class="td-example">"8 escolas operam integral"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>PPP com jornada integral documentada</li>
+                                <li>Grade horária ≥7h efetivas</li>
+                                <li>Registro no Educenso como turma integral</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.2</strong></td>
+                        <td class="td-question">Total de alunos em jornada integral atualmente?</td>
+                        <td class="td-example">"1.450 alunos"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Cada aluno com ≥7h diárias registradas</li>
+                                <li>Atividades pedagógicas (não apenas permanência)</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.3</strong></td>
+                        <td class="td-question">Há escolas com jornada de 6h ou 6h30 que poderiam chegar a 7h?</td>
+                        <td class="td-example">"Sim! 5 escolas funcionam 6h30 — faltam apenas 30 minutos"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Ajustar PPP e grade para ≥7h</li>
+                                <li>Garantir atividades pedagógicas no horário extra</li>
+                                <li>Atualizar registro no Educenso para "integral"</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.4</strong></td>
+                        <td class="td-question">A rede planeja expandir a educação integral em 2026?</td>
+                        <td class="td-example">"Sim, queremos mais 4 escolas integrais"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Portaria de criação de turmas integrais</li>
+                                <li>Aprovação do plano pelo CME</li>
+                                <li>Orçamento previsto (merenda, transporte)</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>2.5</strong></td>
+                        <td class="td-question">Quais escolas já têm estrutura (refeitório, espaço) para operar integral?</td>
+                        <td class="td-example">"12 escolas têm refeitório mas só 8 operam integral — 4 poderiam converter"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Laudo de infraestrutura adequada</li>
+                                <li>Contrato de alimentação escolar suficiente</li>
+                                <li>Equipe docente para horário expandido</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="gain-box">
+            <div class="gain-box-icon">📊</div>
+            <div class="gain-box-content">
+                <div class="gain-box-label">Ganho típico por reclassificação</div>
+                <div class="gain-box-value">+R$ 2.981 / aluno / ano</div>
+                <div class="gain-box-detail">200 alunos reclassificados = +R$ 596.200/ano (fator 1,00 → 1,50)</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- T3 — AEE / ED. ESPECIAL -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <section id="t3" class="section">
+        <div class="section-header">
+            <div class="section-icon tier-t3">♿</div>
+            <div>
+                <h2>T3 — AEE / Educação Especial</h2>
+                <div class="subtitle">Captar dupla matrícula AEE e Educação Especial não registrada — R$ 8.348 por aluno</div>
+            </div>
+            <span class="badge badge-medium">Médio</span>
+        </div>
+
+        <div class="alert alert-warning">
+            <span class="alert-icon">⚠️</span>
+            <div>
+                <strong>Gap mais comum nos municípios</strong>
+                A maioria das redes tem alunos com AEE funcionando, mas SEM a dupla matrícula registrada no Educenso. Cada aluno "esquecido" custa R$ 8.348/ano em receita perdida.
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Pergunta ao Município</th>
+                        <th>Exemplo de Resposta</th>
+                        <th>O que precisa para estar compliant</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>3.1</strong></td>
+                        <td class="td-question">Quantos alunos possuem laudo e recebem AEE?</td>
+                        <td class="td-example">"142 alunos com laudo frequentam sala de recursos"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Laudo médico atualizado</li>
+                                <li>Plano de AEE individual elaborado</li>
+                                <li>Frequência na sala de recursos comprovada</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>3.2</strong></td>
+                        <td class="td-question">Destes, quantos estão registrados como DUPLA MATRÍCULA no Educenso?</td>
+                        <td class="td-example">"Apenas 65 — temos um gap de 77 alunos!"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Matrícula 1: turma regular</li>
+                                <li>Matrícula 2: AEE em contraturno</li>
+                                <li>Ambas registradas no Educenso</li>
+                                <li>Professor especializado vinculado</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>3.3</strong></td>
+                        <td class="td-question">Quantos alunos estão em classes especiais exclusivas?</td>
+                        <td class="td-example">"18 alunos em 2 classes especiais"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Classe registrada como "especial exclusiva"</li>
+                                <li>Projeto pedagógico específico</li>
+                                <li>Profissionais especializados</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>3.4</strong></td>
+                        <td class="td-question">A rede possui salas de recursos multifuncionais? Quantas?</td>
+                        <td class="td-example">"Sim, 12 salas em 12 escolas"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Equipamentos do programa MEC instalados</li>
+                                <li>Professor especializado lotado</li>
+                                <li>Funcionamento em contraturno</li>
+                                <li>Registro no Educenso como SRM</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>3.5</strong></td>
+                        <td class="td-question">Quantos alunos com laudo NÃO frequentam o AEE atualmente?</td>
+                        <td class="td-example">"38 alunos têm laudo mas não vão à sala de recursos"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Busca ativa desses alunos</li>
+                                <li>Oferta de vaga em SRM (mesmo que em outra escola)</li>
+                                <li>Após adesão: registrar dupla matrícula</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>3.6</strong></td>
+                        <td class="td-question">Há alunos com suspeita de deficiência mas SEM laudo formal?</td>
+                        <td class="td-example">"~25 alunos identificados pela equipe pedagógica"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Encaminhar para avaliação médica/psicológica</li>
+                                <li>Obter laudo formal (CID ou CIF)</li>
+                                <li>Após laudo: incluir no AEE + registrar dupla matrícula</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>3.7</strong></td>
+                        <td class="td-question">A rede oferece Educação Bilíngue de Surdos (Libras + Português)?</td>
+                        <td class="td-example">"Sim, 12 alunos surdos com intérprete de Libras"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Registrar como "Educação Bilíngue" (categoria própria desde Lei 14.191/2021)</li>
+                                <li>Não registrar apenas como Ed. Especial genérica</li>
+                                <li>Professor/intérprete de Libras</li>
+                                <li>Fator 1,40 (urbano) ou 1,61 (rural)</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="gain-box">
+            <div class="gain-box-icon">📊</div>
+            <div class="gain-box-content">
+                <div class="gain-box-label">Ganho típico — gap de dupla matrícula</div>
+                <div class="gain-box-value">+R$ 642.796 / ano</div>
+                <div class="gain-box-detail">77 alunos com AEE não registrados como dupla matrícula (77 × R$ 8.348)</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- T4 — CAMPO / INDÍGENA / QUILOMBOLA -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <section id="t4" class="section">
+        <div class="section-header">
+            <div class="section-icon tier-t4">🌾</div>
+            <div>
+                <h2>T4 — Campo / Indígena / Quilombola</h2>
+                <div class="subtitle">Aplicar multiplicadores de localização diferenciada sobre o valor-aluno</div>
+            </div>
+            <span class="badge badge-easy">Fácil</span>
+        </div>
+
+        <!-- MULTIPLIER VISUAL -->
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <h4 style="font-size: 0.85rem; margin-bottom: 1rem; color: var(--text2);">Multiplicadores por localização</h4>
+            <div class="multiplier-row">
+                <span class="multiplier-label">Urbano (base)</span>
+                <div style="flex: 1;"><div class="multiplier-bar" style="width: 71%;"></div></div>
+                <span class="multiplier-value">1,00x</span>
+            </div>
+            <div class="multiplier-row">
+                <span class="multiplier-label">Campo / Rural</span>
+                <div style="flex: 1;"><div class="multiplier-bar" style="width: 82%; background: var(--orange);"></div></div>
+                <span class="multiplier-value" style="color: var(--orange);">1,15x</span>
+            </div>
+            <div class="multiplier-row">
+                <span class="multiplier-label">Indígena</span>
+                <div style="flex: 1;"><div class="multiplier-bar" style="width: 100%; background: var(--green-dark);"></div></div>
+                <span class="multiplier-value" style="color: var(--green-dark);">1,40x</span>
+            </div>
+            <div class="multiplier-row">
+                <span class="multiplier-label">Quilombola</span>
+                <div style="flex: 1;"><div class="multiplier-bar" style="width: 100%; background: var(--green-dark);"></div></div>
+                <span class="multiplier-value" style="color: var(--green-dark);">1,40x</span>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Pergunta ao Município</th>
+                        <th>Exemplo de Resposta</th>
+                        <th>O que precisa para estar compliant</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>4.1</strong></td>
+                        <td class="td-question">Quantas escolas estão em área rural/campo?</td>
+                        <td class="td-example">"12 escolas em zona rural"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Código de localização "rural" no cadastro INEP</li>
+                                <li>Verificar se está correto no Educenso</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>4.2</strong></td>
+                        <td class="td-question">Quantos alunos estão matriculados em escolas rurais?</td>
+                        <td class="td-example">"480 alunos"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Matrícula vinculada a escola com código rural</li>
+                                <li>Multiplicador 1,15x aplicado automaticamente</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>4.3</strong></td>
+                        <td class="td-question">Há escolas em área indígena?</td>
+                        <td class="td-example">"2 escolas em terra indígena"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Classificação indígena no cadastro INEP</li>
+                                <li>PPP culturalmente diferenciado</li>
+                                <li>Professor bilíngue (língua indígena)</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>4.4</strong></td>
+                        <td class="td-question">Quantos alunos em escolas indígenas?</td>
+                        <td class="td-example">"95 alunos"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Currículo diferenciado aprovado</li>
+                                <li>Multiplicador 1,40x</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>4.5</strong></td>
+                        <td class="td-question">Há escolas em comunidade quilombola?</td>
+                        <td class="td-example">"1 escola em comunidade certificada"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Comunidade reconhecida pela Fundação Palmares</li>
+                                <li>Classificação quilombola no INEP</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>4.6</strong></td>
+                        <td class="td-question">Quantos alunos em escolas quilombolas?</td>
+                        <td class="td-example">"42 alunos"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Currículo com referências quilombolas</li>
+                                <li>Multiplicador 1,40x</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>4.7</strong></td>
+                        <td class="td-question">Há escolas rurais classificadas INCORRETAMENTE como urbanas no INEP?</td>
+                        <td class="td-example">"Sim! 3 escolas distritais são rurais mas aparecem como urbanas"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Solicitar reclassificação ao INEP</li>
+                                <li>Documentar localização (coordenadas, fotos, decreto)</li>
+                                <li>Prazo: antes do Censo 27/Mai/2026</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>4.8</strong></td>
+                        <td class="td-question">Há alunos indígenas/quilombolas frequentando escola urbana?</td>
+                        <td class="td-example">"Sim, 30 alunos quilombolas vão à escola da cidade"</td>
+                        <td class="td-compliance">
+                            <ul>
+                                <li>Avaliar criação de extensão/polo na comunidade</li>
+                                <li>Ou verificar se a escola pode ser reclassificada</li>
+                                <li>Alternativa: registrar alunos como de comunidade diferenciada</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="gain-box">
+            <div class="gain-box-icon">📊</div>
+            <div class="gain-box-content">
+                <div class="gain-box-label">Ganho típico — reclassificação de localização</div>
+                <div class="gain-box-value">+R$ 107.334 / ano</div>
+                <div class="gain-box-detail">3 escolas reclassificadas (120 alunos × R$ 5.963 × 15% multiplicador rural)</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- T5 — VAAR / COMPLIANCE -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <section id="t5" class="section">
+        <div class="section-header">
+            <div class="section-icon tier-t5">🏛️</div>
+            <div>
+                <h2>T5 — VAAR / Compliance Federal</h2>
+                <div class="subtitle">Cumprir condicionalidades para acessar complementação federal — impacto mais alto</div>
+            </div>
+            <span class="badge badge-complex">Complexo</span>
+        </div>
+
+        <div class="alert alert-danger">
+            <span class="alert-icon">🚨</span>
+            <div>
+                <strong>REGRA CRÍTICA: Tudo ou Nada</strong>
+                Se o município falha em QUALQUER UMA das 5 condicionalidades (A1–A5), perde o VAAR INTEIRO. Não existe compliance parcial — é habilitado ou inabilitado.
+            </div>
+        </div>
+
+        <!-- SEÇÃO A -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Seção A — 5 Condicionalidades VAAR</div>
+                    <div class="card-subtitle">Deadline: 31/Agosto/2026 — Registro no SIMEC</div>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Pergunta ao Município</th>
+                            <th>Exemplo de Resposta</th>
+                            <th>O que precisa para estar compliant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>A1</strong></td>
+                            <td class="td-question">A rede possui lei de seleção de gestores por critérios técnicos/mérito?</td>
+                            <td class="td-example">"Lei Municipal nº 3.456/2023 — seleção por prova + entrevista"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>Lei municipal aprovada</li>
+                                    <li>Edital de seleção publicado</li>
+                                    <li>Ata de resultado</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>A1.b</strong></td>
+                            <td class="td-question">Quantos diretores foram selecionados por mérito vs total na rede?</td>
+                            <td class="td-example">"28 de 47 diretores (60%) — selecionados por processo"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>Mais de 50% dos diretores por mérito = HABILITADO</li>
+                                    <li>≤50% = INABILITADO (perde VAAR inteiro)</li>
+                                    <li>Lista nominal com comprovação</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>A2</strong></td>
+                            <td class="td-question">TODAS as escolas elegíveis participaram do SAEB?</td>
+                            <td class="td-example">"Sim, 100% das escolas com turmas de 5º e 9º ano aderiram"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>100% de adesão das escolas elegíveis</li>
+                                    <li>Relatório de adesão do INEP</li>
+                                    <li>Uma escola sem participação = risco de inabilitação</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>A3</strong></td>
+                            <td class="td-question">A rede possui programa documentado de redução de desigualdades?</td>
+                            <td class="td-example">"Programa Busca Ativa Escolar + política de equidade racial"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>Documento formal do programa</li>
+                                    <li>Indicadores de acompanhamento</li>
+                                    <li>Evidência de execução (atas, relatórios)</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>A4</strong></td>
+                            <td class="td-question">Existe termo de colaboração formal com a Secretaria Estadual?</td>
+                            <td class="td-example">"Termo assinado com SEDUC em março/2025"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>Acordo/termo formal assinado por ambas as partes</li>
+                                    <li>Objetivos e metas definidos</li>
+                                    <li>Registro no SIMEC</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>A5</strong></td>
+                            <td class="td-question">O currículo da rede está alinhado à BNCC incluindo Computação?</td>
+                            <td class="td-example">"Resolução CME nº 12/2024 — currículo com Computação aprovado"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>Documento curricular com competências de Computação</li>
+                                    <li>Aprovação pelo CME (ata + resolução)</li>
+                                    <li>Registro no SIMEC confirmado</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SEÇÃO B -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Seção B — BNCC Computação (Detalhamento)</div>
+                    <div class="card-subtitle">6 itens de implementação — Deadline: 31/Agosto/2026</div>
+                </div>
+            </div>
+
+            <div class="alert alert-info" style="margin: 0 0 1rem 0;">
+                <span class="alert-icon">📝</span>
+                <div>
+                    <strong>Sobre formação de professores</strong>
+                    A legislação NÃO define percentual mínimo de professores formados como condição para VAAR. O que é aferido formalmente é o documento curricular aprovado e registrado no SIMEC. Porém, formação docente é "rigorosamente indispensável" para implementação real e sustentabilidade no ciclo seguinte.
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Pergunta ao Município</th>
+                            <th>Exemplo de Resposta</th>
+                            <th>O que precisa para estar compliant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>B1</strong></td>
+                            <td class="td-question">O currículo com Computação foi aprovado pelo CME?</td>
+                            <td class="td-example">"Sim — Resolução CME nº 12/2024, aprovada em 15/11/2024"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>Ata da reunião do CME</li>
+                                    <li>Texto da resolução assinada</li>
+                                    <li>Documento curricular anexo</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>B2</strong></td>
+                            <td class="td-question">A resolução foi publicada no Diário Oficial?</td>
+                            <td class="td-example">"Publicada no DO Municipal em 20/01/2025"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>Cópia da publicação oficial</li>
+                                    <li>Data + número da edição</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>B3</strong></td>
+                            <td class="td-question">Quantos professores foram capacitados em Computação/Pensamento Computacional?</td>
+                            <td class="td-example">"45 de 120 professores (38%) — curso AVAMEC de 32h"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>Certificados de conclusão</li>
+                                    <li>Priorizar: professores que atuarão com o componente</li>
+                                    <li>Sem % mínimo obrigatório (recomendação: todos que atuarão)</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>B4</strong></td>
+                            <td class="td-question">Material didático de Computação foi adquirido?</td>
+                            <td class="td-example">"Processo licitatório em andamento — previsão mai/2026"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>Nota fiscal ou empenho</li>
+                                    <li>Inventário dos materiais</li>
+                                    <li>Distribuição às escolas documentada</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>B5</strong></td>
+                            <td class="td-question">As escolas possuem laboratórios ou dispositivos para Computação?</td>
+                            <td class="td-example">"28 de 47 escolas (60%) têm laboratório funcional"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>Inventário de equipamentos</li>
+                                    <li>Condições de uso documentadas</li>
+                                    <li>Alternativas: tablets, chromebooks, computação desplugada</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>B6</strong></td>
+                            <td class="td-question">O currículo está registrado no SIMEC?</td>
+                            <td class="td-example">"Em processo — falta anexar o documento final"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>Acesso ao SIMEC com login da secretaria</li>
+                                    <li>Módulo VAAR preenchido</li>
+                                    <li>Documento curricular em PDF anexado</li>
+                                    <li>Protocolo/confirmação de envio</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SEÇÃO C -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Seção C — Censo Escolar (Educenso)</div>
+                    <div class="card-subtitle">4 itens de registro — Deadline: 27/Maio/2026 (DIA DO CENSO)</div>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Pergunta ao Município</th>
+                            <th>Exemplo de Resposta</th>
+                            <th>O que precisa para estar compliant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>C1</strong></td>
+                            <td class="td-question">TODAS as matrículas da rede estão registradas no Educenso?</td>
+                            <td class="td-example">"Auditoria identificou 120 alunos sem registro"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>Zero pendências no dia do Censo</li>
+                                    <li>Conferência escola a escola</li>
+                                    <li>Relatório de consistência do Educenso limpo</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>C2</strong></td>
+                            <td class="td-question">As categorias de matrícula estão corretas (integral vs parcial, etc)?</td>
+                            <td class="td-example">"85 alunos precisam reclassificação — já em andamento"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>Cada aluno na categoria FUNDEB que corresponde à realidade</li>
+                                    <li>Auditoria de consistência categoria × PPP × horário</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>C3</strong></td>
+                            <td class="td-question">A dupla matrícula AEE está registrada para todos os alunos elegíveis?</td>
+                            <td class="td-example">"65 de 142 — gap de 77 sendo resolvido"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>Cruzamento: lista de alunos AEE × registros Educenso</li>
+                                    <li>100% com dupla matrícula até dia do Censo</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>C4</strong></td>
+                            <td class="td-question">As escolas rurais estão com localização correta no INEP?</td>
+                            <td class="td-example">"3 escolas precisam reclassificação — solicitação enviada"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>Verificação no cadastro INEP</li>
+                                    <li>Solicitação de correção (se necessário)</li>
+                                    <li>Documentação de localização (GPS, decreto)</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SEÇÃO D -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Seção D — SIMEC</div>
+                    <div class="card-subtitle">3 itens de registro — Deadline: 31/Agosto/2026</div>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Pergunta ao Município</th>
+                            <th>Exemplo de Resposta</th>
+                            <th>O que precisa para estar compliant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>D1</strong></td>
+                            <td class="td-question">O PAR (Plano de Ações Articuladas) está atualizado no SIMEC?</td>
+                            <td class="td-example">"Última atualização em dez/2024 — precisa incluir metas 2026"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>PAR com metas 2026 registradas</li>
+                                    <li>Diagnóstico atualizado</li>
+                                    <li>Ações planejadas coerentes</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>D2</strong></td>
+                            <td class="td-question">As 5 condicionalidades VAAR estão declaradas no SIMEC?</td>
+                            <td class="td-example">"4 de 5 registradas — falta a condicionalidade V (computação)"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>Módulo VAAR do SIMEC: 5/5 preenchidas</li>
+                                    <li>Evidências anexadas em cada item</li>
+                                    <li>Status: "concluído" em todas</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>D3</strong></td>
+                            <td class="td-question">Toda a documentação comprobatória foi anexada no SIMEC?</td>
+                            <td class="td-example">"Faltam 2 anexos — resolução CME e termo de colaboração"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>Checklist de documentos do SIMEC 100% completo</li>
+                                    <li>PDFs legíveis e válidos</li>
+                                    <li>Protocolo de envio gerado</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="gain-box">
+            <div class="gain-box-icon">📊</div>
+            <div class="gain-box-content">
+                <div class="gain-box-label">Impacto do VAAR</div>
+                <div class="gain-box-value">~R$ 890.000 / ano</div>
+                <div class="gain-box-detail">Complementação federal que o município PERDE se falhar em qualquer condicionalidade</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- T6 — EC 135 INTEGRAL -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <section id="t6" class="section">
+        <div class="section-header">
+            <div class="section-icon tier-t6">📈</div>
+            <div>
+                <h2>T6 — EC 135 / Expansão Integral</h2>
+                <div class="subtitle">Meta constitucional de 4% novas vagas integrais/ano + captação PETI (R$ 1.693/aluno)</div>
+            </div>
+            <span class="badge badge-long">Longo Prazo</span>
+        </div>
+
+        <!-- SEÇÃO E -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Seção E — EC 135 Escola Integral</div>
+                    <div class="card-subtitle">2 itens obrigatórios — Deadline: 31/Dezembro/2026</div>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Pergunta ao Município</th>
+                            <th>Exemplo de Resposta</th>
+                            <th>O que precisa para estar compliant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>E1</strong></td>
+                            <td class="td-question">A meta de 4% de novas vagas integrais/ano está sendo cumprida?</td>
+                            <td class="td-example">"Base: 1.450 alunos integrais. Meta: +58 vagas em 2026"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>Cálculo: 4% × total de matrículas da rede</li>
+                                    <li>Portaria de criação de turmas</li>
+                                    <li>Registro no Educenso como integral</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>E2</strong></td>
+                            <td class="td-question">O plano de expansão integral foi aprovado formalmente?</td>
+                            <td class="td-example">"Aprovado pelo CME em fev/2026 — Resolução nº 3/2026"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>Ata de aprovação do CME</li>
+                                    <li>Resolução publicada</li>
+                                    <li>Cronograma de implementação</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>E3</strong></td>
+                            <td class="td-question">Quais escolas têm infraestrutura para se tornarem integrais?</td>
+                            <td class="td-example">"4 escolas com refeitório e espaço ocioso — prontas para converter"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>Laudo/inventário de infraestrutura</li>
+                                    <li>Capacidade de merenda ampliada</li>
+                                    <li>Equipe docente dimensionada</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>E4</strong></td>
+                            <td class="td-question">Há orçamento previsto para a expansão integral?</td>
+                            <td class="td-example">"R$ 800K no PPA 2026 — merenda + pessoal + materiais"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>Dotação orçamentária no PPA/LOA</li>
+                                    <li>Empenho ou pré-empenho</li>
+                                    <li>Fonte: FUNDEB + recursos próprios + PETI</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>E5</strong></td>
+                            <td class="td-question">Existem parcerias para atividades complementares no contraturno?</td>
+                            <td class="td-example">"Convênio com SESC + universidade para oficinas"</td>
+                            <td class="td-compliance">
+                                <ul>
+                                    <li>Termos de parceria assinados</li>
+                                    <li>Planejamento de atividades integrado ao PPP</li>
+                                    <li>Cronograma de execução</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="gain-box">
+            <div class="gain-box-icon">📊</div>
+            <div class="gain-box-content">
+                <div class="gain-box-label">Ganho PETI por aluno integral</div>
+                <div class="gain-box-value">R$ 1.693,22 / aluno / ano</div>
+                <div class="gain-box-detail">+58 vagas (meta 4%) = +R$ 98.207/ano em PETI + ganho VAAF adicional</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- CRONOGRAMA -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <section id="cronograma" class="section">
+        <div class="section-header">
+            <div class="section-icon" style="background: linear-gradient(135deg, var(--cyan), var(--cyan-light)); color: white;">📅</div>
+            <div>
+                <h2>Cronograma Crítico</h2>
+                <div class="subtitle">Deadlines inegociáveis — perder qualquer um pode custar milhões ao município</div>
+            </div>
+        </div>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-date">Imediato — Semanas 1-2</div>
+                <div class="timeline-title">Discovery e Diagnóstico</div>
+                <div class="timeline-desc">Coletar respostas do intake, rodar ETL, identificar gaps por alavanca. Priorizar T1 (ativações) e T3 (AEE).</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-date">Semanas 3-5 — Execução Quick Wins</div>
+                <div class="timeline-title">T3 (AEE) + T4 (Localização) + T2 (Integral)</div>
+                <div class="timeline-desc">Registrar duplas matrículas, reclassificar localização, ajustar jornadas para ≥7h.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-date">Semana 6 — Travamento</div>
+                <div class="timeline-title">Último check antes do Censo</div>
+                <div class="timeline-desc">Auditoria final: todas as matrículas corretas? Todas as categorias atualizadas? Relatório de consistência limpo?</div>
+            </div>
+            <div class="timeline-item" style="border-left: 3px solid var(--red);">
+                <div class="timeline-date" style="color: var(--red);">27/Maio/2026 — DIA DO CENSO</div>
+                <div class="timeline-title" style="color: var(--red);">Seção C: Censo Escolar (Educenso)</div>
+                <div class="timeline-desc">Data de referência do Censo Escolar. Tudo que não estiver registrado até aqui NÃO conta para o FUNDEB 2027.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-date" style="color: var(--orange);">31/Agosto/2026</div>
+                <div class="timeline-title">Seções A, B e D: VAAR + BNCC Computação + SIMEC</div>
+                <div class="timeline-desc">Todas as condicionalidades registradas no SIMEC. Currículo de computação aprovado, publicado e registrado. PAR atualizado.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-date">31/Dezembro/2026</div>
+                <div class="timeline-title">Seção E: EC 135 — Expansão Integral</div>
+                <div class="timeline-desc">Meta de 4% novas vagas integrais cumprida. Plano de expansão aprovado pelo CME.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- SIMULAÇÃO -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <section id="simulacao" class="section">
+        <div class="section-header">
+            <div class="section-icon" style="background: linear-gradient(135deg, var(--green), var(--green-dark)); color: white;">💰</div>
+            <div>
+                <h2>Simulação de Impacto — Município Exemplo</h2>
+                <div class="subtitle">Ganho consolidado quando todas as alavancas são ativadas</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Componente</th>
+                            <th>Situação Atual</th>
+                            <th>Situação Otimizada</th>
+                            <th>Ganho Anual</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>T1</strong> — Categorias ativadas</td>
+                            <td>R$ 0 (categorias zeradas)</td>
+                            <td>R$ 415K</td>
+                            <td style="color: var(--green-dark); font-weight: 700;">+R$ 415K</td>
+                        </tr>
+                        <tr>
+                            <td><strong>T2</strong> — Reclassificação integral</td>
+                            <td>R$ 1,2M (base parcial)</td>
+                            <td>R$ 1,8M</td>
+                            <td style="color: var(--green-dark); font-weight: 700;">+R$ 596K</td>
+                        </tr>
+                        <tr>
+                            <td><strong>T3</strong> — AEE dupla matrícula</td>
+                            <td>R$ 543K (65 alunos)</td>
+                            <td>R$ 1,19M (142 alunos)</td>
+                            <td style="color: var(--green-dark); font-weight: 700;">+R$ 643K</td>
+                        </tr>
+                        <tr>
+                            <td><strong>T4</strong> — Multiplicadores localização</td>
+                            <td>R$ 680K</td>
+                            <td>R$ 787K</td>
+                            <td style="color: var(--green-dark); font-weight: 700;">+R$ 107K</td>
+                        </tr>
+                        <tr>
+                            <td><strong>T5</strong> — VAAR (complementação federal)</td>
+                            <td>R$ 0 (inabilitado)</td>
+                            <td>R$ 890K</td>
+                            <td style="color: var(--green-dark); font-weight: 700;">+R$ 890K</td>
+                        </tr>
+                        <tr>
+                            <td><strong>T6</strong> — PETI (integral expandido)</td>
+                            <td>R$ 2,45M</td>
+                            <td>R$ 2,55M</td>
+                            <td style="color: var(--green-dark); font-weight: 700;">+R$ 98K</td>
+                        </tr>
+                        <tr style="background: #E8F5E9; font-weight: 700;">
+                            <td>TOTAL</td>
+                            <td>R$ 4,87M</td>
+                            <td>R$ 7,62M</td>
+                            <td style="color: #1B5E20; font-size: 1.1rem;">+R$ 2,75M/ano</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="alert alert-success">
+            <span class="alert-icon">🎯</span>
+            <div>
+                <strong>Mensagem para o Secretário(a)</strong>
+                "Seu município está deixando até R$ 2,75 milhões por ano na mesa. Com as ações certas nos próximos 4 meses, podemos recuperar esse valor — sem construir nada novo, apenas corrigindo registros e cumprindo requisitos que já estão ao alcance."
+            </div>
+        </div>
+    </section>
+
+    <!-- TABELA DE FATORES -->
+    <section class="section">
+        <div class="section-header">
+            <div class="section-icon" style="background: linear-gradient(135deg, #E8EAF6, #C5CAE9); color: #283593;">📋</div>
+            <div>
+                <h2>Referência Rápida — Fatores de Ponderação 2026</h2>
+                <div class="subtitle">Valores por categoria FUNDEB (base: EF Anos Iniciais Parcial Urbano = 1,00 = R$ 5.963)</div>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Categoria</th>
+                        <th>Fator VAAF</th>
+                        <th>R$/Aluno/Ano</th>
+                        <th>+ Campo (×1,15)</th>
+                        <th>+ Indígena/Quilombola (×1,40)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Creche Pública Integral</td><td><strong>1,55</strong></td><td>R$ 9.242</td><td>R$ 10.629</td><td>R$ 12.939</td></tr>
+                    <tr><td>Creche Conveniada Integral</td><td><strong>1,45</strong></td><td>R$ 8.646</td><td>R$ 9.943</td><td>R$ 12.105</td></tr>
+                    <tr><td>Creche Pública Parcial</td><td><strong>1,25</strong></td><td>R$ 7.453</td><td>R$ 8.571</td><td>R$ 10.435</td></tr>
+                    <tr><td>Creche Conveniada Parcial</td><td><strong>1,15</strong></td><td>R$ 6.857</td><td>R$ 7.886</td><td>R$ 9.600</td></tr>
+                    <tr><td>Pré-Escola Pública Integral</td><td><strong>1,50</strong></td><td>R$ 8.944</td><td>R$ 10.286</td><td>R$ 12.522</td></tr>
+                    <tr><td>Pré-Escola Conveniada Integral</td><td><strong>1,40</strong></td><td>R$ 8.348</td><td>R$ 9.601</td><td>R$ 11.688</td></tr>
+                    <tr><td>Pré-Escola Pública Parcial</td><td><strong>1,15</strong></td><td>R$ 6.857</td><td>R$ 7.886</td><td>R$ 9.600</td></tr>
+                    <tr><td>Pré-Escola Conveniada Parcial</td><td><strong>1,05</strong></td><td>R$ 6.261</td><td>R$ 7.200</td><td>R$ 8.766</td></tr>
+                    <tr style="background: #E3F2FD;"><td><strong>EF Anos Iniciais Parcial (BASE)</strong></td><td><strong>1,00</strong></td><td><strong>R$ 5.963</strong></td><td>R$ 6.857</td><td>R$ 8.348</td></tr>
+                    <tr><td>EF Anos Finais Parcial</td><td><strong>1,10</strong></td><td>R$ 6.559</td><td>R$ 7.543</td><td>R$ 9.183</td></tr>
+                    <tr><td>EF Integral (Inicial ou Final)</td><td><strong>1,50</strong></td><td>R$ 8.944</td><td>R$ 10.286</td><td>R$ 12.522</td></tr>
+                    <tr><td>EJA</td><td><strong>1,00</strong></td><td>R$ 5.963</td><td>R$ 6.857</td><td>R$ 8.348</td></tr>
+                    <tr><td>Ed. Especial (todas as etapas)</td><td><strong>1,40</strong></td><td>R$ 8.348</td><td>R$ 9.601</td><td>R$ 11.688</td></tr>
+                    <tr><td>AEE — Dupla Matrícula</td><td><strong>1,40</strong></td><td>R$ 8.348</td><td>R$ 9.601</td><td>R$ 11.688</td></tr>
+                    <tr><td>Educação Bilíngue Surdos (Urbano)</td><td><strong>1,40</strong></td><td>R$ 8.348</td><td>—</td><td>—</td></tr>
+                    <tr><td>Educação Bilíngue Surdos (Rural)</td><td><strong>1,61</strong></td><td>R$ 9.601</td><td>—</td><td>—</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <p><strong style="color: var(--cyan);">Instituto i10</strong> — Plataforma FUNDEB 2026</p>
+    <p style="margin-top: 0.5rem;">Documento interno para consultores. Versão 1.0 — Maio/2026</p>
+    <p style="margin-top: 0.5rem;"><a href="mailto:contato@institutoi10.com.br">contato@institutoi10.com.br</a></p>
+</footer>
+
+</body>
+</html>
