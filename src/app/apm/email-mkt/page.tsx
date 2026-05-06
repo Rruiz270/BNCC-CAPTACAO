@@ -141,6 +141,18 @@ export default function EmailMktPage() {
           </div>
           <div className="flex items-center gap-3 flex-shrink-0">
             <button
+              onClick={() =>
+                exportDownloadedCSV(
+                  getMunicipios(),
+                  `baixaram-fundeb${tab !== "todos" ? `-${tab}` : ""}-${new Date().toISOString().slice(0, 10)}.csv`,
+                )
+              }
+              disabled={loading || !data || getComDownload() === 0}
+              className="px-4 py-2 rounded-lg text-sm font-semibold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors disabled:opacity-50 flex items-center gap-1.5"
+            >
+              <span>&#128229;</span> Exportar quem baixou
+            </button>
+            <button
               onClick={loadData}
               disabled={loading}
               className="px-4 py-2 rounded-lg text-sm font-semibold bg-white/10 text-white hover:bg-white/20 transition-colors disabled:opacity-50"
@@ -481,6 +493,29 @@ function exportCSV(rows: string[], filename: string) {
   const bom = "﻿";
   const header = "MUNICÍPIO,STATUS\n";
   const body = rows.map((nome) => `"${nome}",Pendente`).join("\n");
+  const blob = new Blob([bom + header + body], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportDownloadedCSV(municipios: MuniStat[], filename: string) {
+  const bom = "﻿";
+  const header = "MUNICÍPIO,DOWNLOADS,ÚLTIMO ACESSO,TELEFONE,EMAIL,RESPONSÁVEL\n";
+  const downloaded = municipios
+    .filter((m) => m.count > 0)
+    .sort((a, b) => b.count - a.count);
+  const body = downloaded
+    .map((m) => {
+      const acesso = m.ultimo_acesso
+        ? new Date(m.ultimo_acesso).toLocaleDateString("pt-BR")
+        : "";
+      return `"${m.nome}",${m.count},"${acesso}","","",""`;
+    })
+    .join("\n");
   const blob = new Blob([bom + header + body], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
