@@ -35,7 +35,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     }
 
     const rows = await sql`
-      SELECT c.*, m.nome, m.total_matriculas, m.receita_total, m.recursos_receber,
+      SELECT c.*, m.nome, m.uf, m.total_matriculas, m.receita_total, m.recursos_receber,
              m.total_escolas, m.escolas_municipais, m.total_docentes,
              m.codigo_ibge, m.pct_internet, m.pct_biblioteca
       FROM fundeb.consultorias c
@@ -64,6 +64,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
       municipality: {
         id: row.municipality_id,
         nome: row.nome,
+        uf: row.uf ?? null,
         totalMatriculas: row.total_matriculas,
         receitaTotal: row.recursos_receber ?? row.receita_total,
         totalEscolas: row.escolas_municipais ?? row.total_escolas,

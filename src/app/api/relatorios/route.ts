@@ -87,6 +87,17 @@ export async function GET(request: Request) {
   }
 
   const nome = m.nome as string;
+  const uf = (m.uf as string) || '';
+  const UF_NOMES: Record<string, string> = {
+    AC: 'Acre', AL: 'Alagoas', AM: 'Amazonas', AP: 'Amapá', BA: 'Bahia',
+    CE: 'Ceará', DF: 'Distrito Federal', ES: 'Espírito Santo', GO: 'Goiás',
+    MA: 'Maranhão', MG: 'Minas Gerais', MS: 'Mato Grosso do Sul', MT: 'Mato Grosso',
+    PA: 'Pará', PB: 'Paraíba', PE: 'Pernambuco', PI: 'Piauí', PR: 'Paraná',
+    RJ: 'Rio de Janeiro', RN: 'Rio Grande do Norte', RO: 'Rondônia', RR: 'Roraima',
+    RS: 'Rio Grande do Sul', SC: 'Santa Catarina', SE: 'Sergipe',
+    SP: 'São Paulo', TO: 'Tocantins',
+  };
+  const estadoNome = UF_NOMES[uf] || 'Brasil';
   const receitaTotal = (m.receita_total as number) || 0;
   const potTotal = (m.pot_total as number) || 0;
   const pctPot = (m.pct_pot_total as number) || 0;
@@ -210,7 +221,7 @@ export async function GET(request: Request) {
   <div class="brand">Instituto i10 - Plataforma FUNDEB</div>
   <h1>${reportType === 'final' ? 'Relatorio Final de Consultoria FUNDEB' : 'Relatorio Inicial de Consultoria FUNDEB'}</h1>
   <h2 style="color:#00B4D8; font-size:24px; margin-top:10px;">${nome}</h2>
-  <div class="subtitle">Gerado em ${hoje} | Exercicio 2026 | Estado de Sao Paulo</div>
+  <div class="subtitle">Gerado em ${hoje} | Exercício 2026 | Estado ${uf ? `de ${estadoNome} (${uf})` : 'Brasil'}</div>
   <div style="font-size:11px;color:#999;margin-top:8px">Protocolo: i10-${consultoriaIdParam || muniId}-${Date.now().toString(36).toUpperCase()}</div>
 </div>
 

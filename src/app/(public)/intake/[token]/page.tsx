@@ -14,6 +14,7 @@ interface Municipality {
   recursosReceber: number;
   vaat: number;
   vaar: number;
+  vaarMedioUf?: number | null;
   totalMatriculas: number;
   totalEscolas: number;
   escolasMunicipais: number;
@@ -80,13 +81,13 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
   const [realValues, setRealValues] = useState<Record<number, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
-  // Educacao Especial e AEE
+  // Educação Especial e AEE
   const [alunosAee, setAlunosAee] = useState("");
   const [alunosDuplaMatricula, setAlunosDuplaMatricula] = useState("");
   const [alunosClasseEspecial, setAlunosClasseEspecial] = useState("");
   const [salaRecursosMultifuncionais, setSalaRecursosMultifuncionais] = useState("");
 
-  // Escolas de Localizacao Diferenciada
+  // Escolas de Localização Diferenciada
   const [escolasCampo, setEscolasCampo] = useState("");
   const [escolasIndigena, setEscolasIndigena] = useState("");
   const [escolasQuilombola, setEscolasQuilombola] = useState("");
@@ -245,12 +246,12 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
         observations: observations.trim() || null,
         // Engine result — guarda o ganho calculado junto da resposta
         gainResult: gainResult ?? null,
-        // Educacao Especial e AEE
+        // Educação Especial e AEE
         alunosAee: alunosAee ? parseInt(alunosAee, 10) : null,
         alunosDuplaMatricula: alunosDuplaMatricula ? parseInt(alunosDuplaMatricula, 10) : null,
         alunosClasseEspecial: alunosClasseEspecial ? parseInt(alunosClasseEspecial, 10) : null,
         salaRecursosMultifuncionais: salaRecursosMultifuncionais || null,
-        // Escolas de Localizacao Diferenciada
+        // Escolas de Localização Diferenciada
         escolasCampo: escolasCampo ? parseInt(escolasCampo, 10) : null,
         escolasIndigena: escolasIndigena ? parseInt(escolasIndigena, 10) : null,
         escolasQuilombola: escolasQuilombola ? parseInt(escolasQuilombola, 10) : null,
@@ -476,11 +477,11 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
                 className="px-3 py-2.5 border border-[var(--border)] rounded-lg text-sm outline-none focus:border-[var(--cyan)] transition-colors"
               >
                 <option value="">Selecione...</option>
-                <option value="Secretario(a) de Educacao">Secretario(a) de Educacao</option>
+                <option value="Secretário(a) de Educação">Secretário(a) de Educação</option>
                 <option value="Diretor(a) Financeiro">Diretor(a) Financeiro</option>
-                <option value="Coordenador(a) Pedagogico">Coordenador(a) Pedagogico</option>
+                <option value="Coordenador(a) Pedagógico">Coordenador(a) Pedagógico</option>
                 <option value="Contador(a)">Contador(a)</option>
-                <option value="Assessor(a) Tecnico">Assessor(a) Tecnico</option>
+                <option value="Assessor(a) Técnico">Assessor(a) Técnico</option>
                 <option value="Outro">Outro</option>
               </select>
             </div>
@@ -527,7 +528,7 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
           </div>
         </section>
 
-        {/* Educacao Especial e AEE */}
+        {/* Educação Especial e AEE */}
         <section className="bg-white border border-[var(--border)] rounded-xl p-7 mt-6">
           <h2 className="text-base font-bold text-[var(--navy)] mb-1">
             Educação Especial e AEE{" "}
@@ -577,14 +578,14 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
               >
                 <option value="">Selecione...</option>
                 <option value="Sim">Sim</option>
-                <option value="Nao">Nao</option>
+                <option value="Não">Não</option>
                 <option value="Parcial">Parcial</option>
               </select>
             </div>
           </div>
         </section>
 
-        {/* Escolas de Localizacao Diferenciada */}
+        {/* Escolas de Localização Diferenciada */}
         <section className="bg-white border border-[var(--border)] rounded-xl p-7 mt-6">
           <h2 className="text-base font-bold text-[var(--navy)] mb-1">
             Escolas de Localização Diferenciada{" "}
@@ -700,7 +701,7 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
               >
                 <option value="">Selecione...</option>
                 <option value="Sim">Sim</option>
-                <option value="Nao">Nao</option>
+                <option value="Não">Não</option>
                 <option value="Em estudo">Em estudo</option>
               </select>
             </div>
@@ -724,8 +725,8 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
               >
                 <option value="">Selecione...</option>
                 <option value="Sim">Sim</option>
-                <option value="Nao">Nao</option>
-                <option value="Em elaboracao">Em elaboracao</option>
+                <option value="Não">Não</option>
+                <option value="Em elaboração">Em elaboração</option>
               </select>
             </div>
             <div className="flex flex-col">
@@ -737,8 +738,8 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
               >
                 <option value="">Selecione...</option>
                 <option value="Sim">Sim</option>
-                <option value="Nao">Nao</option>
-                <option value="Em tramitacao">Em tramitacao</option>
+                <option value="Não">Não</option>
+                <option value="Em tramitação">Em tramitação</option>
               </select>
             </div>
             <div className="flex flex-col">
@@ -750,7 +751,7 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
               >
                 <option value="">Selecione...</option>
                 <option value="Sim">Sim</option>
-                <option value="Nao">Nao</option>
+                <option value="Não">Não</option>
               </select>
             </div>
             <div className="flex flex-col">
@@ -763,7 +764,7 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
                 <option value="">Selecione...</option>
                 <option value="Sim, todas escolas">Sim, todas escolas</option>
                 <option value="Sim, algumas">Sim, algumas</option>
-                <option value="Nao">Nao</option>
+                <option value="Não">Não</option>
               </select>
             </div>
             <div className="flex flex-col">
@@ -775,7 +776,7 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
               >
                 <option value="">Selecione...</option>
                 <option value="Sim">Sim</option>
-                <option value="Nao">Nao</option>
+                <option value="Não">Não</option>
                 <option value="Em planejamento">Em planejamento</option>
               </select>
             </div>
@@ -829,8 +830,8 @@ export default function IntakePage({ params }: { params: Promise<{ token: string
               >
                 <option value="">Selecione...</option>
                 <option value="Sim">Sim</option>
-                <option value="Nao">Nao</option>
-                <option value="Em implantacao">Em implantacao</option>
+                <option value="Não">Não</option>
+                <option value="Em implantação">Em implantação</option>
               </select>
             </div>
           </div>

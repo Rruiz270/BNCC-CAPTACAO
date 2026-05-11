@@ -38,6 +38,7 @@ interface Enrollment {
 interface MunicipalityDetail {
   id: number;
   nome: string;
+  vaarMedioUf?: number | null;
   enrollments: Enrollment[];
   financials: {
     receitaTotal: number | null;
@@ -54,14 +55,14 @@ interface MunicipalityDetail {
 
 function shortLabel(label: string): string {
   return label
-    .replace("Publica ", "Pub. ")
+    .replace("Pública ", "Pub. ")
     .replace("Conveniada ", "Conv. ")
-    .replace("Pre-escola", "Pre")
+    .replace("Pré-escola", "Pre")
     .replace("Integral", "Int.")
     .replace("Parcial", "Parc.")
     .replace("(BASE)", "")
     .replace("Ed. Especial", "Ed.Esp.")
-    .replace("(Dupla Matricula)", "")
+    .replace("(Dupla Matrícula)", "")
     .trim();
 }
 
@@ -238,7 +239,7 @@ export default function SimuladorPage() {
         ) : (
           <div className="max-w-md">
             <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--text3)] mb-2">
-              Municipio
+              Município
             </label>
             <MunicipalitySelector
               value={selectedId}
@@ -268,7 +269,7 @@ export default function SimuladorPage() {
             <div className="lg:col-span-2 space-y-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-sm font-bold text-[var(--text)] uppercase tracking-wider">
-                  Categorias de Matricula
+                  Categorias de Matrícula
                 </h2>
                 <button
                   onClick={handleReset}

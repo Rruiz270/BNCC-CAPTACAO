@@ -17,6 +17,7 @@ import { GainStickyBar } from '@/components/gain-display';
 interface MuniDetail {
   id: number;
   nome: string;
+  vaarMedioUf?: number | null;
   enrollmentSummary: { totalMatriculas: number | null; eiMat: number | null; efMat: number | null };
   financials: { receitaTotal: number | null; vaat: number | null; vaar: number | null };
   potencial: { potTotal: number | null };

@@ -11,12 +11,23 @@ interface SessionData {
   municipality?: {
     id: number;
     nome: string;
+    uf: string | null;
     totalMatriculas: number | null;
     receitaTotal: number | null;
     totalEscolas: number | null;
     codigoIbge: string | null;
   };
 }
+
+const UF_NOMES: Record<string, string> = {
+  AC: "Acre", AL: "Alagoas", AM: "Amazonas", AP: "Amapá", BA: "Bahia",
+  CE: "Ceará", DF: "Distrito Federal", ES: "Espírito Santo", GO: "Goiás",
+  MA: "Maranhão", MG: "Minas Gerais", MS: "Mato Grosso do Sul", MT: "Mato Grosso",
+  PA: "Pará", PB: "Paraíba", PE: "Pernambuco", PI: "Piauí", PR: "Paraná",
+  RJ: "Rio de Janeiro", RN: "Rio Grande do Norte", RO: "Rondônia", RR: "Roraima",
+  RS: "Rio Grande do Sul", SC: "Santa Catarina", SE: "Sergipe",
+  SP: "São Paulo", TO: "Tocantins",
+};
 
 interface StepPayload {
   confirmed?: boolean;
@@ -79,9 +90,9 @@ export default function StepCidade() {
   const muni = session?.municipality;
   const canAdvance = !!muni && confirmed;
   const blockReason = !muni
-    ? "Sessao sem municipio vinculado"
+    ? "Sessão sem município vinculado"
     : !confirmed
-    ? "Confirme o municipio para liberar o avanco"
+    ? "Confirme o município para liberar o avanço"
     : undefined;
 
   async function handleToggle(next: boolean) {
@@ -103,21 +114,21 @@ export default function StepCidade() {
 
   // Flags from quick_win analysis
   const flags: { label: string; color: string }[] = [];
-  if (detail?.cats_faltantes) flags.push({ label: `${detail.potencial?.nFaltantes || 0} categorias nao captadas`, color: "bg-red-500/20 text-red-300" });
-  if (detail?.recebe_vaar === false && (detail?.financials?.vaar || 0) === 0) flags.push({ label: "Nao recebe VAAR", color: "bg-orange-500/20 text-orange-300" });
+  if (detail?.cats_faltantes) flags.push({ label: `${detail.potencial?.nFaltantes || 0} categorias não captadas`, color: "bg-red-500/20 text-red-300" });
+  if (detail?.recebe_vaar === false && (detail?.financials?.vaar || 0) === 0) flags.push({ label: "Não recebe VAAR", color: "bg-orange-500/20 text-orange-300" });
   if (detail?.quick_win_score && detail.quick_win_score > 50) flags.push({ label: `Quick-win score: ${detail.quick_win_score.toFixed(0)}`, color: "bg-[#00E5A0]/20 text-[#00E5A0]" });
   if (detail?.crescimento_4anos && detail.crescimento_4anos > 30) flags.push({ label: `Crescimento 4a: ${detail.crescimento_4anos.toFixed(0)}%`, color: "bg-[#00B4D8]/20 text-[#00B4D8]" });
 
   return (
     <StepShell step={step} canAdvance={canAdvance} blockReason={blockReason}>
-      <h2 className="text-lg font-bold text-[var(--text1)] mb-2">Ficha do Municipio</h2>
+      <h2 className="text-lg font-bold text-[var(--text1)] mb-2">Ficha do Município</h2>
       <p className="text-sm text-[var(--text3)] mb-6">
-        Perfil completo do municipio com dados financeiros, educacionais e de infraestrutura. Confirme para prosseguir.
+        Perfil completo do município com dados financeiros, educacionais e de infraestrutura. Confirme para prosseguir.
       </p>
 
       {!muni ? (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-700">
-          Nao foi possivel carregar o municipio desta sessao. Verifique se a sessao #{consultoriaId} existe.
+          Não foi possível carregar o município desta sessão. Verifique se a sessão #{consultoriaId} existe.
         </div>
       ) : (
         <>
@@ -125,13 +136,16 @@ export default function StepCidade() {
           <div className="border border-[var(--border)] rounded-lg p-5 mb-4">
             <div className="flex items-start justify-between">
               <div>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-[#00B4D8] mb-1">Municipio</div>
+                <div className="text-[10px] font-bold uppercase tracking-widest text-[#00B4D8] mb-1">Município</div>
                 <div className="text-2xl font-extrabold text-[var(--text1)]">{muni.nome}</div>
-                <div className="text-xs text-[var(--text3)] mt-1">IBGE {muni.codigoIbge ?? "—"} | Estado de Sao Paulo</div>
+                <div className="text-xs text-[var(--text3)] mt-1">
+                  IBGE {muni.codigoIbge ?? "—"}
+                  {muni.uf ? ` | ${UF_NOMES[muni.uf] ?? muni.uf} (${muni.uf})` : ""}
+                </div>
               </div>
               {detail?.potencial && (
                 <div className="text-right">
-                  <div className="text-[10px] uppercase text-[var(--text3)]">Potencial Captacao</div>
+                  <div className="text-[10px] uppercase text-[var(--text3)]">Potencial Captação</div>
                   <div className="text-xl font-bold text-[#00E5A0]">+{fmt(detail.potencial.potTotal)}</div>
                   <div className="text-xs text-[var(--text3)]">{detail.potencial.pctPotTotal?.toFixed(1)}% da receita</div>
                 </div>
@@ -189,7 +203,7 @@ export default function StepCidade() {
                 <div className="text-xs font-bold uppercase text-[#00B4D8] mb-3">Educacional</div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-[var(--bg)] rounded-lg p-2.5">
-                    <div className="text-[10px] text-[var(--text3)]">Total Matriculas</div>
+                    <div className="text-[10px] text-[var(--text3)]">Total Matrículas</div>
                     <div className="text-sm font-bold text-[var(--text1)]">{detail.enrollmentSummary?.totalMatriculas?.toLocaleString("pt-BR") ?? "—"}</div>
                   </div>
                   <div className="bg-[var(--bg)] rounded-lg p-2.5">
@@ -253,7 +267,7 @@ export default function StepCidade() {
               {/* Quadrant 4: Historical */}
               <div className="border border-[var(--border)] rounded-lg p-4">
                 <div className="text-xs font-bold uppercase text-[#00B4D8] mb-3">
-                  Historico FUNDEB
+                  Histórico FUNDEB
                   {detail.crescimento_4anos != null && (
                     <span className="ml-2 text-[10px] font-normal text-[var(--text3)]">
                       (crescimento 4a: {detail.crescimento_4anos.toFixed(1)}%)
@@ -301,7 +315,7 @@ export default function StepCidade() {
           {/* Categories warning */}
           {detail?.cats_faltantes && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4 text-xs text-red-700">
-              <span className="font-bold">Categorias nao captadas:</span> {detail.cats_faltantes}
+              <span className="font-bold">Categorias não captadas:</span> {detail.cats_faltantes}
             </div>
           )}
 
@@ -316,7 +330,7 @@ export default function StepCidade() {
                 className="w-4 h-4"
               />
               <span className="text-sm text-[var(--text2)]">
-                Confirmo que este e o municipio correto desta consultoria
+                Confirmo que este é o município correto desta consultoria
               </span>
               {saving && <span className="text-xs text-[#00B4D8] ml-2">salvando...</span>}
             </label>
@@ -325,7 +339,7 @@ export default function StepCidade() {
       )}
 
       <div className="mt-6 text-xs text-[var(--text3)]">
-        Caso precise mudar de municipio, encerre a sessao atual e abra uma nova em{" "}
+        Caso precise mudar de município, encerre a sessão atual e abra uma nova em{" "}
         <Link href="/wizard" className="text-[#00B4D8] underline">
           /wizard
         </Link>
