@@ -26,7 +26,7 @@ interface TaskItem {
 const STATUS_CONFIG: Record<TaskStatus, { label: string; bg: string; text: string }> = {
   pending: { label: "Pendente", bg: "bg-gray-100", text: "text-gray-600" },
   progress: { label: "Em andamento", bg: "bg-amber-50", text: "text-amber-700" },
-  done: { label: "Concluido", bg: "bg-emerald-50", text: "text-emerald-700" },
+  done: { label: "Concluído", bg: "bg-emerald-50", text: "text-emerald-700" },
 };
 
 const STATUS_CYCLE: TaskStatus[] = ["pending", "progress", "done"];
@@ -112,7 +112,7 @@ export default function PlanoDeAcaoPage() {
   return (
     <div>
       <PageHeader
-        title="Plano de Acao"
+        title="Plano de Ação"
         description="Cronograma de implementacao FUNDEB em 3 horizontes"
       />
 

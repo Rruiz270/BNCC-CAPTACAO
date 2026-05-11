@@ -112,12 +112,12 @@ interface RoadmapItem {
 
 function StatusBadge({ status }: { status: string }) {
   const m: Record<string, { bg: string; text: string; label: string }> = {
-    done: { bg: "bg-green-50", text: "text-green-700", label: "Concluido" },
+    done: { bg: "bg-green-50", text: "text-green-700", label: "Concluído" },
     progress: { bg: "bg-blue-50", text: "text-blue-700", label: "Em andamento" },
     pending: { bg: "bg-gray-50", text: "text-gray-600", label: "Pendente" },
     late: { bg: "bg-red-50", text: "text-red-700", label: "Atrasado" },
     active: { bg: "bg-green-50", text: "text-green-700", label: "Ativa" },
-    completed: { bg: "bg-blue-50", text: "text-blue-700", label: "Concluida" },
+    completed: { bg: "bg-blue-50", text: "text-blue-700", label: "Concluída" },
     rascunho: { bg: "bg-gray-50", text: "text-gray-600", label: "Rascunho" },
     aprovado: { bg: "bg-green-50", text: "text-green-700", label: "Aprovado" },
     publicado: { bg: "bg-blue-50", text: "text-blue-700", label: "Publicado" },

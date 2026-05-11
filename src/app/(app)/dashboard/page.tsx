@@ -144,7 +144,7 @@ export default function DashboardPage() {
   if (error) {
     return (
       <div>
-        <PageHeader title="Dashboard" description="Visao geral do FUNDEB 2026 - 5.569 municipios" />
+        <PageHeader title="Dashboard" description="Visão geral do FUNDEB 2026 - 5.569 municípios" />
         <div className="max-w-7xl mx-auto px-8 py-12">
           <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
             <p className="text-red-700 font-semibold">Erro ao carregar dados</p>
@@ -157,7 +157,7 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <PageHeader title="Dashboard" description="Visao geral do FUNDEB 2026 - 5.569 municipios" />
+      <PageHeader title="Dashboard" description="Visão geral do FUNDEB 2026 - 5.569 municípios" />
 
       <div className="max-w-7xl mx-auto px-8 py-8 space-y-8">
         {/* Session-Aware Panel */}
@@ -173,11 +173,11 @@ export default function DashboardPage() {
                 <div className="text-lg font-bold text-[#00E5A0]">{activeSession.complianceProgress ?? 0}%</div>
               </div>
               <div>
-                <div className="text-[10px] uppercase text-white/50">Plano de Acao</div>
+                <div className="text-[10px] uppercase text-white/50">Plano de Ação</div>
                 <div className="text-lg font-bold text-[#48CAE4]">{activeSession.actionPlanProgress ?? 0}%</div>
               </div>
               <div>
-                <div className="text-[10px] uppercase text-white/50">Matriculas</div>
+                <div className="text-[10px] uppercase text-white/50">Matrículas</div>
                 <div className="text-lg font-bold">{municipality.totalMatriculas ? formatNumber(municipality.totalMatriculas) : "-"}</div>
               </div>
               <div>
@@ -190,7 +190,7 @@ export default function DashboardPage() {
                 Compliance
               </Link>
               <Link href="/plano-de-acao" className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-sm font-medium transition-colors">
-                Plano de Acao
+                Plano de Ação
               </Link>
               <Link href="/implementacao/minuta" className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-sm font-medium transition-colors">
                 Minuta CME
@@ -208,10 +208,10 @@ export default function DashboardPage() {
             <><SkeletonCard /><SkeletonCard /><SkeletonCard /><SkeletonCard /></>
           ) : stats ? (
             <>
-              <StatCard label="Total Municipios" value={formatNumber(stats.totalMunicipalities)} icon="&#x1f3db;&#xfe0f;" color="#0A2463" />
-              <StatCard label="Total Matriculas" value={formatNumber(Number(stats.totalEnrollments))} icon="&#x1f393;" color="#0A2463" />
+              <StatCard label="Total Municípios" value={formatNumber(stats.totalMunicipalities)} icon="&#x1f3db;&#xfe0f;" color="#0A2463" />
+              <StatCard label="Total Matrículas" value={formatNumber(Number(stats.totalEnrollments))} icon="&#x1f393;" color="#0A2463" />
               <StatCard label="Receita Total FUNDEB" value={formatCurrency(Number(stats.totalRevenue))} icon="&#x1f4b0;" color="#00B4D8" />
-              <StatCard label="Potencial de Captacao" value={formatCurrency(Number(stats.totalPotencial))} sub="Valor total recuperavel" icon="&#x1f680;" color="#00E5A0" />
+              <StatCard label="Potencial de Captação" value={formatCurrency(Number(stats.totalPotencial))} sub="Valor total recuperavel" icon="&#x1f680;" color="#00E5A0" />
             </>
           ) : null}
         </div>
@@ -222,8 +222,8 @@ export default function DashboardPage() {
             <><SkeletonCard /><SkeletonCard /><SkeletonCard /></>
           ) : stats ? (
             <>
-              <StatCard label="Municipios que Ganham" value={formatNumber(stats.gaining)} sub={`${((stats.gaining / stats.totalMunicipalities) * 100).toFixed(1)}% do total`} icon="&#x1f4c8;" color="#00E5A0" />
-              <StatCard label="Municipios que Perdem" value={formatNumber(stats.losing)} sub={`${((stats.losing / stats.totalMunicipalities) * 100).toFixed(1)}% do total`} icon="&#x1f4c9;" color="#D4553A" />
+              <StatCard label="Municípios que Ganham" value={formatNumber(stats.gaining)} sub={`${((stats.gaining / stats.totalMunicipalities) * 100).toFixed(1)}% do total`} icon="&#x1f4c8;" color="#00E5A0" />
+              <StatCard label="Municípios que Perdem" value={formatNumber(stats.losing)} sub={`${((stats.losing / stats.totalMunicipalities) * 100).toFixed(1)}% do total`} icon="&#x1f4c9;" color="#D4553A" />
               <StatCard label="Impacto Medio" value={formatPercent(Number(stats.avgPotPct))} sub="% medio de potencial sobre receita" icon="&#x26a1;" color="#0A2463" />
             </>
           ) : null}
@@ -235,7 +235,7 @@ export default function DashboardPage() {
             <div className="lg:col-span-2"><SkeletonChart /></div>
           ) : (
             <div className="lg:col-span-2 bg-white border border-[var(--border)] rounded-xl p-6">
-              <h2 className="text-sm font-bold text-[var(--text1)] mb-1">Historico de Receita FUNDEB</h2>
+              <h2 className="text-sm font-bold text-[var(--text1)] mb-1">Histórico de Receita FUNDEB</h2>
               <p className="text-xs text-[var(--text3)] mb-4">Receita total agregada por ano (todos os municipios)</p>
               <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
@@ -263,8 +263,8 @@ export default function DashboardPage() {
             <SkeletonChart />
           ) : (
             <div className="bg-white border border-[var(--border)] rounded-xl p-6">
-              <h2 className="text-sm font-bold text-[var(--text1)] mb-1">Distribuicao Ganho/Perda</h2>
-              <p className="text-xs text-[var(--text3)] mb-4">Municipios que ganham vs. perdem com o FUNDEB</p>
+              <h2 className="text-sm font-bold text-[var(--text1)] mb-1">Distribuição Ganho/Perda</h2>
+              <p className="text-xs text-[var(--text3)] mb-4">Municípios que ganham vs. perdem com o FUNDEB</p>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -308,15 +308,15 @@ export default function DashboardPage() {
           <SkeletonTable />
         ) : (
           <div className="bg-white border border-[var(--border)] rounded-xl p-6">
-            <h2 className="text-sm font-bold text-[var(--text1)] mb-1">Top 10 Municipios por Potencial de Captacao</h2>
-            <p className="text-xs text-[var(--text3)] mb-4">Municipios com maior potencial de recuperacao de recursos FUNDEB</p>
+            <h2 className="text-sm font-bold text-[var(--text1)] mb-1">Top 10 Municípios por Potencial de Captação</h2>
+            <p className="text-xs text-[var(--text3)] mb-4">Municípios com maior potencial de recuperacao de recursos FUNDEB</p>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-[var(--border)]">
                     <th className="text-left py-3 px-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">#</th>
-                    <th className="text-left py-3 px-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">Municipio</th>
-                    <th className="text-right py-3 px-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">Matriculas</th>
+                    <th className="text-left py-3 px-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">Município</th>
+                    <th className="text-right py-3 px-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">Matrículas</th>
                     <th className="text-right py-3 px-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">Receita Total</th>
                     <th className="text-right py-3 px-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">Potencial</th>
                     <th className="text-right py-3 px-3 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">% Potencial</th>

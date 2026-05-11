@@ -19,7 +19,7 @@ interface TaskItem {
 const STATUS_CONFIG: Record<TaskStatus, { label: string; bg: string; text: string }> = {
   pending: { label: "Pendente", bg: "bg-gray-100", text: "text-gray-600" },
   progress: { label: "Em andamento", bg: "bg-amber-50", text: "text-amber-700" },
-  done: { label: "Concluido", bg: "bg-emerald-50", text: "text-emerald-700" },
+  done: { label: "Concluído", bg: "bg-emerald-50", text: "text-emerald-700" },
 };
 
 const STATUS_CYCLE: TaskStatus[] = ["pending", "progress", "done"];
@@ -31,7 +31,7 @@ const WEEK_TASKS: Record<number, string[]> = {
   3: ["Registrar AEE dupla matricula", "Reclassificar escolas rurais", "Verificar integral"],
   4: ["Expandir matriculas integrais", "Formalizar parcerias conveniadas", "Documentar evidencias"],
   5: ["Verificar registros no sistema", "Corrigir inconsistencias", "Preparar relatorio"],
-  6: ["Ultima verificacao", "Validar com equipe", "Backup de documentos"],
+  6: ["Última verificacao", "Validar com equipe", "Backup de documentos"],
   7: ["Verificacao final do Censo", "Confirmar envio"],
 };
 
@@ -100,12 +100,12 @@ export default function PlanoDeAcaoSemanaPage({ params }: { params: Promise<{ sl
       <div>
         <PageHeader title="Semana nao encontrada" />
         <div className="max-w-7xl mx-auto px-8 py-12 text-center">
-          <p className="text-[var(--text2)] mb-4">A semana &quot;{slug}&quot; nao foi encontrada.</p>
+          <p className="text-[var(--text2)] mb-4">A semana &quot;{slug}&quot; não foi encontrada.</p>
           <Link href="/plano-de-acao" className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--cyan)] hover:underline">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            Voltar ao Plano de Acao
+            Voltar ao Plano de Ação
           </Link>
         </div>
       </div>
@@ -156,7 +156,7 @@ export default function PlanoDeAcaoSemanaPage({ params }: { params: Promise<{ sl
   if (!loaded) {
     return (
       <div>
-        <PageHeader title={week.label} description={`Periodo: ${week.dates}`} />
+        <PageHeader title={week.label} description={`Período: ${week.dates}`} />
         <div className="max-w-5xl mx-auto px-8 py-12 text-center text-[var(--text3)] text-sm animate-pulse-slow">
           Carregando...
         </div>
@@ -166,7 +166,7 @@ export default function PlanoDeAcaoSemanaPage({ params }: { params: Promise<{ sl
 
   return (
     <div>
-      <PageHeader title={week.label} description={`Periodo: ${week.dates}`} />
+      <PageHeader title={week.label} description={`Período: ${week.dates}`} />
 
       <div className="max-w-5xl mx-auto px-8 py-6 space-y-6">
         {/* Back link + session */}
@@ -175,7 +175,7 @@ export default function PlanoDeAcaoSemanaPage({ params }: { params: Promise<{ sl
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            Voltar ao Plano de Acao
+            Voltar ao Plano de Ação
           </Link>
           {municipality && (
             <div className="flex items-center gap-2 text-xs text-[var(--text2)]">

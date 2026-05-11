@@ -89,7 +89,7 @@ export function TransferLeadModal({
               <div className="py-8 text-center text-sm text-[var(--text3)]">Carregando consultores...</div>
             ) : consultores.length === 0 ? (
               <div className="py-6 text-center text-sm text-[var(--text3)]">
-                Nenhum consultor disponivel para transferencia.
+                Nenhum consultor disponível para transferencia.
               </div>
             ) : (
               <>

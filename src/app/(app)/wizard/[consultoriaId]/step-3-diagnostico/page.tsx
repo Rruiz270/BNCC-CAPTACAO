@@ -94,21 +94,21 @@ export default function StepDiagnostico() {
   const muniSlug = session?.municipality?.slug ?? null;
   const canAdvance = !!diag && validated;
   const blockReason = !diag
-    ? "Rode o recalculo de potencial antes de avancar"
+    ? "Rode o recálculo de potencial antes de avançar"
     : !validated
-    ? "Marque o diagnostico como validado"
+    ? "Marque o diagnóstico como validado"
     : undefined;
 
   return (
     <StepShell step={step} canAdvance={canAdvance} blockReason={blockReason}>
-      <h2 className="text-lg font-bold text-[var(--text1)] mb-2">Diagnostico do municipio</h2>
+      <h2 className="text-lg font-bold text-[var(--text1)] mb-2">Diagnóstico do município</h2>
       <p className="text-sm text-[var(--text3)] mb-6">
-        O recalculo dispara <code>fundeb.sp_recalcular_potencial</code>, que le{" "}
+        O recálculo dispara <code>fundeb.sp_recalcular_potencial</code>, que lê{" "}
         <code>enrollments</code>, soma o potencial por categoria subnotificada e atualiza as
         colunas <code>pot_total</code>, <code>pct_pot_total</code> e <code>n_faltantes</code>.
       </p>
 
-      {/* Acao principal */}
+      {/* Ação principal */}
       <div className="bg-[var(--bg)] border border-[var(--border)] rounded-lg p-4 mb-4 flex items-center justify-between gap-4">
         <div>
           <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--text3)] mb-0.5">
@@ -116,9 +116,9 @@ export default function StepDiagnostico() {
           </div>
           <div className="text-sm text-[var(--text2)]">
             {lastRecalcAt ? (
-              <>Ultimo recalculo: {new Date(lastRecalcAt).toLocaleString("pt-BR")}</>
+              <>Último recálculo: {new Date(lastRecalcAt).toLocaleString("pt-BR")}</>
             ) : (
-              <>Nenhum recalculo rodado ainda nesta sessao</>
+              <>Nenhum recálculo rodado ainda nesta sessão</>
             )}
           </div>
         </div>
@@ -183,14 +183,14 @@ export default function StepDiagnostico() {
             target="_blank"
             className="text-sm font-semibold text-[#00B4D8] hover:underline"
           >
-            Abrir diagnostico completo do municipio ↗
+            Abrir diagnóstico completo do município ↗
           </Link>
         ) : (
-          <div className="text-xs text-gray-400">Carregando sessao...</div>
+          <div className="text-xs text-gray-400">Carregando sessão...</div>
         )}
       </div>
 
-      {/* Validacao */}
+      {/* Validação */}
       <label className="border border-[var(--border)] rounded-lg p-3 flex items-start gap-3 cursor-pointer">
         <input
           type="checkbox"
@@ -200,7 +200,7 @@ export default function StepDiagnostico() {
           className="mt-0.5"
         />
         <div>
-          <div className="text-sm font-semibold text-[var(--text1)]">Diagnostico validado</div>
+          <div className="text-sm font-semibold text-[var(--text1)]">Diagnóstico validado</div>
           <div className="text-xs text-[var(--text3)]">
             Eu revisei os KPIs, as categorias subnotificadas e os indicadores socioeducacionais
           </div>
@@ -236,9 +236,9 @@ function Kpi({
 
 const TIERS = [
   { key: "pot_t1", label: "T1 - Categorias Zeradas", desc: "Ativar categorias FUNDEB que tem zero matriculas registradas", color: "#ef4444", difficulty: "Facil" },
-  { key: "pot_t2", label: "T2 - Reclassificacao Integral", desc: "Converter matriculas parciais para integral (maior fator VAAF)", color: "#f59e0b", difficulty: "Medio" },
+  { key: "pot_t2", label: "T2 - Reclassificação Integral", desc: "Converter matriculas parciais para integral (maior fator VAAF)", color: "#f59e0b", difficulty: "Medio" },
   { key: "pot_t3", label: "T3 - AEE/Ed. Especial", desc: "Captar dupla matricula AEE e Ed. Especial nao registrada", color: "#8b5cf6", difficulty: "Medio" },
-  { key: "pot_t4", label: "T4 - Campo/Indigena", desc: "Aplicar multiplicadores de localizacao diferenciada (1.15x campo, 1.40x indigena)", color: "#22c55e", difficulty: "Facil" },
+  { key: "pot_t4", label: "T4 - Campo/Indígena", desc: "Aplicar multiplicadores de localizacao diferenciada (1.15x campo, 1.40x indigena)", color: "#22c55e", difficulty: "Facil" },
   { key: "pot_t5", label: "T5 - VAAR/VAAT", desc: "Otimizar complementacoes federais por condicionalidades", color: "#3b82f6", difficulty: "Complexo" },
   { key: "pot_t6", label: "T6 - EC 135 Integral", desc: "Expansao obrigatoria de escola integral (4%/ano) com ganho FUNDEB", color: "#06b6d4", difficulty: "Longo Prazo" },
 ];
@@ -403,12 +403,12 @@ function TierBreakdown({ muniId }: { muniId: number | null }) {
       {/* Categories and strategies */}
       {data.cats_faltantes && (
         <div className="mt-3 bg-red-50 border border-red-200 rounded-lg p-3 text-xs text-red-700">
-          <span className="font-bold">Categorias nao captadas:</span> {data.cats_faltantes}
+          <span className="font-bold">Categorias não captadas:</span> {data.cats_faltantes}
         </div>
       )}
       {data.estrategias_resumo && (
         <div className="mt-2 bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-xs text-emerald-700">
-          <span className="font-bold">Estrategias ({data.n_estrategias || 0}):</span> {data.estrategias_resumo}
+          <span className="font-bold">Estratégias ({data.n_estrategias || 0}):</span> {data.estrategias_resumo}
         </div>
       )}
     </div>

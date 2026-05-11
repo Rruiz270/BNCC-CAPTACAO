@@ -17,7 +17,7 @@ interface ItemState {
 const STATUS_CONFIG: Record<ItemStatus, { label: string; bg: string; text: string }> = {
   pending: { label: "Pendente", bg: "bg-gray-100", text: "text-gray-600" },
   progress: { label: "Em andamento", bg: "bg-amber-50", text: "text-amber-700" },
-  done: { label: "Concluido", bg: "bg-emerald-50", text: "text-emerald-700" },
+  done: { label: "Concluído", bg: "bg-emerald-50", text: "text-emerald-700" },
 };
 
 const STATUS_CYCLE: ItemStatus[] = ["pending", "progress", "done"];
@@ -109,7 +109,7 @@ export default function ComplianceSectionPage({ params }: { params: Promise<{ sl
         <PageHeader title="Secao nao encontrada" />
         <div className="max-w-7xl mx-auto px-8 py-12 text-center">
           <p className="text-[var(--text2)] mb-4">
-            A secao &quot;{slug}&quot; nao foi encontrada.
+            A secao &quot;{slug}&quot; não foi encontrada.
           </p>
           <Link
             href="/compliance"

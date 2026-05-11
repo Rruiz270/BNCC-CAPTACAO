@@ -161,7 +161,7 @@ export default function CaptacaoPage() {
     <div>
       {/* Page header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[var(--text1)] mb-1">Captacao Pre-Consultoria</h1>
+        <h1 className="text-2xl font-bold text-[var(--text1)] mb-1">Captação Pre-Consultoria</h1>
         <p className="text-sm text-[var(--text3)]">
           Gere links de intake para qualquer municipio. Quando o secretario responder, os dados ficam prontos para a consultoria.
         </p>
@@ -178,7 +178,7 @@ export default function CaptacaoPage() {
           {/* Municipality picker */}
           <div ref={dropdownRef} className="relative flex-1 min-w-[280px]">
             <label className="block text-[10px] font-bold uppercase tracking-wider text-[var(--text3)] mb-1">
-              Municipio
+              Município
             </label>
             {selected ? (
               <div className="flex items-center gap-2">
@@ -262,7 +262,7 @@ export default function CaptacaoPage() {
         <h2 className="text-base font-bold text-[var(--text1)] mb-1 flex items-center gap-2">
           <span className="text-lg">&#128203;</span> Todos os Links de Intake
         </h2>
-        <p className="text-xs text-[var(--text3)] mb-4">Historico de links gerados e status das respostas.</p>
+        <p className="text-xs text-[var(--text3)] mb-4">Histórico de links gerados e status das respostas.</p>
 
         {loadingTokens ? (
           <div className="text-center py-12 text-[var(--text3)]">
@@ -278,12 +278,12 @@ export default function CaptacaoPage() {
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="text-[10px] uppercase text-white bg-[#0A2463]">
-                  <th className="text-left px-4 py-3 font-semibold tracking-wider">Municipio</th>
+                  <th className="text-left px-4 py-3 font-semibold tracking-wider">Município</th>
                   <th className="text-left px-4 py-3 font-semibold tracking-wider">Gerado em</th>
                   <th className="text-left px-4 py-3 font-semibold tracking-wider">Expira</th>
                   <th className="text-left px-4 py-3 font-semibold tracking-wider">Status</th>
                   <th className="text-left px-4 py-3 font-semibold tracking-wider">Responsavel</th>
-                  <th className="text-left px-4 py-3 font-semibold tracking-wider">Acoes</th>
+                  <th className="text-left px-4 py-3 font-semibold tracking-wider">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -372,7 +372,7 @@ export default function CaptacaoPage() {
                   <thead>
                     <tr className="text-[10px] uppercase text-[var(--text3)] bg-gray-100 border-b border-[var(--border)]">
                       <th className="text-left px-3 py-2">Categoria</th>
-                      <th className="text-right px-3 py-2">Publico</th>
+                      <th className="text-right px-3 py-2">Público</th>
                       <th className="text-right px-3 py-2">Real</th>
                       <th className="text-right px-3 py-2">Delta</th>
                     </tr>

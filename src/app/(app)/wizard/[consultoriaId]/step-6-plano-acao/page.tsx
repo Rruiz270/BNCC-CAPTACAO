@@ -164,16 +164,16 @@ export default function StepPlanoAcao() {
   const canAdvance = tasks.length > 0 && dirty.size === 0 && blockingCount === 0;
   const blockReason =
     tasks.length === 0
-      ? "Nenhuma tarefa de plano de acao cadastrada"
+      ? "Nenhuma tarefa de plano de ação cadastrada"
       : dirty.size > 0
-      ? "Salve as alteracoes antes de avancar"
+      ? "Salve as alterações antes de avançar"
       : blockingCount > 0
       ? `${blockingCount} tarefa(s) de curto prazo ainda bloqueando`
       : undefined;
 
   return (
     <StepShell step={step} canAdvance={canAdvance} blockReason={blockReason}>
-      <h2 className="text-lg font-bold text-[var(--text1)] mb-2">Plano de Acao</h2>
+      <h2 className="text-lg font-bold text-[var(--text1)] mb-2">Plano de Ação</h2>
       <p className="text-sm text-[var(--text3)] mb-4">
         Tarefas divididas em curto, medio e longo prazo. Salvar consolida via{" "}
         <code>sp_consolidar_plano_acao</code>.

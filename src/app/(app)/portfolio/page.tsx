@@ -41,7 +41,7 @@ interface Snapshot {
   createdAt: string;
 }
 
-type Phase = "R1" | "R2" | "R3" | "Concluida";
+type Phase = "R1" | "R2" | "R3" | "Concluída";
 
 interface EnrichedSession extends Session {
   phase: Phase;
@@ -60,7 +60,7 @@ const PHASE_CONFIG: Record<Phase, { label: string; color: string; bg: string; bo
   R1: { label: "R1 - Curto Prazo", color: "#D4553A", bg: "bg-red-50", border: "border-red-200" },
   R2: { label: "R2 - Medio Prazo", color: "#00B4D8", bg: "bg-blue-50", border: "border-blue-200" },
   R3: { label: "R3 - Longo Prazo", color: "#0891B2", bg: "bg-cyan-50", border: "border-cyan-200" },
-  Concluida: { label: "Concluida", color: "#00E5A0", bg: "bg-green-50", border: "border-green-200" },
+  Concluída: { label: "Concluída", color: "#00E5A0", bg: "bg-green-50", border: "border-green-200" },
 };
 
 // ---------------------------------------------------------------------------
@@ -83,7 +83,7 @@ function daysUntilCenso(): number {
 }
 
 function determinePhase(session: Session, snapshots: Snapshot[], hasBncc: boolean): Phase {
-  if (session.status === "completed") return "Concluida";
+  if (session.status === "completed") return "Concluída";
   // R1: active, no snapshot yet
   if (snapshots.length === 0) return "R1";
   // R2: has snapshot from R1, BNCC pendente
@@ -242,8 +242,8 @@ export default function PortfolioPage() {
         search === "" || (s.municipality?.nome ?? "").toLowerCase().includes(search.toLowerCase())
       )
       .sort((a, b) => {
-        // R1 first (urgent), then R2, R3, Concluida
-        const order: Record<Phase, number> = { R1: 0, R2: 1, R3: 2, Concluida: 3 };
+        // R1 first (urgent), then R2, R3, Concluída
+        const order: Record<Phase, number> = { R1: 0, R2: 1, R3: 2, Concluída: 3 };
         return order[a.phase] - order[b.phase];
       });
   }, [enriched, phaseFilter, search]);
@@ -254,7 +254,7 @@ export default function PortfolioPage() {
     const r1 = enriched.filter((s) => s.phase === "R1").length;
     const r2 = enriched.filter((s) => s.phase === "R2").length;
     const r3 = enriched.filter((s) => s.phase === "R3").length;
-    const concluidas = enriched.filter((s) => s.phase === "Concluida").length;
+    const concluidas = enriched.filter((s) => s.phase === "Concluída").length;
     const potencialTotal = enriched.reduce((sum, s) => sum + s.potencial, 0);
     return { total, r1, r2, r3, concluidas, potencialTotal };
   }, [enriched]);
@@ -266,7 +266,7 @@ export default function PortfolioPage() {
       <PageHeader
         label="Portfolio"
         title="Painel do Consultor"
-        description="Visao consolidada de todas as consultorias - gerencie sua carteira de municipios"
+        description="Visão consolidada de todas as consultorias - gerencie sua carteira de municipios"
       >
         <CensoCountdown />
       </PageHeader>
@@ -323,13 +323,13 @@ export default function PortfolioPage() {
             <span className="text-xs font-semibold text-[var(--text3)] uppercase tracking-wider">
               Fase:
             </span>
-            {(["all", "R1", "R2", "R3", "Concluida"] as const).map((f) => {
+            {(["all", "R1", "R2", "R3", "Concluída"] as const).map((f) => {
               const labels: Record<string, string> = {
                 all: "Todas",
                 R1: "R1",
                 R2: "R2",
                 R3: "R3",
-                Concluida: "Concluidas",
+                Concluída: "Concluidas",
               };
               return (
                 <button
@@ -406,7 +406,7 @@ export default function PortfolioPage() {
                 <thead>
                   <tr className="border-b border-[var(--border)]">
                     <th className="text-left py-3 px-4 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">
-                      Municipio
+                      Município
                     </th>
                     <th className="text-left py-3 px-4 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">
                       Fase
@@ -421,10 +421,10 @@ export default function PortfolioPage() {
                       Plano %
                     </th>
                     <th className="text-left py-3 px-4 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">
-                      Ultima Atividade
+                      Última Atividade
                     </th>
                     <th className="text-center py-3 px-4 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">
-                      Acoes
+                      Ações
                     </th>
                   </tr>
                 </thead>
@@ -434,7 +434,7 @@ export default function PortfolioPage() {
                       key={s.id}
                       className="border-b border-[var(--border)] hover:bg-[var(--bg)] transition-colors"
                     >
-                      {/* Municipio */}
+                      {/* Município */}
                       <td className="py-3 px-4">
                         <div className="font-semibold text-[var(--text1)]">
                           {s.municipality?.nome ?? "-"}
@@ -466,12 +466,12 @@ export default function PortfolioPage() {
                         <ProgressBar value={s.actionPlanProgress} color="var(--cyan)" />
                       </td>
 
-                      {/* Ultima Atividade */}
+                      {/* Última Atividade */}
                       <td className="py-3 px-4 text-[var(--text2)] text-xs">
                         {formatDate(s.endDate ?? s.startDate)}
                       </td>
 
-                      {/* Acoes */}
+                      {/* Ações */}
                       <td className="py-3 px-4 text-center">
                         <div className="flex items-center justify-center gap-2">
                           <Link

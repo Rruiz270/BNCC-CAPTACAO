@@ -142,7 +142,7 @@ export default function CalculadoraEC135() {
 
       {/* Municipality picker */}
       <div className="bg-white rounded-xl p-5 border border-[var(--border)]">
-        <h2 className="text-sm font-semibold text-[var(--text2)] mb-3">Selecionar Municipio</h2>
+        <h2 className="text-sm font-semibold text-[var(--text2)] mb-3">Selecionar Município</h2>
         {!selectedId ? (
           <div>
             <input
@@ -169,7 +169,7 @@ export default function CalculadoraEC135() {
         ) : (
           <div className="flex items-center gap-3">
             <div className="flex-1 px-4 py-2.5 rounded-xl bg-[#00B4D8]/10 text-[#0A2463] font-semibold text-sm">
-              {muniData?.nome || `Municipio #${selectedId}`}
+              {muniData?.nome || `Município #${selectedId}`}
             </div>
             <button
               onClick={() => { setSelectedId(null); setMuniData(null); setSearch(''); }}
@@ -190,11 +190,11 @@ export default function CalculadoraEC135() {
           {/* Current state */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-white rounded-xl p-4 border border-[var(--border)]">
-              <div className="text-xs text-[var(--text3)] mb-1">Total Matriculas</div>
+              <div className="text-xs text-[var(--text3)] mb-1">Total Matrículas</div>
               <div className="text-xl font-bold text-[var(--text1)]">{fmtN(matTotal)}</div>
             </div>
             <div className="bg-white rounded-xl p-4 border border-[var(--border)]">
-              <div className="text-xs text-[var(--text3)] mb-1">Matriculas Integral</div>
+              <div className="text-xs text-[var(--text3)] mb-1">Matrículas Integral</div>
               <div className="text-xl font-bold text-[#00B4D8]">{fmtN(matIntegral)}</div>
             </div>
             <div className="bg-white rounded-xl p-4 border border-[var(--border)]">
@@ -212,7 +212,7 @@ export default function CalculadoraEC135() {
             <h2 className="text-sm font-semibold text-[var(--text1)] mb-4">Parametros da Simulacao</h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
-                <label className="block text-xs text-[var(--text3)] mb-1">Total Matriculas</label>
+                <label className="block text-xs text-[var(--text3)] mb-1">Total Matrículas</label>
                 <input
                   type="number"
                   value={matTotal}
@@ -221,7 +221,7 @@ export default function CalculadoraEC135() {
                 />
               </div>
               <div>
-                <label className="block text-xs text-[var(--text3)] mb-1">Matriculas Integral Atuais</label>
+                <label className="block text-xs text-[var(--text3)] mb-1">Matrículas Integral Atuais</label>
                 <input
                   type="number"
                   value={matIntegral}
@@ -339,9 +339,9 @@ export default function CalculadoraEC135() {
           <div className="bg-white rounded-xl p-5 border border-[var(--border)]">
             <h2 className="text-sm font-semibold text-[var(--text1)] mb-3">Como funciona a EC 135</h2>
             <div className="space-y-2 text-sm text-[var(--text2)]">
-              <p>A Emenda Constitucional 135/2025 determina que municipios devem ampliar vagas em escola integral a uma taxa minima de <span className="text-[#00B4D8] font-semibold">4% ao ano</span> sobre o total de matriculas.</p>
+              <p>A Emenda Constitucional 135/2025 determina que municipios devem ampliar vagas em escola integral a uma taxa mínima de <span className="text-[#00B4D8] font-semibold">4% ao ano</span> sobre o total de matriculas.</p>
               <p>Cada aluno convertido de parcial para integral gera um ganho FUNDEB de <span className="text-emerald-600 font-semibold">{fmt(GANHO_POR_CONVERSAO)}/aluno</span> (fator 1.50 vs 1.00 na base VAAF de {fmt(VAAF_BASE)}).</p>
-              <p>Este calculo considera apenas a conversao de EF parcial para integral. Creche e Pre-escola integral tem fatores ainda maiores (1.55 e 1.50 respectivamente).</p>
+              <p>Este calculo considera apenas a conversao de EF parcial para integral. Creche e Pré-escola integral tem fatores ainda maiores (1.55 e 1.50 respectivamente).</p>
               <p className="text-[var(--text3)] text-xs">Fonte: EC 108/2020 (FUNDEB Permanente), EC 135/2025, Lei 14.113/2020</p>
             </div>
           </div>

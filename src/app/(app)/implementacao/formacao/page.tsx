@@ -2,7 +2,7 @@
 
 import { PageHeader } from "@/components/page-header";
 
-type ModuleStatus = "disponivel" | "em_breve" | "concluido" | "em_andamento";
+type ModuleStatus = "disponível" | "em_breve" | "concluido" | "em_andamento";
 
 interface TrainingModule {
   num: number;
@@ -26,7 +26,7 @@ const MODULES: TrainingModule[] = [
       "Habilidades por ano escolar",
       "Articulação interdisciplinar",
     ],
-    status: "disponivel",
+    status: "disponível",
   },
   {
     num: 2,
@@ -40,7 +40,7 @@ const MODULES: TrainingModule[] = [
       "Algoritmos e automação",
       "Computação desplugada: atividades sem computador",
     ],
-    status: "disponivel",
+    status: "disponível",
   },
   {
     num: 3,
@@ -74,7 +74,7 @@ const MODULES: TrainingModule[] = [
 
 function getStatusConfig(status: ModuleStatus) {
   switch (status) {
-    case "disponivel":
+    case "disponível":
       return { label: "Disponível", bg: "bg-[var(--green)]/10", text: "text-[var(--green-dark)]", dot: "bg-[var(--green)]" };
     case "em_andamento":
       return { label: "Em andamento", bg: "bg-[var(--cyan)]/10", text: "text-[var(--cyan)]", dot: "bg-[var(--cyan)]" };

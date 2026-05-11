@@ -49,7 +49,7 @@ function StatusBadge({ status }: { status: string }) {
   };
   const labels: Record<string, string> = {
     active: "Ativa",
-    completed: "Concluida",
+    completed: "Concluída",
     paused: "Pausada",
   };
   return (
@@ -186,7 +186,7 @@ export default function ConsultoriasPage() {
   return (
     <div>
       <PageHeader
-        label="Historico"
+        label="Histórico"
         title="Consultorias"
         description="Todas as consultorias realizadas - historico completo com metricas"
       />
@@ -252,7 +252,7 @@ export default function ConsultoriasPage() {
             className="px-3 py-1.5 rounded-lg text-xs border border-[var(--border)] bg-white text-[var(--text2)]"
           >
             <option value="date">Data</option>
-            <option value="name">Municipio</option>
+            <option value="name">Município</option>
           </select>
         </div>
 
@@ -283,14 +283,14 @@ export default function ConsultoriasPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-[var(--border)]">
-                    <th className="text-left py-3 px-4 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">Municipio</th>
+                    <th className="text-left py-3 px-4 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">Município</th>
                     <th className="text-left py-3 px-4 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">Responsavel</th>
                     <th className="text-left py-3 px-4 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">Status</th>
-                    <th className="text-left py-3 px-4 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">Inicio</th>
+                    <th className="text-left py-3 px-4 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">Início</th>
                     <th className="text-left py-3 px-4 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)] min-w-[120px]">Compliance</th>
                     <th className="text-left py-3 px-4 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)] min-w-[120px]">Plano</th>
                     <th className="text-right py-3 px-4 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">Receita Base</th>
-                    <th className="text-center py-3 px-4 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">Acoes</th>
+                    <th className="text-center py-3 px-4 text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">Ações</th>
                   </tr>
                 </thead>
                 <tbody>

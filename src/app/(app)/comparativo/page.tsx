@@ -246,7 +246,7 @@ export default function ComparativoPage() {
           [muniB.nome]: safe(muniB.receitaTotal),
         },
         {
-          metric: "Matriculas",
+          metric: "Matrículas",
           [muniA.nome]: safe(muniA.totalMatriculas),
           [muniB.nome]: safe(muniB.totalMatriculas),
         },
@@ -340,7 +340,7 @@ export default function ComparativoPage() {
               Consultoria ativa: {activeMunicipality.nome}
             </span>
             <span className="text-xs text-[var(--text3)]">
-              Municipio A pre-selecionado com municipio similar sugerido
+              Município A pré-selecionado com municipio similar sugerido
             </span>
           </div>
         )}
@@ -357,7 +357,7 @@ export default function ComparativoPage() {
                   className="inline-block w-3 h-3 rounded-full mr-2"
                   style={{ background: COLOR_A }}
                 />
-                Municipio A
+                Município A
               </label>
               <MunicipalitySelector value={idA as number} onChange={handleSelectA} />
             </div>
@@ -367,7 +367,7 @@ export default function ComparativoPage() {
                   className="inline-block w-3 h-3 rounded-full mr-2"
                   style={{ background: COLOR_B }}
                 />
-                Municipio B
+                Município B
               </label>
               <MunicipalitySelector value={idB as number} onChange={handleSelectB} />
             </div>
@@ -429,7 +429,7 @@ export default function ComparativoPage() {
                   formatter={formatCurrency}
                 />
                 <ComparisonCard
-                  label="Potencial de Captacao"
+                  label="Potencial de Captação"
                   valueA={safe(muniA.potTotal)}
                   valueB={safe(muniB.potTotal)}
                   nameA={muniA.nome}
@@ -437,7 +437,7 @@ export default function ComparativoPage() {
                   formatter={formatCurrency}
                 />
                 <ComparisonCard
-                  label="Total Matriculas"
+                  label="Total Matrículas"
                   valueA={safe(muniA.totalMatriculas)}
                   valueB={safe(muniB.totalMatriculas)}
                   nameA={muniA.nome}
@@ -483,7 +483,7 @@ export default function ComparativoPage() {
             {/* ===== Revenue Breakdown ===== */}
             <section className="bg-white rounded-xl border border-[var(--border)] p-6 animate-fade-in">
               <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text3)] mb-4">
-                Composicao de Receita
+                Composição de Receita
               </h2>
               <ResponsiveContainer width="100%" height={360}>
                 <BarChart

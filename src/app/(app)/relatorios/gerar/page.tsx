@@ -89,7 +89,7 @@ export default function GerarRelatorio() {
       </div>
 
       <div className="bg-white rounded-xl p-5 border border-[var(--border)]">
-        <h2 className="text-sm font-semibold text-[var(--text2)] mb-3">Municipio</h2>
+        <h2 className="text-sm font-semibold text-[var(--text2)] mb-3">Município</h2>
         {!selectedId ? (
           <div>
             <input

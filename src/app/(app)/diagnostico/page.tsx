@@ -181,8 +181,8 @@ export default function DiagnosticoPage() {
     return (
       <div>
         <PageHeader
-          title="Diagnostico Municipal"
-          description="Analise detalhada dos municipios brasileiros"
+          title="Diagnóstico Municipal"
+          description="Análise detalhada dos municípios brasileiros"
         />
         <div className="max-w-7xl mx-auto px-8 py-6">
           {activeSession && activeMunicipality && (
@@ -205,8 +205,8 @@ export default function DiagnosticoPage() {
   return (
     <div>
       <PageHeader
-        title="Diagnostico Municipal"
-        description="Analise detalhada dos municipios brasileiros"
+        title="Diagnóstico Municipal"
+        description="Análise detalhada dos municípios brasileiros"
       />
 
       <div className="max-w-7xl mx-auto px-8 py-6">
@@ -215,7 +215,7 @@ export default function DiagnosticoPage() {
           <div className="grid grid-cols-4 gap-4 mb-6">
             <div className="bg-white border border-[var(--border)] rounded-xl p-4 animate-fade-in">
               <div className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">
-                Total Municipios
+                Total Municípios
               </div>
               <div className="text-2xl font-extrabold mt-1 text-[var(--navy)]">
                 {formatNumber(stats.totalMunicipalities)}
@@ -318,7 +318,7 @@ export default function DiagnosticoPage() {
                     onClick={() => handleSort("nome")}
                   >
                     <span className="flex items-center gap-1.5">
-                      Municipio
+                      Município
                       <SortIcon col="nome" />
                     </span>
                   </th>
@@ -327,7 +327,7 @@ export default function DiagnosticoPage() {
                     onClick={() => handleSort("total_matriculas")}
                   >
                     <span className="flex items-center justify-end gap-1.5">
-                      Matriculas
+                      Matrículas
                       <SortIcon col="total_matriculas" />
                     </span>
                   </th>
@@ -460,7 +460,7 @@ export default function DiagnosticoPage() {
           {pagination && totalPages > 1 && (
             <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border)] bg-[var(--bg)]">
               <div className="text-xs text-[var(--text3)]">
-                Pagina {pagination.currentPage} de {totalPages}
+                Página {pagination.currentPage} de {totalPages}
               </div>
               <div className="flex items-center gap-1">
                 <button
@@ -510,14 +510,14 @@ export default function DiagnosticoPage() {
                   disabled={page === totalPages}
                   className="px-2.5 py-1.5 text-xs font-medium rounded-md border border-[var(--border)] bg-white disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[var(--bg)] transition-colors"
                 >
-                  Proxima
+                  Próxima
                 </button>
                 <button
                   onClick={() => setPage(totalPages)}
                   disabled={page === totalPages}
                   className="px-2.5 py-1.5 text-xs font-medium rounded-md border border-[var(--border)] bg-white disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[var(--bg)] transition-colors"
                 >
-                  Ultima
+                  Última
                 </button>
               </div>
             </div>

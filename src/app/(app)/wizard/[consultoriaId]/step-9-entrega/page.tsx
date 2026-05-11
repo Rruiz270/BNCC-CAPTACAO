@@ -72,7 +72,7 @@ export default function StepEntrega() {
 
   const gerarSnapshot = useCallback(async () => {
     if (!requiredCompleted) {
-      setError("Etapas 1 a 7 ainda nao foram concluidas");
+      setError("Etapas 1 a 7 ainda não foram concluídas");
       return;
     }
     if (!signed || !signedBy.trim()) {
@@ -125,7 +125,7 @@ export default function StepEntrega() {
 
   const canAdvance = requiredCompleted && signed && snapshot !== null;
   const blockReason = !requiredCompleted
-    ? "Etapas 1 a 7 ainda nao foram concluidas"
+    ? "Etapas 1 a 7 ainda não foram concluídas"
     : !signed
     ? "Assine o checklist final"
     : !snapshot
@@ -136,9 +136,9 @@ export default function StepEntrega() {
     <StepShell step={step} canAdvance={canAdvance} blockReason={blockReason}>
       <h2 className="text-lg font-bold text-[var(--text1)] mb-2">Entrega & Snapshot</h2>
       <p className="text-sm text-[var(--text3)] mb-6">
-        Encerre a consultoria com snapshot imutavel via{" "}
+        Encerre a consultoria com snapshot imutável via{" "}
         <code>audit.sp_snapshot_sessao</code>. O snapshot gera um hash SHA-256 do payload
-        consolidado (consultoria + compliance + plano + documentos + cenarios + wizard).
+        consolidado (consultoria + compliance + plano + documentos + cenários + wizard).
       </p>
 
       {error && (
@@ -163,7 +163,7 @@ export default function StepEntrega() {
                   {ok ? "OK" : "!"}
                 </span>
                 <span className={ok ? "text-[var(--text1)]" : "text-[var(--text3)]"}>
-                  Etapa {id} {ok ? "concluida" : "pendente"}
+                  Etapa {id} {ok ? "concluída" : "pendente"}
                 </span>
               </li>
             );

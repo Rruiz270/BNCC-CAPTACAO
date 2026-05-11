@@ -206,10 +206,10 @@ export default function StepDiscovery() {
               const pct = entry.publicValue > 0 ? Math.abs(diff / entry.publicValue * 100) : (diff !== 0 ? 100 : 0);
               // Match INEP field to category key
               const inepMap: Record<string, string> = {
-                "Creche": "matCreche", "Pre-Escola": "matPreEscola",
+                "Creche": "matCreche", "Pré-Escola": "matPreEscola",
                 "EF - Anos Iniciais": "matEfAi", "EF - Anos Finais": "matEfAf",
                 "Ensino Medio": "matEmTotal", "EJA": "matEjaTotal",
-                "Educacao Especial": "matEspecialTotal", "Total": "matTotal",
+                "Educação Especial": "matEspecialTotal", "Total": "matTotal",
               };
               const inepKey = inepMap[key];
               const inepVal = inepKey && inepData ? (inepData[inepKey] as number | undefined) : undefined;

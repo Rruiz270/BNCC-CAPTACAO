@@ -9,19 +9,19 @@ import { useWizard } from "./wizard-provider";
 interface StepShellProps {
   step: WizardStepDef;
   children: ReactNode;
-  /** Quando true, o botao "Avancar" fica habilitado e ao clicar marca a etapa como completa. */
+  /** Quando true, o botao "Avançar" fica habilitado e ao clicar marca a etapa como completa. */
   canAdvance?: boolean;
   /** Texto do bloqueio quando canAdvance = false. */
   blockReason?: string;
-  /** Callback opcional ao avancar (ex: persistir payload da etapa). */
+  /** Callback opcional ao avançar (ex: persistir payload da etapa). */
   onAdvance?: () => Promise<void> | void;
 }
 
 const STATUS_LABELS: Record<StepStatus, string> = {
   locked: "Bloqueado",
-  available: "Disponivel",
+  available: "Disponível",
   in_progress: "Em andamento",
-  completed: "Concluido",
+  completed: "Concluído",
   blocked: "Bloqueado",
 };
 
@@ -101,7 +101,7 @@ export function StepShell({ step, children, canAdvance = false, blockReason, onA
                 ← {prev.short}
               </Link>
             ) : (
-              <span className="text-sm text-gray-300">← Inicio</span>
+              <span className="text-sm text-gray-300">← Início</span>
             )}
           </div>
 
@@ -113,7 +113,7 @@ export function StepShell({ step, children, canAdvance = false, blockReason, onA
                 Salvo as {lastSavedAt.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
               </span>
             ) : (
-              <span className="text-gray-400">Sem alteracoes</span>
+              <span className="text-gray-400">Sem alterações</span>
             )}
           </div>
 
@@ -128,7 +128,7 @@ export function StepShell({ step, children, canAdvance = false, blockReason, onA
               disabled={!canAdvance}
               className="px-4 py-2 rounded-lg text-sm font-semibold bg-[#00B4D8] text-white hover:bg-[#00B4D8]/90 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
             >
-              {next ? `Avancar para ${next.short} →` : "Concluir"}
+              {next ? `Avançar para ${next.short} →` : "Concluir"}
             </button>
           </div>
         </div>

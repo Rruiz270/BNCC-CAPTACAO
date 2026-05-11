@@ -130,14 +130,14 @@ export function IntakeResponseModal({ open, onOpenChange, consultoriaId }: Intak
               {enrollmentEntries.length > 0 && (
                 <div>
                   <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--text3)] mb-2">
-                    Matriculas — Publico vs Real
+                    Matrículas — Público vs Real
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm border-collapse">
                       <thead>
                         <tr className="bg-[var(--navy)] text-white text-xs uppercase">
                           <th className="text-left px-3 py-2 rounded-tl-lg">Categoria</th>
-                          <th className="text-right px-3 py-2">Publico</th>
+                          <th className="text-right px-3 py-2">Público</th>
                           <th className="text-right px-3 py-2">Real</th>
                           <th className="text-right px-3 py-2 rounded-tr-lg">Delta</th>
                         </tr>

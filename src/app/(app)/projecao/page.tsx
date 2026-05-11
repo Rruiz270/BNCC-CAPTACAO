@@ -47,9 +47,9 @@ interface MuniDetail {
 
 const TIER_INFO = [
   { key: 't1', label: 'T1 - Categorias Zeradas', desc: 'Ativar categorias sem matriculas', color: '#ef4444' },
-  { key: 't2', label: 'T2 - Reclassificacao Integral', desc: 'Converter parcial para integral', color: '#f59e0b' },
+  { key: 't2', label: 'T2 - Reclassificação Integral', desc: 'Converter parcial para integral', color: '#f59e0b' },
   { key: 't3', label: 'T3 - AEE/Ed. Especial', desc: 'Captar dupla matricula e especial', color: '#8b5cf6' },
-  { key: 't4', label: 'T4 - Campo/Indigena', desc: 'Multiplicadores localizacao diferenciada', color: '#22c55e' },
+  { key: 't4', label: 'T4 - Campo/Indígena', desc: 'Multiplicadores localizacao diferenciada', color: '#22c55e' },
   { key: 't5', label: 'T5 - VAAR/VAAT', desc: 'Otimizar complementacoes', color: '#3b82f6' },
   { key: 't6', label: 'T6 - EC 135 Integral', desc: 'Expansao escola integral obrigatoria', color: '#06b6d4' },
 ]
@@ -121,13 +121,13 @@ export default function ProjecaoFinanceira() {
       <div>
         <h1 className="text-2xl font-bold text-[var(--text1)]">Projecao Financeira FUNDEB</h1>
         <p className="text-[var(--text3)] text-sm mt-1">
-          Visao consolidada: receita atual vs. cenario otimizado com detalhamento por tier de potencial (T1-T6)
+          Visão consolidada: receita atual vs. cenario otimizado com detalhamento por tier de potencial (T1-T6)
         </p>
       </div>
 
       {/* Municipality picker */}
       <div className="bg-white rounded-xl p-5 border border-[var(--border)]">
-        <h2 className="text-sm font-semibold text-[var(--text2)] mb-3">Municipio</h2>
+        <h2 className="text-sm font-semibold text-[var(--text2)] mb-3">Município</h2>
         {!selectedId ? (
           <div>
             <input
@@ -168,7 +168,7 @@ export default function ProjecaoFinanceira() {
               <div className="text-xs text-[var(--text3)] mt-1">{fmtN(data.enrollmentSummary?.totalMatriculas || 0)} matriculas</div>
             </div>
             <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 rounded-xl p-5 border border-emerald-200">
-              <div className="text-xs text-emerald-600 mb-1">Potencial de Captacao</div>
+              <div className="text-xs text-emerald-600 mb-1">Potencial de Captação</div>
               <div className="text-2xl font-bold text-emerald-700">+{fmt(totalPotencial)}</div>
               <div className="text-xs text-emerald-500 mt-1">
                 +{data.potencial?.pctPotTotal ? pct(data.potencial.pctPotTotal) : pct(receitaAtual > 0 ? (totalPotencial / receitaAtual) * 100 : 0)} sobre receita atual
@@ -210,13 +210,13 @@ export default function ProjecaoFinanceira() {
             </div>
             {data.cats_faltantes && (
               <div className="mt-4 p-3 bg-red-50 rounded-xl border border-red-200">
-                <div className="text-xs font-semibold text-red-700 mb-1">Categorias Nao Captadas ({data.potencial?.nFaltantes || 0})</div>
+                <div className="text-xs font-semibold text-red-700 mb-1">Categorias Não Captadas ({data.potencial?.nFaltantes || 0})</div>
                 <div className="text-xs text-red-600">{data.cats_faltantes}</div>
               </div>
             )}
             {data.estrategias_resumo && (
               <div className="mt-3 p-3 bg-emerald-50 rounded-xl border border-emerald-200">
-                <div className="text-xs font-semibold text-emerald-700 mb-1">Estrategias Identificadas ({data.n_estrategias || 0})</div>
+                <div className="text-xs font-semibold text-emerald-700 mb-1">Estratégias Identificadas ({data.n_estrategias || 0})</div>
                 <div className="text-xs text-emerald-600">{data.estrategias_resumo}</div>
               </div>
             )}
@@ -251,7 +251,7 @@ export default function ProjecaoFinanceira() {
             </div>
             {data.crescimento_4anos != null && (
               <div className="mt-3 text-xs text-[var(--text3)]">
-                Crescimento nos ultimos 4 anos: <span className="text-[var(--text1)] font-semibold">{data.crescimento_4anos.toFixed(1)}%</span>
+                Crescimento nos últimos 4 anos: <span className="text-[var(--text1)] font-semibold">{data.crescimento_4anos.toFixed(1)}%</span>
               </div>
             )}
           </div>
@@ -261,14 +261,14 @@ export default function ProjecaoFinanceira() {
             <div className="bg-white rounded-xl p-3 border border-[var(--border)] text-center">
               <div className="text-xs text-[var(--text3)]">VAAR</div>
               <div className={`text-lg font-bold ${data.recebe_vaar ? 'text-emerald-600' : 'text-red-500'}`}>
-                {data.recebe_vaar ? 'Recebe' : 'Nao Recebe'}
+                {data.recebe_vaar ? 'Recebe' : 'Não Recebe'}
               </div>
               <div className="text-xs text-[var(--text3)]">{fmt(data.financials?.vaar)}</div>
             </div>
             <div className="bg-white rounded-xl p-3 border border-[var(--border)] text-center">
               <div className="text-xs text-[var(--text3)]">VAAT</div>
               <div className={`text-lg font-bold ${data.recebe_vaat ? 'text-emerald-600' : 'text-amber-500'}`}>
-                {data.recebe_vaat ? 'Recebe' : 'Nao Recebe'}
+                {data.recebe_vaat ? 'Recebe' : 'Não Recebe'}
               </div>
               <div className="text-xs text-[var(--text3)]">{fmt(data.financials?.vaat)}</div>
             </div>

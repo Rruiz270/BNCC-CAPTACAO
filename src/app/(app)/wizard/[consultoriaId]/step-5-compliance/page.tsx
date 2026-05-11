@@ -176,12 +176,12 @@ export default function StepCompliance() {
   const blockReason = !classifiedAll
     ? "Ainda existem itens em status 'pending'"
     : dirty.size > 0
-    ? "Salve as alteracoes antes de avancar"
+    ? "Salve as alterações antes de avançar"
     : undefined;
 
   return (
     <StepShell step={step} canAdvance={canAdvance} blockReason={blockReason}>
-      <h2 className="text-lg font-bold text-[var(--text1)] mb-2">Compliance — 5 secoes A-E</h2>
+      <h2 className="text-lg font-bold text-[var(--text1)] mb-2">Compliance — 5 seções A-E</h2>
       <p className="text-sm text-[var(--text3)] mb-4">
         Classifique cada item. Ao salvar, a SP <code>sp_atualizar_compliance</code> roda e
         atualiza as materialized views.
@@ -200,7 +200,7 @@ export default function StepCompliance() {
             <div>
               <div className="text-xs font-bold text-emerald-700">Impacto Financeiro do Compliance</div>
               <div className="text-[10px] text-emerald-600 mt-0.5">
-                Cada item concluido protege receita FUNDEB. Pendencias colocam repasses em risco.
+                Cada item concluído protege receita FUNDEB. Pendências colocam repasses em risco.
               </div>
             </div>
             <div className="text-right">
@@ -215,7 +215,7 @@ export default function StepCompliance() {
         </div>
       )}
 
-      {/* Stats + acao de salvar */}
+      {/* Stats + ação de salvar */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
         <div className="border border-[var(--border)] rounded-lg p-3">
           <div className="text-[10px] uppercase text-[var(--text3)]">Progresso</div>
@@ -240,7 +240,7 @@ export default function StepCompliance() {
         </div>
         <div className="border border-[var(--border)] rounded-lg p-3 flex flex-col justify-between">
           <div className="text-[10px] uppercase text-[var(--text3)]">
-            Alteracoes nao salvas: {dirty.size}
+            Alterações não salvas: {dirty.size}
           </div>
           <button
             onClick={salvar}
@@ -252,10 +252,10 @@ export default function StepCompliance() {
         </div>
       </div>
 
-      {/* Items por secao */}
+      {/* Items por seção */}
       {total === 0 ? (
         <div className="border border-[var(--border)] rounded-lg p-4 text-xs text-gray-400 mb-4">
-          Nenhum item de compliance cadastrado para este municipio.
+          Nenhum item de compliance cadastrado para este município.
         </div>
       ) : (
         <div className="space-y-4 mb-4">

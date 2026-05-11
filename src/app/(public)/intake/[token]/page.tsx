@@ -28,7 +28,6 @@ interface Municipality {
   efMat?: number;
   complianceASectionDone?: number;
   complianceASectionTotal?: number;
-  vaarMedioUf?: number | null;
 }
 
 interface Enrollment {

@@ -549,7 +549,7 @@ export default function StepSimulacao() {
   const targetScenarioId = storedPayload?.targetScenarioId ?? null;
   const hasTarget = scenarios.some((s) => s.isTarget) || targetScenarioId != null;
   const canAdvance = hasTarget;
-  const blockReason = !hasTarget ? "Marque um cenario como cenario-alvo antes de avancar" : undefined;
+  const blockReason = !hasTarget ? "Marque um cenario como cenario-alvo antes de avançar" : undefined;
 
   const fmtBRL = (v: number) =>
     v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
@@ -558,10 +558,10 @@ export default function StepSimulacao() {
 
   return (
     <StepShell step={step} canAdvance={canAdvance} blockReason={blockReason}>
-      <h2 className="text-lg font-bold text-[var(--text1)] mb-2">Simulacao de cenarios</h2>
+      <h2 className="text-lg font-bold text-[var(--text1)] mb-2">Simulação de cenários</h2>
       <p className="text-sm text-[var(--text3)] mb-6">
-        Ajuste a quantidade de matriculas por categoria e veja o impacto em receita FUNDEB.
-        Salve cenarios nomeados e marque um deles como cenario-alvo da consultoria.
+        Ajuste a quantidade de matrículas por categoria e veja o impacto em receita FUNDEB.
+        Salve cenários nomeados e marque um deles como cenário-alvo da consultoria.
       </p>
 
       {error && (
@@ -593,7 +593,7 @@ export default function StepSimulacao() {
           <div className="flex items-center justify-between">
             <div>
               <div className="text-[10px] font-bold uppercase tracking-widest text-blue-600 mb-0.5">
-                Teto de captacao do municipio
+                Teto de captação do município
               </div>
               <div className="text-sm font-bold text-blue-800">
                 {fmtBRL(muni.potencial.potTotal ?? muni.potencial.detalhes?.pot_total_novo ?? 0)}
@@ -668,7 +668,7 @@ export default function StepSimulacao() {
             {" "}({projecao.tocadas.length} categoria{projecao.tocadas.length === 1 ? "" : "s"} modificada{projecao.tocadas.length === 1 ? "" : "s"})
           </div>
           {!muni ? (
-            <div className="text-xs text-gray-400">Carregando matriculas do municipio...</div>
+            <div className="text-xs text-gray-400">Carregando matrículas do município...</div>
           ) : currentTabEnrollments.length === 0 ? (
             <div className="text-xs text-gray-400">
               {activeTab === "active" && "Nenhuma categoria ativa encontrada."}
@@ -822,7 +822,7 @@ export default function StepSimulacao() {
             type="text"
             value={scenarioName}
             onChange={(e) => setScenarioName(e.target.value)}
-            placeholder="Ex: Reclassificacao + AEE + integral"
+            placeholder="Ex: Reclassificação + AEE + integral"
             className="flex-1 px-3 py-2 text-sm border border-[var(--border)] rounded-lg"
             disabled={submitting}
           />

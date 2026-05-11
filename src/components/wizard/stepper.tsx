@@ -39,7 +39,7 @@ export function Stepper({ consultoriaId, currentStep, stepsState }: StepperProps
               Wizard de Consultoria FUNDEB SP 2026
             </div>
             <div className="text-xs text-white/50 mt-0.5">
-              Sessao #{consultoriaId} · Etapa {currentStep + 1} de {WIZARD_STEPS.length}
+              Sessão #{consultoriaId} · Etapa {currentStep + 1} de {WIZARD_STEPS.length}
             </div>
           </div>
           <div className="text-right">

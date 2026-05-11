@@ -26,7 +26,6 @@ interface MuniDetail {
   compliance: {
     summary: Record<string, { total: number; done: number; progress: number; pending: number }>;
   };
-  vaarMedioUf?: number | null;
 }
 
 interface IntakeResponseData {

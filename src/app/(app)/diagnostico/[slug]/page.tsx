@@ -99,7 +99,7 @@ export default function MunicipalityDetailPage({
         const res = await fetch(`/api/municipalities/${slug}`);
         if (!res.ok) {
           const errData = await res.json();
-          setError(errData.error || "Municipio nao encontrado");
+          setError(errData.error || "Município não encontrado");
           return;
         }
         const data: MunicipalityDetail = await res.json();
@@ -132,7 +132,7 @@ export default function MunicipalityDetailPage({
       <div>
         <PageHeader title="Erro" />
         <div className="max-w-7xl mx-auto px-8 py-16 text-center">
-          <p className="text-[var(--red)] mb-4">{error || "Municipio nao encontrado"}</p>
+          <p className="text-[var(--red)] mb-4">{error || "Município não encontrado"}</p>
           <Link
             href="/diagnostico"
             className="text-sm text-[var(--cyan)] hover:underline"
@@ -215,7 +215,7 @@ export default function MunicipalityDetailPage({
         {/* Section 1: Financial Overview */}
         <section>
           <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text3)] mb-4">
-            Visao Financeira
+            Visão Financeira
           </h2>
           <div className="grid grid-cols-4 gap-4">
             <StatCard
@@ -255,12 +255,12 @@ export default function MunicipalityDetailPage({
                   ? `${gpPrefix}${formatCurrency(Math.abs(gp))}`
                   : "--"
               }
-              sub={gp > 0 ? "Municipio ganha" : gp < 0 ? "Municipio perde" : undefined}
+              sub={gp > 0 ? "Município ganha" : gp < 0 ? "Município perde" : undefined}
               icon={gp >= 0 ? "+" : "-"}
               color={gpColor}
             />
             <StatCard
-              label="Potencial de Captacao"
+              label="Potencial de Captação"
               value={
                 muni.potencial.potTotal != null
                   ? formatCurrency(muni.potencial.potTotal)
@@ -281,7 +281,7 @@ export default function MunicipalityDetailPage({
         {revenueData.length > 0 && (
           <section>
             <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text3)] mb-4">
-              Composicao da Receita
+              Composição da Receita
             </h2>
             <div className="bg-white border border-[var(--border)] rounded-xl p-6 animate-fade-in">
               <ResponsiveContainer width="100%" height={280}>
@@ -351,7 +351,7 @@ export default function MunicipalityDetailPage({
         {histData.length > 0 && (
           <section>
             <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text3)] mb-4">
-              Historico FUNDEB (2022-2026)
+              Histórico FUNDEB (2022-2026)
             </h2>
             <div className="bg-white border border-[var(--border)] rounded-xl p-6 animate-fade-in">
               <ResponsiveContainer width="100%" height={280}>
@@ -459,7 +459,7 @@ export default function MunicipalityDetailPage({
           {/* Enrollment Breakdown */}
           <section>
             <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text3)] mb-4">
-              Matriculas por Segmento
+              Matrículas por Segmento
             </h2>
             <div className="bg-white border border-[var(--border)] rounded-xl p-6 animate-fade-in space-y-4">
               <div className="grid grid-cols-3 gap-4">

@@ -107,7 +107,7 @@ export default function WizardLanding() {
               >
                 <div className="flex items-center justify-between mb-1">
                   <div className="text-sm font-semibold text-[var(--text1)]">
-                    {s.municipality?.nome ?? `Sessao #${s.id}`}
+                    {s.municipality?.nome ?? `Sessão #${s.id}`}
                   </div>
                   <span className="text-[10px] uppercase font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">
                     Ativa

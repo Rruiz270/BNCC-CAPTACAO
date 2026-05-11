@@ -24,9 +24,9 @@ const REPORTS: Report[] = [
   {
     id: "matriculas",
     icon: "&#x1f393;",
-    titulo: "Relatorio de Matriculas",
-    descricao: "Distribuicao por categoria",
-    detalhes: "Distribuicao de matriculas por etapa (creche, pre-escola, fundamental), modalidade (regular, EJA, especial), turno e localizacao das escolas.",
+    titulo: "Relatorio de Matrículas",
+    descricao: "Distribuição por categoria",
+    detalhes: "Distribuição de matriculas por etapa (creche, pre-escola, fundamental), modalidade (regular, EJA, especial), turno e localizacao das escolas.",
   },
   {
     id: "compliance",
@@ -40,7 +40,7 @@ const REPORTS: Report[] = [
     icon: "&#x1f4c8;",
     titulo: "Relatorio de Potencial",
     descricao: "Oportunidades de captacao",
-    detalhes: "Analise de oportunidades de ampliacao de receitas: matriculas em categorias com maior fator de ponderacao, novas condicionalidades e otimizacao de recursos.",
+    detalhes: "Analise de oportunidades de ampliacao de receitas: matriculas em categorias com maior fator de ponderacao, novas condicionalidades e otimização de recursos.",
   },
 ];
 
@@ -79,16 +79,16 @@ export default function RelatoriosPage() {
         {sessions.length > 0 && (
           <section className="animate-fade-in">
             <h2 className="text-sm font-bold text-[var(--navy)] uppercase tracking-wider mb-3">
-              Sessoes de Consultoria
+              Sessões de Consultoria
             </h2>
             <div className="bg-white border border-[var(--border)] rounded-xl overflow-hidden">
               <div className="grid grid-cols-12 gap-2 px-4 py-2.5 bg-[var(--bg)] border-b border-[var(--border)] text-[10px] font-bold uppercase tracking-wider text-[var(--text3)]">
-                <div className="col-span-3">Municipio</div>
+                <div className="col-span-3">Município</div>
                 <div className="col-span-1 text-center">Status</div>
                 <div className="col-span-2 text-center">Compliance</div>
-                <div className="col-span-2 text-center">Plano de Acao</div>
-                <div className="col-span-2 text-center">Inicio</div>
-                <div className="col-span-2 text-center">Acoes</div>
+                <div className="col-span-2 text-center">Plano de Ação</div>
+                <div className="col-span-2 text-center">Início</div>
+                <div className="col-span-2 text-center">Ações</div>
               </div>
               {sessions.map((session) => (
                 <div
@@ -109,7 +109,7 @@ export default function RelatoriosPage() {
                       session.status === "completed" ? "bg-blue-50 text-blue-700" :
                       "bg-gray-100 text-gray-600"
                     }`}>
-                      {session.status === "active" ? "Ativa" : session.status === "completed" ? "Concluida" : "Pausada"}
+                      {session.status === "active" ? "Ativa" : session.status === "completed" ? "Concluída" : "Pausada"}
                     </span>
                   </div>
                   <div className="col-span-2 text-center">
