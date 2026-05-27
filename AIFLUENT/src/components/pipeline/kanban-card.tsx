@@ -19,6 +19,8 @@ import {
   Zap,
   BookOpen,
   Clock,
+  Target,
+  MessagesSquare,
 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
@@ -43,6 +45,8 @@ const sourceIcons: Record<LeadSource, React.ReactNode> = {
   referral: <Users className="h-3 w-3" />,
   manual: <PenLine className="h-3 w-3" />,
   import: <Upload className="h-3 w-3" />,
+  meta_ads: <Target className="h-3 w-3" />,
+  facebook_lead_ad: <MessagesSquare className="h-3 w-3" />,
 }
 
 const sourceLabels: Record<LeadSource, string> = {
@@ -55,6 +59,8 @@ const sourceLabels: Record<LeadSource, string> = {
   referral: 'Indicacao',
   manual: 'Manual',
   import: 'Importacao',
+  meta_ads: 'Meta Ads',
+  facebook_lead_ad: 'Facebook Lead Ad',
 }
 
 const temperatureConfig: Record<LeadTemperature, { label: string; variant: 'cold' | 'warm' | 'hot' }> = {
