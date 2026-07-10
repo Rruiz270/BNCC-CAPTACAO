@@ -6,6 +6,7 @@ import { MunicipalitySelector } from "@/components/municipality-selector";
 import { StatCard } from "@/components/stat-card";
 import { useConsultoria } from "@/lib/consultoria-context";
 import { CATEGORIAS_FUNDEB, VAAF_BASE } from "@/lib/constants";
+import { TermoTooltip } from "@/components/termo-tooltip";
 import { formatCurrency, formatNumber } from "@/lib/utils";
 import { calculateGain, type IntakeInput, type MunicipalityInput } from "@/lib/fundeb/gain";
 import { GainBigCard, GainBreakdownTable } from "@/components/gain-display";
@@ -357,7 +358,7 @@ export default function SimuladorPage() {
               </div>
 
               <div className="text-[10px] text-[var(--text3)] text-right">
-                Valor base VAAF (EF Anos Iniciais Parcial):{" "}
+                Valor base <TermoTooltip termo="vaaf">VAAF</TermoTooltip> (EF Anos Iniciais Parcial):{" "}
                 <span className="font-semibold">R$ {VAAF_BASE.toLocaleString("pt-BR")}</span> por aluno/ano
               </div>
             </div>

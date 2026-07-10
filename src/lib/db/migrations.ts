@@ -551,6 +551,63 @@ $IMM$ LANGUAGE plpgsql`,
   `CREATE INDEX IF NOT EXISTS idx_gain_snapshots_muni ON fundeb.gain_snapshots(municipality_id)`,
   `CREATE INDEX IF NOT EXISTS idx_gain_snapshots_token ON fundeb.gain_snapshots(intake_token)`,
   `CREATE INDEX IF NOT EXISTS idx_gain_snapshots_at ON fundeb.gain_snapshots(captured_at DESC)`,
+
+  // ── fundeb.ref_parametros — parâmetros FUNDEB versionados por ano ──────
+  `CREATE TABLE IF NOT EXISTS fundeb.ref_parametros (
+    id              SERIAL PRIMARY KEY,
+    chave           TEXT NOT NULL,
+    valor           REAL NOT NULL,
+    ano             INTEGER NOT NULL,
+    fonte           TEXT,
+    vigencia_inicio TIMESTAMP,
+    vigencia_fim    TIMESTAMP,
+    notas           TEXT,
+    created_at      TIMESTAMP DEFAULT NOW(),
+    UNIQUE(chave, ano)
+  )`,
+
+  // Seed idempotente dos parâmetros 2026 (valores hoje hardcoded em constants.ts)
+  `INSERT INTO fundeb.ref_parametros (chave, valor, ano, fonte) VALUES
+    ('vaaf_base',        5962.79, 2026, 'FNDE — ponderações 2026'),
+    ('vaaf_min_nacional',5962.79, 2026, 'FNDE'),
+    ('vaat_min_nacional',10194.38,2026, 'FNDE'),
+    ('vaar_mediana_sp',  710.24,  2026, 'FNDE — distribuição VAAR 2026'),
+    ('vaat_mediana_sp',  500.50,  2026, 'FNDE'),
+    ('peti_por_aluno',   1693.22, 2026, 'Lei 14.640/2023 — PETI 2026')
+  ON CONFLICT (chave, ano) DO NOTHING`,
+
+  // ── fundeb.leads — ranking de prospecção ───────────────────────────────
+  `CREATE TABLE IF NOT EXISTS fundeb.leads (
+    id              SERIAL PRIMARY KEY,
+    municipality_id INTEGER REFERENCES fundeb.municipalities(id),
+    nome            TEXT NOT NULL,
+    uf              VARCHAR(2),
+    score           TEXT DEFAULT 'frio',
+    pontos          INTEGER DEFAULT 0,
+    origem          TEXT,
+    sinais          JSONB DEFAULT '[]'::jsonb,
+    contato         TEXT,
+    notas           TEXT,
+    updated_at      TIMESTAMP DEFAULT NOW(),
+    created_at      TIMESTAMP DEFAULT NOW(),
+    UNIQUE(nome, uf)
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_leads_score ON fundeb.leads(score)`,
+  `CREATE INDEX IF NOT EXISTS idx_leads_muni ON fundeb.leads(municipality_id)`,
+
+  // ── fundeb.ai_outputs — cache de gerações IA ───────────────────────────
+  `CREATE TABLE IF NOT EXISTS fundeb.ai_outputs (
+    id              SERIAL PRIMARY KEY,
+    municipality_id INTEGER REFERENCES fundeb.municipalities(id),
+    consultoria_id  INTEGER REFERENCES fundeb.consultorias(id) ON DELETE CASCADE,
+    tipo            TEXT NOT NULL,
+    conteudo        TEXT NOT NULL,
+    input_hash      TEXT,
+    model           TEXT,
+    generated_by    TEXT,
+    created_at      TIMESTAMP DEFAULT NOW()
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_ai_outputs_muni_tipo ON fundeb.ai_outputs(municipality_id, tipo, created_at DESC)`,
 ];
 
 // ── Stored Procedures ─────────────────────────────────────────────────────

@@ -451,6 +451,52 @@ export const estados = fundebSchema.table('estados', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+// fundeb.ref_parametros — parâmetros FUNDEB versionados por ano/fonte.
+// Substitui hardcodes de constants.ts na virada de exercício: a UI continua
+// usando FUNDEB_PARAMS como fallback, mas o valor vigente vem daqui.
+export const refParametros = fundebSchema.table('ref_parametros', {
+  id: serial('id').primaryKey(),
+  chave: text('chave').notNull(), // ex.: vaaf_base, peti_por_aluno, vaar_mediana_sp
+  valor: real('valor').notNull(),
+  ano: integer('ano').notNull(),
+  fonte: text('fonte'), // ex.: 'Portaria Interministerial 11/2025'
+  vigenciaInicio: timestamp('vigencia_inicio'),
+  vigenciaFim: timestamp('vigencia_fim'),
+  notas: text('notas'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// fundeb.leads — ranking de prospecção (importado de municipios-consultoria-fundeb.md
+// + sinais de CRM/webinars/downloads). Alimenta /captacao.
+export const leads = fundebSchema.table('leads', {
+  id: serial('id').primaryKey(),
+  municipalityId: integer('municipality_id').references(() => municipalities.id),
+  nome: text('nome').notNull(),
+  uf: varchar('uf', { length: 2 }),
+  score: text('score').default('frio'), // quente | morno | engajado | frio
+  pontos: integer('pontos').default(0), // score numérico do modelo de ranking
+  origem: text('origem'), // crm | webinar | download | evento | manual
+  sinais: jsonb('sinais').default([]), // lista de evidências de interesse
+  contato: text('contato'),
+  notas: text('notas'),
+  updatedAt: timestamp('updated_at').defaultNow(),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// fundeb.ai_outputs — cache/histórico de gerações IA (resumo executivo,
+// plano recomendado, revisão de documento). Evita regenerar a cada view.
+export const aiOutputs = fundebSchema.table('ai_outputs', {
+  id: serial('id').primaryKey(),
+  municipalityId: integer('municipality_id').references(() => municipalities.id),
+  consultoriaId: integer('consultoria_id').references(() => consultorias.id, { onDelete: 'cascade' }),
+  tipo: text('tipo').notNull(), // resumo_executivo | plano_recomendado | revisao_documento
+  conteudo: text('conteudo').notNull(), // markdown
+  inputHash: text('input_hash'), // hash dos dados de entrada — invalida cache quando mudam
+  model: text('model'),
+  generatedBy: text('generated_by'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 // audit.snapshots — snapshot imutavel (UC-AU.05, UC-AU.07)
 export const auditSnapshots = auditSchema.table('snapshots', {
   id: bigserial('id', { mode: 'number' }).primaryKey(),

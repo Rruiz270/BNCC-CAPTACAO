@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { Sidebar } from '@/components/sidebar';
 import { Providers } from '@/components/providers';
+import { AssistentePanel } from '@/components/ai/assistente-panel';
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   // Defesa em profundidade: proxy.ts já redireciona não-autenticados, mas este
@@ -23,6 +24,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <main className="flex-1 ml-64 min-h-screen bg-[var(--bg)]">
           {children}
         </main>
+        <AssistentePanel />
       </div>
     </Providers>
   );

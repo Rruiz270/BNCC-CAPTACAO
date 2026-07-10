@@ -5,6 +5,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { StatCard } from "@/components/stat-card";
 import { formatCurrency, formatNumber } from "@/lib/utils";
+import { ResumoExecutivoIA } from "@/components/ai/resumo-executivo";
 
 interface Resumo {
   consultoria: {
@@ -282,8 +283,11 @@ export default function ConsultoriaDetailPage({ params }: { params: Promise<{ id
             icon="&#x1f4c8;"
             color={delta > 0 ? "var(--green)" : "var(--red)"}
           />
-          <StatCard label="Compliance VAAR" value={`${compliancePct}%`} sub={`${compliance.done}/${compliance.total} itens`} icon="&#x2705;" color="var(--green)" />
+          <StatCard label="Compliance VAAR" termo="vaar" value={`${compliancePct}%`} sub={`${compliance.done}/${compliance.total} itens`} icon="&#x2705;" color="var(--green)" />
         </div>
+
+        {/* Resumo executivo narrativo (IA) */}
+        <ResumoExecutivoIA municipalityId={municipio.id} consultoriaId={consultoria.id} />
 
         {/* Snapshot info */}
         {snapshot && (

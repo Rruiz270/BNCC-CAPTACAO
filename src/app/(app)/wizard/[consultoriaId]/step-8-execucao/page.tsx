@@ -5,6 +5,7 @@ import { StepShell } from "@/components/wizard/step-shell";
 import { useWizard } from "@/components/wizard/wizard-provider";
 import { getStepById } from "@/lib/wizard/steps";
 import { ACTION_PLAN_WEEKS } from "@/lib/constants";
+import { proximaJanela, formatDataBR } from "@/lib/fundeb/prazos";
 
 type TaskStatus = "done" | "progress" | "pending" | "late";
 
@@ -88,13 +89,11 @@ export default function StepExecucao() {
   const late = tasks.filter((t) => t.status === "late").length;
   const pct = total > 0 ? Math.round((done / total) * 100) : 0;
 
-  // Contagem regressiva
-  const censo = new Date("2026-05-27");
-  const today = new Date();
-  const diasRestantes = Math.max(
-    0,
-    Math.ceil((censo.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
-  );
+  // Contagem regressiva dinâmica: usa a próxima janela regulatória aberta
+  // (condicionalidades VAAR 31/ago, EC 135 31/dez, Censo 2027...), em vez
+  // do Censo 27/mai/2026 fixo que já passou.
+  const janela = proximaJanela();
+  const diasRestantes = janela?.diasRestantes ?? 0;
 
   const update = (id: number, patch: Partial<Task>) => {
     setTasks((cur) => cur.map((t) => (t.id === id ? { ...t, ...patch } : t)));
@@ -151,8 +150,9 @@ export default function StepExecucao() {
     <StepShell step={step} canAdvance={canAdvance} blockReason={blockReason}>
       <h2 className="text-lg font-bold text-[var(--text1)] mb-2">Acompanhamento semanal</h2>
       <p className="text-sm text-[var(--text3)] mb-4">
-        Acompanhe o progresso das 7 semanas até o Dia do Censo Escolar (27/Mai/2026). Marque
-        tarefas como concluídas, atualize notas e salve para consolidar.
+        Acompanhe a execução semanal até a próxima janela regulatória
+        {janela ? ` — ${janela.titulo} (${formatDataBR(janela.data)})` : ""}. Marque tarefas como
+        concluídas, atualize notas e salve para consolidar.
       </p>
 
       {error && (
@@ -168,7 +168,9 @@ export default function StepExecucao() {
             Contagem regressiva
           </div>
           <div className="text-3xl font-extrabold mt-1">{diasRestantes} dias</div>
-          <div className="text-xs text-white/60 mt-1">até 27/05/2026</div>
+          <div className="text-xs text-white/60 mt-1">
+            {janela ? `${janela.titulo} · ${formatDataBR(janela.data)}` : "sem janelas futuras cadastradas"}
+          </div>
         </div>
         <div className="border border-[var(--border)] rounded-lg p-3">
           <div className="text-[10px] uppercase text-[var(--text3)]">Progresso curto</div>

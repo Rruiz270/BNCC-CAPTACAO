@@ -57,7 +57,25 @@ export async function GET(
       ORDER BY phase, semana
     `;
 
+    // Resumo executivo narrativo (último gerado pela IA, se houver)
+    let resumoNarrativo: string | null = null;
+    try {
+      const resumoRows = await sql`
+        SELECT conteudo FROM fundeb.ai_outputs
+        WHERE municipality_id = ${muniId} AND tipo = 'resumo_executivo'
+        ORDER BY created_at DESC LIMIT 1`;
+      resumoNarrativo = (resumoRows[0]?.conteudo as string) ?? null;
+    } catch { /* tabela pode não existir ainda */ }
+
+    // "O que precisamos de você": tarefas pendentes/atrasadas mais próximas do prazo
+    const pendencias = planRows
+      .filter((r: Record<string, unknown>) => r.status === 'pending' || r.status === 'late')
+      .slice(0, 5)
+      .map((r: Record<string, unknown>) => ({ tarefa: r.tarefa, dueDate: r.due_date, status: r.status }));
+
     return Response.json({
+      resumoNarrativo,
+      pendencias,
       municipio: access.nome,
       receitaTotal: access.receita_total || 0,
       potTotal: access.pot_total || 0,

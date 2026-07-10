@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { LeadsRadar } from "@/components/leads-radar";
 
 interface MuniOption {
   id: number;
@@ -405,6 +406,11 @@ export default function CaptacaoPage() {
             )}
           </div>
         )}
+      </div>
+
+      {/* Radar de leads */}
+      <div className="max-w-7xl mx-auto px-8 pb-8">
+        <LeadsRadar />
       </div>
 
       {/* Toast */}

@@ -101,14 +101,16 @@ export const T2_CONVERSIONS = [
   { from: 'ef_final', to: 'ef_integral', ganho: 2385 },
 ] as const;
 
+// Esteira LEAN i10×APM: 7 semanas relativas ao início da consultoria,
+// travando na próxima janela regulatória (ver src/lib/fundeb/prazos.ts).
 export const ACTION_PLAN_WEEKS = [
-  { semana: 1, label: 'Semana 1: Discovery e Diagnostico', dates: '7-11 Abr', color: '#3b82f6' },
-  { semana: 2, label: 'Semana 2: Plano Aprovado + Inicio Execucao', dates: '14-18 Abr', color: '#8b5cf6' },
-  { semana: 3, label: 'Semana 3: Execucao T3 (AEE) + T4 (Reclassificacao)', dates: '21-25 Abr', color: '#22c55e' },
-  { semana: 4, label: 'Semana 4: Execucao T2 (Integral) + Parcerias', dates: '28 Abr - 2 Mai', color: '#06b6d4' },
-  { semana: 5, label: 'Semana 5: Verificacao e Ajustes Finais', dates: '5-9 Mai', color: '#f59e0b' },
-  { semana: 6, label: 'Semana 6: Travamento - Ultimo Check', dates: '12-23 Mai', color: '#ef4444' },
-  { semana: 7, label: 'DIA DO CENSO: 27/Mai/2026', dates: '27 Mai', color: '#ef4444' },
+  { semana: 1, label: 'Semana 1: Discovery e Diagnostico', dates: 'semana 1', color: '#3b82f6' },
+  { semana: 2, label: 'Semana 2: Plano Aprovado + Inicio Execucao', dates: 'semana 2', color: '#8b5cf6' },
+  { semana: 3, label: 'Semana 3: Execucao T3 (AEE) + T4 (Reclassificacao)', dates: 'semana 3', color: '#22c55e' },
+  { semana: 4, label: 'Semana 4: Execucao T2 (Integral) + Parcerias', dates: 'semana 4', color: '#06b6d4' },
+  { semana: 5, label: 'Semana 5: Verificacao e Ajustes Finais', dates: 'semana 5', color: '#f59e0b' },
+  { semana: 6, label: 'Semana 6: Travamento - Ultimo Check', dates: 'semana 6', color: '#ef4444' },
+  { semana: 7, label: 'Semana 7: Janela regulatoria - conferencia final', dates: 'semana 7', color: '#ef4444' },
 ];
 
 export const ACTION_PLAN_PHASES = [

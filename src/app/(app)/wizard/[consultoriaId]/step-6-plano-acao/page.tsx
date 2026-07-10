@@ -48,6 +48,8 @@ export default function StepPlanoAcao() {
   const [dirty, setDirty] = useState<Set<number>>(new Set());
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [gerandoIA, setGerandoIA] = useState(false);
+  const [iaInfo, setIaInfo] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(`/api/consultorias`)
@@ -161,6 +163,30 @@ export default function StepPlanoAcao() {
     }
   }, [muniId, dirty, tasks, consultoriaId, updateStep, totals, totalPct, blockingCount]);
 
+  const gerarComIA = useCallback(async () => {
+    if (!muniId || gerandoIA) return;
+    setGerandoIA(true);
+    setError(null);
+    setIaInfo(null);
+    try {
+      const res = await fetch("/api/ai/plano", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ municipalityId: muniId, consultoriaId, gravar: true }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message ?? data?.error ?? "Falha ao gerar plano");
+      setIaInfo(
+        `${data.gravadas} tarefa(s) sugeridas pela IA adicionadas ao plano. ${data.diagnostico ?? ""}`,
+      );
+      load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Erro ao gerar plano com IA");
+    } finally {
+      setGerandoIA(false);
+    }
+  }, [muniId, consultoriaId, gerandoIA, load]);
+
   const canAdvance = tasks.length > 0 && dirty.size === 0 && blockingCount === 0;
   const blockReason =
     tasks.length === 0
@@ -182,6 +208,26 @@ export default function StepPlanoAcao() {
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700 mb-4">
           {error}
+        </div>
+      )}
+
+      {/* Recomendador IA */}
+      <div className="border border-blue-200 bg-blue-50 rounded-lg p-3 mb-4 flex items-center justify-between gap-3">
+        <div className="text-xs text-blue-800">
+          <span className="font-bold">✨ Recomendador IA:</span> gera tarefas priorizadas a partir do
+          diagnóstico T1-T6, dos gaps de compliance e das janelas regulatórias.
+        </div>
+        <button
+          onClick={gerarComIA}
+          disabled={gerandoIA || !muniId}
+          className="shrink-0 px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-50"
+        >
+          {gerandoIA ? "Gerando…" : "Gerar plano com IA"}
+        </button>
+      </div>
+      {iaInfo && (
+        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-xs text-emerald-800 mb-4">
+          {iaInfo}
         </div>
       )}
 

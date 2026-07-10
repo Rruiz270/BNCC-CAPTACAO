@@ -3,6 +3,8 @@
 import { use, useState, useEffect } from "react";
 import { PageHeader } from "@/components/page-header";
 import { StatCard } from "@/components/stat-card";
+import { ResumoExecutivoIA } from "@/components/ai/resumo-executivo";
+import { BenchmarkSimilares } from "@/components/benchmark-similares";
 import { formatCurrency, formatNumber, formatPercent } from "@/lib/utils";
 import Link from "next/link";
 import {
@@ -212,6 +214,9 @@ export default function MunicipalityDetailPage({
       </PageHeader>
 
       <div className="max-w-7xl mx-auto px-8 py-6 space-y-8">
+        {/* Resumo executivo narrativo (IA) */}
+        <ResumoExecutivoIA municipalityId={muni.id} />
+
         {/* Section 1: Financial Overview */}
         <section>
           <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text3)] mb-4">
@@ -580,6 +585,9 @@ export default function MunicipalityDetailPage({
             </div>
           </div>
         </section>
+
+        {/* Benchmark de municípios similares */}
+        <BenchmarkSimilares slug={muni.id} />
 
         {/* Back link */}
         <div className="pb-8">

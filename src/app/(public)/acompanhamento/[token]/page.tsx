@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect, use } from 'react'
+import { Markdown } from '@/components/ai/markdown'
+import { janelasAtivas, formatDataBR } from '@/lib/fundeb/prazos'
 
 interface DashboardData {
   municipio: string
@@ -12,6 +14,8 @@ interface DashboardData {
   financials: { ganhoPerda: number; vaar: number; vaat: number }
   historico: Record<string, number>
   lastUpdated: string
+  resumoNarrativo?: string | null
+  pendencias?: { tarefa: string; dueDate: string | null; status: string }[]
 }
 
 export default function AcompanhamentoPage({ params }: { params: Promise<{ token: string }> }) {
@@ -75,44 +79,59 @@ export default function AcompanhamentoPage({ params }: { params: Promise<{ token
       </header>
 
       <main className="max-w-5xl mx-auto px-8 py-8 space-y-6">
-        {/* Countdown to Censo */}
-        {(() => {
-          const censoDate = new Date('2026-05-27T23:59:59');
-          const bnccDate = new Date('2026-08-31T23:59:59');
-          const now = new Date();
-          const censoDays = Math.max(0, Math.ceil((censoDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
-          const bnccDays = Math.max(0, Math.ceil((bnccDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
-          return (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className={`rounded-2xl p-4 border ${censoDays <= 14 ? 'bg-red-500/20 border-red-500/40' : censoDays <= 30 ? 'bg-orange-500/20 border-orange-500/40' : 'bg-white/5 border-white/10'}`}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-xs text-white/40">Censo Escolar 2026</div>
-                    <div className="text-sm text-white/70 mt-0.5">Prazo para quick wins no Educacenso</div>
-                  </div>
-                  <div className="text-right">
-                    <div className={`text-2xl font-bold ${censoDays <= 14 ? 'text-red-400' : censoDays <= 30 ? 'text-orange-400' : 'text-white'}`}>{censoDays}</div>
-                    <div className="text-xs text-white/40">dias restantes</div>
-                  </div>
+        {/* Janelas regulatórias dinâmicas */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {janelasAtivas().filter(j => j.diasRestantes >= 0).slice(0, 2).map(j => (
+            <div
+              key={j.key}
+              className={`rounded-2xl p-4 border ${
+                j.severidade === 'critico'
+                  ? 'bg-red-500/20 border-red-500/40'
+                  : j.severidade === 'atencao'
+                  ? 'bg-orange-500/20 border-orange-500/40'
+                  : 'bg-white/5 border-white/10'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-xs text-white/40">{j.titulo}</div>
+                  <div className="text-sm text-white/70 mt-0.5">{j.emJogo}</div>
                 </div>
-                <div className="text-xs text-white/30 mt-2">Data referência: 27/05/2026</div>
-              </div>
-              <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-xs text-white/40">BNCC Computação</div>
-                    <div className="text-sm text-white/70 mt-0.5">Currículo + CME + SIMEC para VAAR 2027</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-[#00B4D8]">{bnccDays}</div>
-                    <div className="text-xs text-white/40">dias restantes</div>
-                  </div>
+                <div className="text-right">
+                  <div className={`text-2xl font-bold ${
+                    j.severidade === 'critico' ? 'text-red-400' : j.severidade === 'atencao' ? 'text-orange-400' : 'text-[#00B4D8]'
+                  }`}>{j.diasRestantes}</div>
+                  <div className="text-xs text-white/40">dias restantes</div>
                 </div>
-                <div className="text-xs text-white/30 mt-2">Prazo: Agosto 2026</div>
               </div>
+              <div className="text-xs text-white/30 mt-2">Prazo: {formatDataBR(j.data)}</div>
             </div>
-          );
-        })()}
+          ))}
+        </div>
+
+        {/* Resumo executivo narrativo */}
+        {data.resumoNarrativo && (
+          <div className="bg-white/5 rounded-2xl p-5 border border-white/10">
+            <h2 className="text-sm font-semibold text-white/80 mb-3">Resumo executivo da sua rede</h2>
+            <Markdown content={data.resumoNarrativo} className="text-sm text-white/70" />
+          </div>
+        )}
+
+        {/* O que precisamos de você */}
+        {data.pendencias && data.pendencias.length > 0 && (
+          <div className="bg-[#00B4D8]/10 rounded-2xl p-5 border border-[#00B4D8]/30">
+            <h2 className="text-sm font-semibold text-[#00B4D8] mb-3">O que precisamos de você agora</h2>
+            <div className="space-y-2">
+              {data.pendencias.map((p, i) => (
+                <div key={i} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl">
+                  <div className={`w-2 h-2 rounded-full ${p.status === 'late' ? 'bg-red-400' : 'bg-orange-400'}`} />
+                  <div className="flex-1 text-sm text-white/80">{p.tarefa}</div>
+                  {p.dueDate && <div className="text-xs text-white/40">até {p.dueDate}</div>}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -162,9 +181,9 @@ export default function AcompanhamentoPage({ params }: { params: Promise<{ token
           const phaseTasks = upcomingTasks.filter(t => t.phase === phase);
           if (phaseTasks.length === 0) return null;
           const phaseConfig = {
-            curto: { label: 'Curto Prazo — Quick Wins (Censo 27/Mai)', color: 'orange', bg: 'bg-orange-500/10', border: 'border-orange-500/30' },
-            medio: { label: 'Médio Prazo — BNCC Computação (Agosto 2026)', color: 'blue', bg: 'bg-blue-500/10', border: 'border-blue-500/30' },
-            longo: { label: 'Longo Prazo — EC 135 e Expansão (2027+)', color: 'cyan', bg: 'bg-cyan-500/10', border: 'border-cyan-500/30' },
+            curto: { label: 'Curto Prazo — Quick Wins de cadastro', color: 'orange', bg: 'bg-orange-500/10', border: 'border-orange-500/30' },
+            medio: { label: 'Médio Prazo — Condicionalidades VAAR (31/Ago/2026)', color: 'blue', bg: 'bg-blue-500/10', border: 'border-blue-500/30' },
+            longo: { label: 'Longo Prazo — EC 135 e Expansão Integral (2027+)', color: 'cyan', bg: 'bg-cyan-500/10', border: 'border-cyan-500/30' },
           }[phase];
           return (
             <div key={phase} className={`${phaseConfig.bg} rounded-2xl p-5 border ${phaseConfig.border}`}>

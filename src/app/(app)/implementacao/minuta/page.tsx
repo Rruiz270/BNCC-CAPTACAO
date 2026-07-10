@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { PageHeader } from "@/components/page-header";
 import { useConsultoria } from "@/lib/consultoria-context";
 import { generateMinutaCME } from "@/lib/document-templates";
+import { Markdown } from "@/components/ai/markdown";
 
 interface DocumentRecord {
   id: number;
@@ -31,6 +32,9 @@ export default function MinutaPage() {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [iaBusy, setIaBusy] = useState<null | "gerar" | "revisar">(null);
+  const [revisao, setRevisao] = useState<string | null>(null);
+  const [iaError, setIaError] = useState<string | null>(null);
 
   // Load existing document
   useEffect(() => {
@@ -115,6 +119,63 @@ export default function MinutaPage() {
     }
   }
 
+  // Geração completa com IA (redação contextualizada, sem placeholders)
+  async function handleGenerateIA() {
+    if (!municipalityId) return;
+    setIaBusy("gerar");
+    setIaError(null);
+    try {
+      const res = await fetch("/api/ai/documento", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          municipalityId,
+          consultoriaId: activeSession?.id,
+          tipo: "minuta_cme",
+          acao: "gerar",
+          salvar: true,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message ?? data.error ?? "Falha na geração com IA");
+      setGeneratedText(data.conteudo);
+      if (data.documentId) {
+        setDocument({ id: data.documentId, conteudo: data.conteudo, versao: (document?.versao ?? 0) + 1, status: "rascunho", createdAt: new Date().toISOString() });
+      }
+    } catch (e) {
+      setIaError(e instanceof Error ? e.message : "Erro na geração com IA");
+    } finally {
+      setIaBusy(null);
+    }
+  }
+
+  // Revisão crítica do texto atual com IA
+  async function handleRevisarIA() {
+    if (!municipalityId || !generatedText) return;
+    setIaBusy("revisar");
+    setIaError(null);
+    setRevisao(null);
+    try {
+      const res = await fetch("/api/ai/documento", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          municipalityId,
+          tipo: "minuta_cme",
+          acao: "revisar",
+          conteudoAtual: generatedText,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message ?? data.error ?? "Falha na revisão com IA");
+      setRevisao(data.conteudo);
+    } catch (e) {
+      setIaError(e instanceof Error ? e.message : "Erro na revisão com IA");
+    } finally {
+      setIaBusy(null);
+    }
+  }
+
   async function handleCopy() {
     try {
       await navigator.clipboard.writeText(generatedText);
@@ -159,18 +220,33 @@ export default function MinutaPage() {
           </div>
         )}
 
-        {/* Generate button */}
+        {/* Generate buttons */}
         {activeSession && !hasDocument && (
           <div className="text-center py-8">
-            <button
-              onClick={handleGenerate}
-              disabled={loading}
-              className="px-6 py-3 rounded-xl bg-[var(--navy)] text-white font-semibold hover:bg-[var(--navy-dark)] transition-colors disabled:opacity-50"
-            >
-              {loading ? "Gerando..." : "Gerar Documento"}
-            </button>
-            <p className="text-xs text-[var(--text3)] mt-2">O documento será preenchido automaticamente com dados do município</p>
+            <div className="flex items-center justify-center gap-3">
+              <button
+                onClick={handleGenerate}
+                disabled={loading || iaBusy !== null}
+                className="px-6 py-3 rounded-xl bg-[var(--navy)] text-white font-semibold hover:bg-[var(--navy-dark)] transition-colors disabled:opacity-50"
+              >
+                {loading ? "Gerando..." : "Gerar do modelo"}
+              </button>
+              <button
+                onClick={handleGenerateIA}
+                disabled={loading || iaBusy !== null}
+                className="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-500 transition-colors disabled:opacity-50"
+              >
+                {iaBusy === "gerar" ? "Redigindo com IA..." : "✨ Redigir com IA"}
+              </button>
+            </div>
+            <p className="text-xs text-[var(--text3)] mt-2">
+              O modelo preenche placeholders; a IA redige o documento completo com os dados e prazos reais do município.
+            </p>
           </div>
+        )}
+
+        {iaError && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800">{iaError}</div>
         )}
 
         {/* Article summary cards */}
@@ -212,13 +288,29 @@ export default function MinutaPage() {
                   Exportar PDF
                 </button>
                 {activeSession && (
-                  <button
-                    onClick={handleGenerate}
-                    disabled={loading}
-                    className="px-4 py-2 rounded-lg text-sm font-medium border border-[var(--border)] text-[var(--text2)] hover:bg-[var(--bg)] transition-all disabled:opacity-50"
-                  >
-                    Regenerar
-                  </button>
+                  <>
+                    <button
+                      onClick={handleRevisarIA}
+                      disabled={iaBusy !== null}
+                      className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-500 transition-all disabled:opacity-50"
+                    >
+                      {iaBusy === "revisar" ? "Revisando..." : "✨ Revisar com IA"}
+                    </button>
+                    <button
+                      onClick={handleGenerateIA}
+                      disabled={iaBusy !== null}
+                      className="px-4 py-2 rounded-lg text-sm font-medium border border-blue-400 text-blue-600 hover:bg-blue-50 transition-all disabled:opacity-50"
+                    >
+                      {iaBusy === "gerar" ? "Redigindo..." : "✨ Nova versão com IA"}
+                    </button>
+                    <button
+                      onClick={handleGenerate}
+                      disabled={loading || iaBusy !== null}
+                      className="px-4 py-2 rounded-lg text-sm font-medium border border-[var(--border)] text-[var(--text2)] hover:bg-[var(--bg)] transition-all disabled:opacity-50"
+                    >
+                      Regenerar modelo
+                    </button>
+                  </>
                 )}
               </div>
             </div>
@@ -238,6 +330,21 @@ export default function MinutaPage() {
               >
                 {generatedText}
               </pre>
+            </div>
+          </section>
+        )}
+
+        {/* Revisão da IA */}
+        {revisao && (
+          <section className="animate-fade-in print:hidden">
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-5">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-bold text-blue-900">✨ Revisão da IA</h3>
+                <button onClick={() => setRevisao(null)} className="text-xs text-blue-500 hover:underline">
+                  fechar
+                </button>
+              </div>
+              <Markdown content={revisao} className="text-xs text-blue-900" />
             </div>
           </section>
         )}

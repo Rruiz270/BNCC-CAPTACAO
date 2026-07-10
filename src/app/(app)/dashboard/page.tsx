@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/page-header";
 import { StatCard } from "@/components/stat-card";
 import { useConsultoria } from "@/lib/consultoria-context";
 import { formatCurrency, formatNumber, formatPercent } from "@/lib/utils";
+import { janelasAtivas, formatDataBR, SEVERIDADE_COLORS } from "@/lib/fundeb/prazos";
 import {
   BarChart,
   Bar,
@@ -99,7 +100,7 @@ function SkeletonTable() {
 const COLORS_PIE = ["#00E5A0", "#D4553A"];
 
 export default function DashboardPage() {
-  const { activeSession, municipality } = useConsultoria();
+  const { activeSession, municipality, sessions, switchSession } = useConsultoria();
   const [data, setData] = useState<Municipality[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -160,6 +161,103 @@ export default function DashboardPage() {
       <PageHeader title="Dashboard" description="Visão geral do FUNDEB 2026 - 5.569 municípios" />
 
       <div className="max-w-7xl mx-auto px-8 py-8 space-y-8">
+        {/* Relógio regulatório — semáforo de janelas FUNDEB */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {janelasAtivas().slice(0, 3).map((j) => (
+            <div
+              key={j.key}
+              className="bg-white border rounded-xl p-4 flex items-start gap-3"
+              style={{ borderColor: SEVERIDADE_COLORS[j.severidade] }}
+            >
+              <span
+                className="mt-1 h-3 w-3 shrink-0 rounded-full"
+                style={{ backgroundColor: SEVERIDADE_COLORS[j.severidade] }}
+                aria-hidden
+              />
+              <div className="min-w-0">
+                <div className="text-xs font-bold text-[var(--text1)]">
+                  {j.titulo}
+                </div>
+                <div className="text-[11px] text-[var(--text3)] mt-0.5">
+                  {j.diasRestantes >= 0
+                    ? `${j.diasRestantes} dias · até ${formatDataBR(j.data)}`
+                    : `venceu em ${formatDataBR(j.data)}`}
+                </div>
+                <div className="text-[10px] text-[var(--text3)] mt-1 line-clamp-2">{j.emJogo}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Minha carteira — consultorias ativas primeiro */}
+        {sessions.filter((s) => s.status === "active").length > 0 && (
+          <section>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text3)] mb-3">
+              Minha carteira
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {sessions
+                .filter((s) => s.status === "active")
+                .map((s) => {
+                  const emRisco =
+                    (s.complianceProgress ?? 0) < 50 || (s.actionPlanProgress ?? 0) < 50;
+                  const isAtiva = activeSession?.id === s.id;
+                  return (
+                    <div
+                      key={s.id}
+                      className={`bg-white border rounded-xl p-4 ${
+                        isAtiva ? "border-[#00B4D8] ring-1 ring-[#00B4D8]/30" : "border-[var(--border)]"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="font-semibold text-sm text-[var(--text1)] truncate">
+                          {s.municipality?.nome ?? `Consultoria #${s.id}`}
+                        </div>
+                        <span
+                          className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            emRisco ? "bg-amber-50 text-amber-700" : "bg-green-50 text-green-700"
+                          }`}
+                        >
+                          {emRisco ? "atenção" : "no ritmo"}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 mt-3 text-center">
+                        <div className="rounded-lg bg-[var(--bg)] py-1.5">
+                          <div className="text-[9px] uppercase text-[var(--text3)]">Compliance</div>
+                          <div className="text-sm font-extrabold text-[#0A2463]">
+                            {s.complianceProgress ?? 0}%
+                          </div>
+                        </div>
+                        <div className="rounded-lg bg-[var(--bg)] py-1.5">
+                          <div className="text-[9px] uppercase text-[var(--text3)]">Plano</div>
+                          <div className="text-sm font-extrabold text-[#00B4D8]">
+                            {s.actionPlanProgress ?? 0}%
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 mt-3">
+                        <Link
+                          href={`/wizard/${s.id}`}
+                          className="flex-1 text-center px-2 py-1.5 rounded-lg bg-[var(--navy)] text-white text-[11px] font-semibold hover:opacity-90"
+                        >
+                          Abrir wizard
+                        </Link>
+                        {!isAtiva && (
+                          <button
+                            onClick={() => switchSession(s.id)}
+                            className="px-2 py-1.5 rounded-lg border border-[var(--border)] text-[11px] text-[var(--text2)] hover:bg-[var(--bg)]"
+                          >
+                            Ativar
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+          </section>
+        )}
+
         {/* Session-Aware Panel */}
         {activeSession && municipality && (
           <div className="bg-gradient-to-r from-[var(--navy)] to-[#0A2463]/80 rounded-xl p-6 text-white animate-fade-in">
@@ -203,6 +301,9 @@ export default function DashboardPage() {
         )}
 
         {/* KPI Stats Row */}
+        <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text3)] -mb-4">
+          Panorama nacional
+        </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {loading ? (
             <><SkeletonCard /><SkeletonCard /><SkeletonCard /><SkeletonCard /></>
@@ -211,7 +312,7 @@ export default function DashboardPage() {
               <StatCard label="Total Municípios" value={formatNumber(stats.totalMunicipalities)} icon="&#x1f3db;&#xfe0f;" color="#0A2463" />
               <StatCard label="Total Matrículas" value={formatNumber(Number(stats.totalEnrollments))} icon="&#x1f393;" color="#0A2463" />
               <StatCard label="Receita Total FUNDEB" value={formatCurrency(Number(stats.totalRevenue))} icon="&#x1f4b0;" color="#00B4D8" />
-              <StatCard label="Potencial de Captação" value={formatCurrency(Number(stats.totalPotencial))} sub="Valor total recuperavel" icon="&#x1f680;" color="#00E5A0" />
+              <StatCard label="Potencial de Captação" termo="ganho_garantido" value={formatCurrency(Number(stats.totalPotencial))} sub="Valor total recuperável" icon="&#x1f680;" color="#00E5A0" />
             </>
           ) : null}
         </div>
