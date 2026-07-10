@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { StepShell } from "@/components/wizard/step-shell";
 import { useWizard } from "@/components/wizard/wizard-provider";
@@ -392,15 +391,6 @@ export default function StepDiscovery() {
         </div>
       )}
 
-      <div className="mt-6 flex flex-wrap gap-3">
-        <Link
-          href="/importar"
-          target="_blank"
-          className="text-xs px-3 py-2 rounded-lg bg-[var(--bg)] border border-[var(--border)] hover:bg-white"
-        >
-          Abrir importador legado ↗
-        </Link>
-      </div>
     </StepShell>
   );
 }

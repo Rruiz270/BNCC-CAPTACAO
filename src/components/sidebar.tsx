@@ -427,26 +427,6 @@ export function Sidebar({ user }: { user?: SidebarUser }) {
           Captação
         </Link>
         <Link
-          href="/catalogo"
-          className={`flex items-center px-3 py-2.5 rounded-lg text-sm transition-all ${
-            isActive("/catalogo")
-              ? "bg-white/15 text-white font-semibold"
-              : "text-white/60 hover:bg-white/8 hover:text-white/90"
-          }`}
-        >
-          Catálogo i10
-        </Link>
-        <Link
-          href="/projecao"
-          className={`flex items-center px-3 py-2.5 rounded-lg text-sm transition-all ${
-            isActive("/projecao")
-              ? "bg-white/15 text-white font-semibold"
-              : "text-white/60 hover:bg-white/8 hover:text-white/90"
-          }`}
-        >
-          Projeção Financeira
-        </Link>
-        <Link
           href="/calculadora-ec135"
           className={`flex items-center px-3 py-2.5 rounded-lg text-sm transition-all ${
             isActive("/calculadora-ec135")
@@ -492,16 +472,6 @@ export function Sidebar({ user }: { user?: SidebarUser }) {
           }`}
         >
           Histórico Consultorias
-        </Link>
-        <Link
-          href="/importar"
-          className={`flex items-center px-3 py-2.5 rounded-lg text-sm transition-all ${
-            isActive("/importar")
-              ? "bg-white/15 text-white font-semibold"
-              : "text-white/60 hover:bg-white/8 hover:text-white/90"
-          }`}
-        >
-          Importar Dados
         </Link>
       </nav>
 
