@@ -390,7 +390,7 @@ export default function PortfolioPage() {
             <p className="text-[var(--text3)] text-sm mt-1">
               {search
                 ? `Nenhum resultado para "${search}"`
-                : "Inicie uma nova consultoria pelo botao acima"}
+                : "Inicie uma nova consultoria pelo botão acima"}
             </p>
             <Link
               href="/wizard"
@@ -484,7 +484,7 @@ export default function PortfolioPage() {
                             href={`/relatorios?sessionId=${s.id}`}
                             className="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[var(--cyan)]/10 text-[var(--cyan)] hover:bg-[var(--cyan)]/20 transition-colors"
                           >
-                            Relatorio
+                            Relatório
                           </Link>
                         </div>
                       </td>

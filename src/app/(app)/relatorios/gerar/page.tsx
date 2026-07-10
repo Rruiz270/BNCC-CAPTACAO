@@ -82,9 +82,9 @@ export default function GerarRelatorio() {
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[var(--text1)]">Gerar Relatorio de Consultoria</h1>
+        <h1 className="text-2xl font-bold text-[var(--text1)]">Gerar Relatório de Consultoria</h1>
         <p className="text-[var(--text3)] text-sm mt-1">
-          Relatorio completo com ficha municipal, diagnostico T1-T6, matriculas, compliance e plano de acao
+          Relatório completo com ficha municipal, diagnóstico T1-T6, matrículas, compliance e plano de ação
         </p>
       </div>
 
@@ -120,13 +120,13 @@ export default function GerarRelatorio() {
         {selectedId && !reportHtml && (
           <div className="mt-4 space-y-3">
             <div>
-              <label className="text-xs font-semibold text-[var(--text2)] block mb-2">Tipo de Relatorio</label>
+              <label className="text-xs font-semibold text-[var(--text2)] block mb-2">Tipo de Relatório</label>
               <div className="flex gap-3">
                 <label className={`flex-1 p-3 rounded-xl border-2 cursor-pointer transition-colors ${
                   reportType === 'inicial' ? 'border-[#00B4D8] bg-[#00B4D8]/5' : 'border-[var(--border)]'
                 }`}>
                   <input type="radio" name="reportType" value="inicial" checked={reportType === 'inicial'} onChange={() => setReportType('inicial')} className="sr-only" />
-                  <div className="text-sm font-semibold text-[var(--text1)]">Relatorio Inicial</div>
+                  <div className="text-sm font-semibold text-[var(--text1)]">Relatório Inicial</div>
                   <div className="text-xs text-[var(--text3)] mt-0.5">R1 — Quick wins, acoes Censo 2026, diagnostico T1-T6</div>
                   <span className="inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full font-semibold bg-orange-100 text-orange-700">Curto Prazo</span>
                 </label>
@@ -134,7 +134,7 @@ export default function GerarRelatorio() {
                   reportType === 'final' ? 'border-[#00B4D8] bg-[#00B4D8]/5' : 'border-[var(--border)]'
                 }`}>
                   <input type="radio" name="reportType" value="final" checked={reportType === 'final'} onChange={() => setReportType('final')} className="sr-only" />
-                  <div className="text-sm font-semibold text-[var(--text1)]">Relatorio Final</div>
+                  <div className="text-sm font-semibold text-[var(--text1)]">Relatório Final</div>
                   <div className="text-xs text-[var(--text3)] mt-0.5">R3 — Comparativo antes/depois, oportunidades, projecao 2027-2030</div>
                   <span className="inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full font-semibold bg-cyan-100 text-cyan-700">Longo Prazo</span>
                 </label>
@@ -145,7 +145,7 @@ export default function GerarRelatorio() {
               disabled={generating}
               className="w-full py-3 rounded-xl bg-[#00B4D8] text-white font-semibold hover:bg-[#00B4D8]/80 disabled:opacity-50 transition-colors"
             >
-              {generating ? 'Gerando relatorio...' : `Gerar ${reportType === 'final' ? 'Relatorio Final' : 'Relatorio Inicial'}`}
+              {generating ? 'Gerando relatório...' : `Gerar ${reportType === 'final' ? 'Relatório Final' : 'Relatório Inicial'}`}
             </button>
           </div>
         )}
@@ -176,7 +176,7 @@ export default function GerarRelatorio() {
               srcDoc={reportHtml}
               className="w-full border-0"
               style={{ minHeight: '80vh' }}
-              title="Relatorio Preview"
+              title="Relatório Preview"
             />
           </div>
         </div>

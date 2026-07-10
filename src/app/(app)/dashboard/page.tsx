@@ -190,6 +190,27 @@ export default function DashboardPage() {
         </div>
 
         {/* Minha carteira — consultorias ativas primeiro */}
+        {sessions.filter((s) => s.status === "active").length === 0 && (
+          <section>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text3)] mb-3">
+              Minha carteira
+            </h2>
+            <div className="bg-white border border-dashed border-[var(--border)] rounded-xl p-8 text-center">
+              <p className="text-sm font-semibold text-[var(--text1)]">
+                Nenhuma consultoria em andamento
+              </p>
+              <p className="text-xs text-[var(--text3)] mt-1">
+                Comece pelo diagnóstico do município: o wizard guia as 8 etapas da esteira de captação.
+              </p>
+              <Link
+                href="/wizard"
+                className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-lg bg-[var(--navy)] text-white text-xs font-bold hover:opacity-90 transition-opacity"
+              >
+                + Iniciar consultoria
+              </Link>
+            </div>
+          </section>
+        )}
         {sessions.filter((s) => s.status === "active").length > 0 && (
           <section>
             <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text3)] mb-3">

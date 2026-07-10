@@ -5,6 +5,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { useConsultoria } from "@/lib/consultoria-context";
 import { COMPLIANCE_SECTIONS } from "@/lib/constants";
+import { janelasAtivas, formatDataBR, SEVERIDADE_COLORS, type JanelaComStatus } from "@/lib/fundeb/prazos";
 
 type ItemStatus = "pending" | "progress" | "done";
 
@@ -22,17 +23,34 @@ const STATUS_CONFIG: Record<ItemStatus, { label: string; bg: string; text: strin
 
 const STATUS_CYCLE: ItemStatus[] = ["pending", "progress", "done"];
 
+type SaveState = "idle" | "saving" | "saved";
+
 export default function ComplianceSectionPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
   const { activeSession, municipality } = useConsultoria();
   const municipalityId = activeSession?.municipalityId;
 
-  const section = COMPLIANCE_SECTIONS.find((s) => s.id === slug.toUpperCase());
+  const sectionIndex = COMPLIANCE_SECTIONS.findIndex((s) => s.id === slug.toUpperCase());
+  const section = sectionIndex >= 0 ? COMPLIANCE_SECTIONS[sectionIndex] : undefined;
+  const prevSection = sectionIndex > 0 ? COMPLIANCE_SECTIONS[sectionIndex - 1] : null;
+  const nextSection =
+    sectionIndex >= 0 && sectionIndex < COMPLIANCE_SECTIONS.length - 1
+      ? COMPLIANCE_SECTIONS[sectionIndex + 1]
+      : null;
 
   const [itemStates, setItemStates] = useState<Record<string, ItemState>>({});
   const [loaded, setLoaded] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [janela, setJanela] = useState<JanelaComStatus | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Janela regulatória mais urgente que cobre esta seção (client-only: depende de "hoje")
+  useEffect(() => {
+    if (!section) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- countdown depende de "hoje", só existe no client
+    setJanela(janelasAtivas().find((j) => j.diasRestantes >= 0 && j.secoes.includes(section.id)) ?? null);
+  }, [section]);
 
   // Load items from DB (fetch-on-key-change; setState on initial load / reset is legitimate here)
   useEffect(() => {
@@ -84,8 +102,9 @@ export default function ComplianceSectionPage({ params }: { params: Promise<{ sl
     (states: Record<string, ItemState>) => {
       if (!municipalityId || !section) return;
       if (debounceRef.current) clearTimeout(debounceRef.current);
+      if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
       debounceRef.current = setTimeout(() => {
-        setSaving(true);
+        setSaveState("saving");
         const items = Object.entries(states).map(([key, val]) => ({
           itemKey: key,
           status: val.status,
@@ -96,8 +115,11 @@ export default function ComplianceSectionPage({ params }: { params: Promise<{ sl
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ municipalityId, items }),
         })
-          .catch(() => {})
-          .finally(() => setSaving(false));
+          .then(() => {
+            setSaveState("saved");
+            savedTimerRef.current = setTimeout(() => setSaveState("idle"), 2000);
+          })
+          .catch(() => setSaveState("idle"));
       }, 500);
     },
     [municipalityId, section]
@@ -106,10 +128,10 @@ export default function ComplianceSectionPage({ params }: { params: Promise<{ sl
   if (!section) {
     return (
       <div>
-        <PageHeader title="Secao nao encontrada" />
+        <PageHeader title="Seção não encontrada" />
         <div className="max-w-7xl mx-auto px-8 py-12 text-center">
           <p className="text-[var(--text2)] mb-4">
-            A secao &quot;{slug}&quot; não foi encontrada.
+            A seção &quot;{slug}&quot; não foi encontrada.
           </p>
           <Link
             href="/compliance"
@@ -170,13 +192,19 @@ export default function ComplianceSectionPage({ params }: { params: Promise<{ sl
   };
 
   const completedCount = Object.values(itemStates).filter((s) => s.status === "done").length;
+  const inProgressCount = Object.values(itemStates).filter((s) => s.status === "progress").length;
+  const pendingCount = Object.values(itemStates).filter((s) => s.status === "pending").length;
   const totalCount = section.items.length;
   const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
+  const prazoDescricao = janela
+    ? `Prazo: ${formatDataBR(janela.data)} (${janela.diasRestantes} dias) — ${totalCount} itens`
+    : `${totalCount} itens`;
 
   if (!loaded) {
     return (
       <div>
-        <PageHeader title={`Secao ${section.id}: ${section.name}`} description={`Prazo: ${section.deadline}`} />
+        <PageHeader title={`Seção ${section.id}: ${section.name}`} description={prazoDescricao} />
         <div className="max-w-5xl mx-auto px-8 py-12 text-center text-[var(--text3)] text-sm animate-pulse-slow">
           Carregando...
         </div>
@@ -187,8 +215,8 @@ export default function ComplianceSectionPage({ params }: { params: Promise<{ sl
   return (
     <div>
       <PageHeader
-        title={`Secao ${section.id}: ${section.name}`}
-        description={`Prazo: ${section.deadline} - ${totalCount} itens`}
+        title={`Seção ${section.id}: ${section.name}`}
+        description={prazoDescricao}
       />
 
       <div className="max-w-5xl mx-auto px-8 py-6 space-y-6">
@@ -207,16 +235,82 @@ export default function ComplianceSectionPage({ params }: { params: Promise<{ sl
             <div className="flex items-center gap-2 text-xs text-[var(--text2)]">
               <span className="w-2 h-2 rounded-full bg-[#00E5A0]" />
               {municipality.nome}
-              {saving && <span className="text-[var(--text3)] animate-pulse-slow ml-2">Salvando...</span>}
             </div>
           )}
         </div>
 
         {!activeSession && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center text-sm text-amber-700">
-            Inicie uma consultoria para salvar o progresso no banco de dados.
+            <p>Inicie uma consultoria para salvar o progresso no banco de dados.</p>
+            <Link
+              href="/wizard"
+              className="inline-flex items-center gap-2 mt-2 px-3 py-1.5 rounded-lg bg-[var(--navy)] text-white text-xs font-bold hover:opacity-90 transition-opacity"
+            >
+              + Iniciar consultoria
+            </Link>
           </div>
         )}
+
+        {/* Progress Summary — sticky no topo para não exigir scroll */}
+        <div className="sticky top-0 z-10 bg-white border border-[var(--border)] rounded-xl p-4 shadow-sm animate-fade-in">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4 min-w-0">
+              <div
+                className="text-xl font-extrabold shrink-0"
+                style={{ color: progressPercent === 100 ? "var(--green)" : "var(--cyan)" }}
+              >
+                {progressPercent}%
+              </div>
+              <div className="min-w-0">
+                <div className="text-sm font-bold text-[var(--text)] truncate">
+                  {completedCount} de {totalCount} concluídos
+                </div>
+                <div className="flex gap-3 text-[11px] text-[var(--text3)]">
+                  <span>{pendingCount} pendentes</span>
+                  <span>{inProgressCount} em andamento</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 shrink-0">
+              {janela && (
+                <span
+                  className="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold"
+                  style={{
+                    backgroundColor: `${SEVERIDADE_COLORS[janela.severidade]}18`,
+                    color: SEVERIDADE_COLORS[janela.severidade],
+                  }}
+                  title={`${janela.titulo} — ${janela.emJogo}`}
+                >
+                  <span
+                    className="w-1.5 h-1.5 rounded-full"
+                    style={{ backgroundColor: SEVERIDADE_COLORS[janela.severidade] }}
+                  />
+                  {janela.diasRestantes} dias
+                </span>
+              )}
+              <span
+                className={`text-[11px] font-semibold transition-opacity ${
+                  saveState === "saving"
+                    ? "text-[var(--text3)] animate-pulse-slow"
+                    : saveState === "saved"
+                      ? "text-emerald-600"
+                      : "opacity-0"
+                }`}
+              >
+                {saveState === "saving" ? "Salvando..." : "✓ Salvo"}
+              </span>
+            </div>
+          </div>
+          <div className="mt-2.5 w-full bg-[var(--bg)] rounded-full h-2">
+            <div
+              className="h-2 rounded-full transition-all duration-500"
+              style={{
+                width: `${progressPercent}%`,
+                backgroundColor: progressPercent === 100 ? "var(--green)" : "var(--cyan)",
+              }}
+            />
+          </div>
+        </div>
 
         {/* Checklist Items */}
         <div className="space-y-3">
@@ -238,6 +332,7 @@ export default function ComplianceSectionPage({ params }: { params: Promise<{ sl
                   {/* Checkbox */}
                   <button
                     onClick={() => toggleCheck(item.key)}
+                    aria-label={state.checked ? "Marcar como pendente" : "Marcar como concluído"}
                     className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                       state.checked
                         ? "bg-emerald-500 border-emerald-500 text-white"
@@ -270,7 +365,7 @@ export default function ComplianceSectionPage({ params }: { params: Promise<{ sl
                     <div className="mt-2">
                       <input
                         type="text"
-                        placeholder="Adicionar observacao..."
+                        placeholder="Adicionar observação..."
                         value={state.notes}
                         onChange={(e) => updateNotes(item.key, e.target.value)}
                         className="w-full text-xs px-3 py-1.5 border border-[var(--border)] rounded-md focus:outline-none focus:border-[var(--cyan)] bg-[var(--bg)] placeholder:text-[var(--text3)]"
@@ -292,41 +387,38 @@ export default function ComplianceSectionPage({ params }: { params: Promise<{ sl
           })}
         </div>
 
-        {/* Progress Summary */}
-        <div className="bg-white border border-[var(--border)] rounded-xl p-5 animate-fade-in">
-          <div className="flex items-center justify-between mb-3">
-            <div>
+        {/* Navegação entre seções */}
+        <div className="flex items-center justify-between gap-4 pt-2">
+          {prevSection ? (
+            <Link
+              href={`/compliance/${prevSection.id}`}
+              className="flex-1 group bg-white border border-[var(--border)] rounded-xl p-4 hover:border-[var(--cyan)] transition-all"
+            >
               <div className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">
-                Progresso da Secao {section.id}
+                ← Seção anterior
               </div>
-              <div className="text-xl font-extrabold mt-1 text-[var(--text)]">
-                {completedCount} de {totalCount} concluidos
+              <div className="text-sm font-bold text-[var(--text)] group-hover:text-[var(--navy)] mt-0.5">
+                {prevSection.id}: {prevSection.name}
               </div>
-            </div>
-            <div className="text-2xl font-extrabold" style={{ color: progressPercent === 100 ? "var(--green)" : "var(--cyan)" }}>
-              {progressPercent}%
-            </div>
-          </div>
-          <div className="w-full bg-[var(--bg)] rounded-full h-2.5">
-            <div
-              className="h-2.5 rounded-full transition-all duration-500"
-              style={{
-                width: `${progressPercent}%`,
-                backgroundColor: progressPercent === 100 ? "var(--green)" : "var(--cyan)",
-              }}
-            />
-          </div>
-          <div className="mt-3 flex gap-4 text-xs text-[var(--text3)]">
-            <span>
-              {Object.values(itemStates).filter((s) => s.status === "pending").length} pendentes
-            </span>
-            <span>
-              {Object.values(itemStates).filter((s) => s.status === "progress").length} em andamento
-            </span>
-            <span>
-              {Object.values(itemStates).filter((s) => s.status === "done").length} concluidos
-            </span>
-          </div>
+            </Link>
+          ) : (
+            <div className="flex-1" />
+          )}
+          {nextSection ? (
+            <Link
+              href={`/compliance/${nextSection.id}`}
+              className="flex-1 group bg-white border border-[var(--border)] rounded-xl p-4 text-right hover:border-[var(--cyan)] transition-all"
+            >
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text3)]">
+                Próxima seção →
+              </div>
+              <div className="text-sm font-bold text-[var(--text)] group-hover:text-[var(--navy)] mt-0.5">
+                {nextSection.id}: {nextSection.name}
+              </div>
+            </Link>
+          ) : (
+            <div className="flex-1" />
+          )}
         </div>
       </div>
     </div>

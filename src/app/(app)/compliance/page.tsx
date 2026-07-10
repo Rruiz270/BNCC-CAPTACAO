@@ -5,6 +5,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { useConsultoria } from "@/lib/consultoria-context";
 import { COMPLIANCE_SECTIONS } from "@/lib/constants";
+import { janelasAtivas, formatDataBR, SEVERIDADE_COLORS, type JanelaComStatus } from "@/lib/fundeb/prazos";
 
 interface SectionProgress {
   section: string;
@@ -13,12 +14,39 @@ interface SectionProgress {
   progress: number;
 }
 
+/** Janela regulatória mais urgente que cobre a seção. */
+function janelaDaSecao(secaoId: string, janelas: JanelaComStatus[]): JanelaComStatus | null {
+  return janelas.find((j) => j.diasRestantes >= 0 && j.secoes.includes(secaoId)) ?? null;
+}
+
+function PrazoChip({ janela }: { janela: JanelaComStatus | null }) {
+  if (!janela) return null;
+  const color = SEVERIDADE_COLORS[janela.severidade];
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold"
+      style={{ backgroundColor: `${color}18`, color }}
+      title={`${janela.titulo} — ${janela.emJogo}`}
+    >
+      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
+      {janela.diasRestantes} dias · {formatDataBR(janela.data)}
+    </span>
+  );
+}
+
 export default function CompliancePage() {
   const { activeSession, municipality } = useConsultoria();
   const [sectionProgress, setSectionProgress] = useState<Record<string, SectionProgress>>({});
   const [loading, setLoading] = useState(false);
+  const [janelas, setJanelas] = useState<JanelaComStatus[]>([]);
 
   const municipalityId = activeSession?.municipalityId;
+
+  // Countdown calculado no client para evitar divergência de hidratação
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- depende de "hoje", só existe no client
+    setJanelas(janelasAtivas());
+  }, []);
 
   useEffect(() => {
     if (!municipalityId) {
@@ -67,7 +95,15 @@ export default function CompliancePage() {
         {!activeSession ? (
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 text-center">
             <p className="text-amber-800 text-sm font-semibold">Nenhuma consultoria ativa</p>
-            <p className="text-amber-600 text-xs mt-1">Inicie uma consultoria na sidebar para acompanhar o compliance do município.</p>
+            <p className="text-amber-600 text-xs mt-1">
+              O checklist de compliance é salvo por município. Inicie uma consultoria para acompanhar o progresso.
+            </p>
+            <Link
+              href="/wizard"
+              className="inline-flex items-center gap-2 mt-3 px-4 py-2 rounded-lg bg-[var(--navy)] text-white text-xs font-bold hover:opacity-90 transition-opacity"
+            >
+              + Iniciar consultoria
+            </Link>
           </div>
         ) : (
           <div className="bg-[#00B4D8]/5 border border-[#00B4D8]/20 rounded-lg px-4 py-2.5 flex items-center gap-2 text-sm">
@@ -110,6 +146,7 @@ export default function CompliancePage() {
             const sp = sectionProgress[section.id];
             const progress = sp?.progress ?? 0;
             const totalCount = section.items.length;
+            const janela = janelaDaSecao(section.id, janelas);
 
             return (
               <Link
@@ -139,12 +176,12 @@ export default function CompliancePage() {
                   </svg>
                 </div>
 
-                {/* Deadline */}
-                <div className="flex items-center gap-1.5 text-xs text-[var(--text2)] mb-3">
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  Prazo: {section.deadline}
+                {/* Prazo dinâmico com semáforo */}
+                <div className="flex items-center gap-1.5 mb-3 min-h-[20px]">
+                  <PrazoChip janela={janela} />
+                  {!janela && janelas.length > 0 && (
+                    <span className="text-xs text-[var(--text3)]">Sem janela aberta</span>
+                  )}
                 </div>
 
                 {/* Item Count */}

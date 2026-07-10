@@ -226,7 +226,7 @@ export default function StepEntrega() {
           </div>
         </div>
         <div className="text-[10px] text-[var(--text3)] mt-2">
-          Estes nomes serao incluidos no snapshot e no relatorio final da consultoria.
+          Estes nomes serão incluídos no snapshot e no relatório final da consultoria.
         </div>
       </div>
 
